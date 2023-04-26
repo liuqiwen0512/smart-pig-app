@@ -1,0 +1,11 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- 闪屏页主题样式 -->
+    <style name="SplashTheme" parent="FullScreenTheme">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowIsTranslucent">false</item>
+        <item name="android:windowBackground">#003579</item>
+        <item name="android:windowSplashScreenBackground">#003579</item>
+        <item name="android:windowSplashScreenIconBackgroundColor">#003579</item>
+    </style>
+</resources>

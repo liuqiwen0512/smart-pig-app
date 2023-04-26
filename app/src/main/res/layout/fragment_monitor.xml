@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/img_main_bg">
+
+    <LinearLayout
+        android:id="@+id/pig_farm_selection"
+        android:layout_width="wrap_content"
+        android:layout_height="56dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginLeft="20dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <androidx.constraintlayout.utils.widget.ImageFilterView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:tint="@color/grey_76"
+            android:src="@drawable/selector_vertical_arrow"/>
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/swinery_name"
+            style="@style/text_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:text="猪栏11"/>
+    </LinearLayout>
+
+    <androidx.constraintlayout.utils.widget.ImageFilterView
+        android:id="@+id/pig_farm_search"
+        android:layout_width="56dp"
+        android:layout_height="40dp"
+        app:layout_constraintTop_toTopOf="@id/pig_farm_selection"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/pig_farm_selection"
+        android:scaleType="center"
+        android:src="@drawable/img_search"/>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/pig_farm_name"
+        style="@style/text_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginTop="70dp"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:text="猪场11"/>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/pigsty_layout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintDimensionRatio="474:240"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/pig_farm_name"
+        app:layout_constraintRight_toLeftOf="@id/pig_layout"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="30dp"
+        android:elevation="3dp"
+        android:background="@drawable/shape_main_pigsty_bg">
+        <androidx.constraintlayout.utils.widget.ImageFilterView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/img_monitor_pigsty_bg"/>
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/pigsty_label"
+            style="@style/text_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="14dp"
+            android:text="在线猪栏"/>
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/pigsty_count"
+            style="@style/text_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="25dp"
+            android:text="431 个"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/pig_layout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintDimensionRatio="474:240"
+        app:layout_constraintLeft_toRightOf="@id/pigsty_layout"
+        app:layout_constraintTop_toTopOf="@id/pigsty_layout"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="16dp"
+        android:elevation="3dp"
+        android:background="@drawable/shape_main_pigsty_bg">
+        <androidx.constraintlayout.utils.widget.ImageFilterView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/img_monitor_pig_bg"/>
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/pig_label"
+            style="@style/text_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="14dp"
+            android:text="在线生猪"/>
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/pig_count"
+            style="@style/text_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="25dp"
+            android:text="4121331 个"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/pigsty_recycler"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/pig_layout"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:overScrollMode="never"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

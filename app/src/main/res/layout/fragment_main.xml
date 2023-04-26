@@ -1,0 +1,429 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/img_main_bg">
+
+    <LinearLayout
+        android:id="@+id/pig_farm_selection"
+        android:layout_width="wrap_content"
+        android:layout_height="56dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginLeft="20dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <androidx.constraintlayout.utils.widget.ImageFilterView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:tint="@color/grey_76"
+            android:src="@drawable/selector_vertical_arrow"/>
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/swinery_name"
+            style="@style/text_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:text="猪栏11"/>
+    </LinearLayout>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/pig_farm_name"
+        style="@style/text_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginTop="80dp"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:text="猪场11"/>
+
+    <androidx.constraintlayout.helper.widget.Flow
+        android:id="@+id/environment_flow"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/pig_farm_name"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="30dp"
+        app:flow_wrapMode="chain"
+        app:flow_horizontalStyle="spread_inside"
+        app:constraint_referenced_ids="pig_farm_temperature,pig_farm_humidity,pig_farm_concentration"/>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/pig_farm_temperature"
+        android:layout_width="94dp"
+        android:layout_height="120dp"
+        android:elevation="3dp"
+        android:background="@drawable/shape_main_pigsty_bg">
+        <androidx.constraintlayout.utils.widget.ImageFilterView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/img_main_temperature"/>
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/temperature_name"
+            style="@style/text_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="12dp"
+            android:text="温度"/>
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/temperature_value"
+            style="@style/text_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:textSize="32sp"
+            android:textStyle="bold"
+            android:text="26.7"/>
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/temperature_unit"
+            style="@style/text_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginRight="15dp"
+            android:layout_marginBottom="7dp"
+            android:textSize="18sp"
+            android:text="°C"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/pig_farm_humidity"
+        android:layout_width="94dp"
+        android:layout_height="120dp"
+        android:elevation="3dp"
+        android:background="@drawable/shape_main_pigsty_bg">
+        <androidx.constraintlayout.utils.widget.ImageFilterView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/img_main_humidity"/>
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/humidity_name"
+            style="@style/text_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="12dp"
+            android:text="湿度"/>
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/humidity_value"
+            style="@style/text_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:textSize="32sp"
+            android:textStyle="bold"
+            android:text="55"/>
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/humidity_unit"
+            style="@style/text_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginRight="15dp"
+            android:layout_marginBottom="7dp"
+            android:textSize="18sp"
+            android:text="%"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/pig_farm_concentration"
+        android:layout_width="94dp"
+        android:layout_height="120dp"
+        android:elevation="3dp"
+        android:background="@drawable/shape_main_pigsty_bg">
+        <androidx.constraintlayout.utils.widget.ImageFilterView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/img_main_concentration"/>
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/concentration_name"
+            style="@style/text_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="12dp"
+            android:text="氨气浓度"/>
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/concentration_value"
+            style="@style/text_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:textSize="32sp"
+            android:textStyle="bold"
+            android:text="21"/>
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/concentration_unit"
+            style="@style/text_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginRight="15dp"
+            android:layout_marginBottom="7dp"
+            android:textSize="18sp"
+            android:text="ppm"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/pigsty_count"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintDimensionRatio="656:120"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/environment_flow"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginRight="16dp"
+        android:elevation="3dp"
+        android:background="@drawable/shape_main_pigsty_bg">
+
+        <androidx.constraintlayout.utils.widget.ImageFilterView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitXY"
+            android:src="@drawable/img_main_pigsty_bg"/>
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/pigsty_count_label"
+            style="@style/text_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="5dp"
+            android:text="在线猪栏数量"/>
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/pigsty_count_value"
+            style="@style/text_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="@id/pigsty_count_label"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/pigsty_count_label"
+            android:textSize="18sp"
+            android:text="643个"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.utils.widget.ImageFilterView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/pig_statis"
+        android:layout_marginLeft="42dp"
+        android:src="@drawable/img_main_pigs"/>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/pig_statis"
+        android:layout_width="0dp"
+        android:layout_height="200dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/pigsty_count"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:elevation="3dp"
+        android:background="@drawable/shape_main_pig_statis_bg">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            style="@style/text_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_marginTop="13dp"
+            android:text="在线生猪数量"/>
+
+        <androidx.constraintlayout.helper.widget.Flow
+            android:id="@+id/statis_flow"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="42dp"
+            android:layout_marginRight="10dp"
+            app:flow_wrapMode="chain"
+            app:flow_horizontalStyle="spread_inside"
+            app:constraint_referenced_ids="pig_statis_today,pig_statis_yesterday,pig_statis_before_yesterday"/>
+
+        <LinearLayout
+            android:id="@+id/pig_statis_today"
+            android:layout_width="96dp"
+            android:layout_height="60dp"
+            android:orientation="vertical"
+            android:background="@drawable/shape_main_pig_statis_bg2">
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/text_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="8dp"
+                android:text="今日"/>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/pig_statis_today_value"
+                style="@style/text_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="7dp"
+                android:text="90808 头"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/pig_statis_yesterday"
+            android:layout_width="96dp"
+            android:layout_height="60dp"
+            android:orientation="vertical"
+            android:background="@drawable/shape_main_pig_statis_bg3">
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/text_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="7dp"
+                android:text="昨日"/>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/pig_statis_yesterday_value"
+                style="@style/text_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="7dp"
+                android:text="90808 头"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/pig_statis_before_yesterday"
+            android:layout_width="96dp"
+            android:layout_height="60dp"
+            android:orientation="vertical"
+            android:background="@drawable/shape_main_pig_statis_bg4">
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/text_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="8dp"
+                android:text="前日"/>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/pig_statis_before_yesterday_value"
+                style="@style/text_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="7dp"
+                android:text="90808 头"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/pig_statis_health"
+            android:layout_width="149dp"
+            android:layout_height="60dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/statis_flow"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="16dp"
+            android:orientation="vertical"
+            android:background="@drawable/shape_main_pig_statis_bg5">
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/text_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="8dp"
+                android:text="72小时健康告警"/>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/pig_statis_health_value"
+                style="@style/text_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="7dp"
+                android:text="90808 头"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/pig_statis_equipment"
+            android:layout_width="149dp"
+            android:layout_height="60dp"
+            app:layout_constraintTop_toBottomOf="@id/statis_flow"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_marginTop="16dp"
+            android:layout_marginRight="10dp"
+            android:orientation="vertical"
+            android:background="@drawable/shape_main_pig_statis_bg6">
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/text_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="8dp"
+                android:text="72小时设备异常"/>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/pig_statis_equipment_value"
+                style="@style/text_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="7dp"
+                android:text="90808 头"/>
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

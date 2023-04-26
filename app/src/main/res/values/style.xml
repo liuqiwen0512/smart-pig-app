@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="dialog_fade_style">
+        <item name="android:windowEnterAnimation">@android:anim/fade_in</item>
+        <item name="android:windowExitAnimation">@android:anim/fade_out</item>
+    </style>
+
+    <style name="dialog_fade_style2">
+        <item name="android:windowEnterAnimation">@android:anim/slide_in_left</item>
+        <item name="android:windowExitAnimation">@anim/slide_out_left</item>
+    </style>
+
+    <!--LoadingDialog-->
+    <style name="loadingDialogTheme" parent="Theme.AppCompat.Dialog">
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:background">@null</item>
+        <item name="android:backgroundDimAmount">0.35</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <!--背景模糊-->
+    </style>
+
+    <!--loadingDialogThemeNobg-->
+    <style name="loadingDialogThemeNobg" parent="Theme.AppCompat.Dialog">
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:background">@null</item>
+        <item name="android:backgroundDimEnabled">false</item>
+        <!--背景模糊-->
+    </style>
+
+    <style name="text_title">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/grey_3a</item>
+    </style>
+
+    <style name="text_content">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/grey_76</item>
+    </style>
+
+    <style name="text_register_content">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/grey_3a</item>
+    </style>
+
+    <style name="text_dialog_button">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/colorButton</item>
+    </style>
+
+
+
+</resources>

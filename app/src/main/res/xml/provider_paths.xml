@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+
+    <!--    paths-->
+    <!--    name：是一个文件别名，对外可见路径的一部分，隐藏真实文件目录 ；-->
+    <!--    path：是一个相对目录，相对于当前标签的根目录。path值为点符号（"."）时，该根目录下所有的文件夹都可以临时授权访问。-->
+    <!--    root-path：表示设备的根目录，对应File DEVICE_ROOT = new File("/")目录路径："/"；-->
+    <!--    files-path：表示内部存储空间应用私有目录下的 files/ 目录，对应Context.getFilesDir()所获取的目录路径：/data/data/<包名>/files；-->
+    <!--    cache-path：表示内部存储空间应用私有目录下的 cache/ 目录，对应Context.getCacheDir()所获取的目录路径：/data/data/<包名>/cache；-->
+    <!--    external-path：表示外部存储空间根目录，对应Environment.getExternalStorageDirectory()所获取的目录路径：/storage/emulate/0；-->
+    <!--    external-files-path：表示外部存储空间应用私有目录下的 files/ 目录，对应Context.getExternalFilesDir()所获取的目录路径：/storage/emulate/0/Android/data/<包名>/files；-->
+    <!--    external-cache-path：表示外部存储空间应用私有目录下的 cache/ 目录，对应Context.getExternalCacheDir()所获取的目录路径：/storage/emulate/0/Android/data/<包名>/cache；-->
+    <!--    external-media-path：表示外部媒体区域根目录中的文件，对应Context.getExternalMediaDirs()所获取的目录路径：/storage/emulated/0/Android/media/<包名>。-->
+    <!--    获取Uri方法-->
+    <!--    Uri uriFile = FileProvider.getUriForFile(this, getPackageName() + ".fileprovider", new File(mCameraImagePath));-->
+
+    <files-path
+        name="files_root"
+        path="." />
+
+    <external-path
+        name="external_files_root"
+        path="." />
+    <external-files-path
+        name="my_images"
+        path="Android/data/${applicationId}/files/Pictures" />
+</paths>
