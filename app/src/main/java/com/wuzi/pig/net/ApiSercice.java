@@ -46,7 +46,7 @@ public interface ApiSercice {
 
     //忘记密码
     @PUT("/prod-api/system/user/profile/forgetPwd")
-    Observable<ResponseEntity<UserEntity>> forgetPwd(@Body HashMap<String, Object> map);
+    Observable<ResponseEntity<UserEntity>> forgetPwd(@QueryMap HashMap<String, Object> map);
 
     //登录
     @Headers({"Content-type:application/json;charset=UTF-8"})

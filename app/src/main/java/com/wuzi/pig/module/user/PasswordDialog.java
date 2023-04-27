@@ -63,6 +63,10 @@ public class PasswordDialog extends BaseDialogFragment<PasswordPresenter> implem
     protected void initView(View view, Bundle savedInstanceState) {
         mLoadingDialog = new LoadingDialog(mContext);
         mHandler = new HandlerImpl(this);
+
+        if (LoginManager.isLogin()) {
+            mPhoneValueView.setText(LoginManager.getUserName());
+        }
     }
 
     @OnClick({R.id.back, R.id.verification_code_send, R.id.password_visible, R.id.submit})
