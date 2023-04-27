@@ -1,16 +1,14 @@
 package com.wuzi.pig.module.main;
 
+import android.os.Bundle;
+import android.widget.FrameLayout;
+
 import androidx.constraintlayout.motion.widget.MotionLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.app.ActivityGroup;
-import android.graphics.Point;
-import android.os.Bundle;
-import android.widget.FrameLayout;
 
 import com.wuzi.pig.R;
 import com.wuzi.pig.base.BaseActivity;
@@ -22,8 +20,6 @@ import com.wuzi.pig.module.user.UserMainFragment;
 import com.wuzi.pig.module.warm.WarmFragment;
 import com.wuzi.pig.utils.StatusBarUtils;
 import com.wuzi.pig.utils.StatusbarColorUtils;
-import com.wuzi.pig.utils.StringUtils;
-import com.wuzi.pig.utils.UIUtils;
 import com.wuzi.pig.utils.fun.Function;
 
 import java.util.List;

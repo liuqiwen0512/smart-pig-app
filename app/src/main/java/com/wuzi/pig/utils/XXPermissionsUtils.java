@@ -76,7 +76,7 @@ public class XXPermissionsUtils {
      */
     public void hasCameraPermission(Runnable runnable, Context context) {
         this.context = context;
-        if (XXPermissions.isGranted(context, cameraPermission, readOrWritePermission)) {
+        if (XXPermissions.isGranted(context, cameraPermission)) {
             runnable.run();
             this.context = null;
         } else {
@@ -84,7 +84,7 @@ public class XXPermissionsUtils {
                 if (allow) {
                     runnable.run();
                 }
-            }, cameraPermission, readOrWritePermission);
+            }, cameraPermission);
         }
     }
 
