@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.wuzi.pig.R;
 import com.wuzi.pig.constant.PigFarmConstant;
-import com.wuzi.pig.entity.PigFarmEntity;
+import com.wuzi.pig.entity.PigstyEntity;
 import com.wuzi.pig.utils.StringUtils;
 import com.wuzi.pig.utils.fun.Function3;
 import com.wuzi.pig.utils.tools.CollectionUtils;
@@ -33,8 +33,8 @@ public class PigstyAdapter extends RecyclerView.Adapter<PigstyAdapter.ViewHolder
     public final static int CLICK_ACTION = 100;
 
     private Context mContext;
-    private Function3<View, PigFarmEntity, Integer> mEventListener;
-    private List<PigFarmEntity> mList = new ArrayList<>();
+    private Function3<View, PigstyEntity, Integer> mEventListener;
+    private List<PigstyEntity> mList = new ArrayList<>();
     private Map<String, Object> mCheckedMap = new HashMap<>();
     private boolean isEdit = false;
 
@@ -59,57 +59,7 @@ public class PigstyAdapter extends RecyclerView.Adapter<PigstyAdapter.ViewHolder
         return mList.size();
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
-
-        @BindView(R.id.checkbox)
-        AppCompatCheckBox mCheckBoxView;
-        @BindView(R.id.name)
-        AppCompatTextView mNameView;
-
-        public ViewHolder(@NonNull View itemView) {
-            super(itemView);
-            ButterKnife.bind(this, itemView);
-
-            itemView.setOnClickListener(this);
-            mCheckBoxView.setOnCheckedChangeListener(this);
-        }
-
-        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-            PigFarmEntity entity = mList.get(position);
-            mNameView.setText(entity.getPigfarmName());
-
-            mCheckBoxView.setVisibility(isEdit ? View.VISIBLE : View.GONE);
-            mCheckBoxView.setChecked(mCheckedMap.containsKey(entity.getPigfarmId()));
-        }
-
-        @Override
-        public void onClick(View v) {
-            int position = getAdapterPosition();
-            if (position == -1) return;
-            PigFarmEntity entity = mList.get(position);
-            if (!isEdit && mEventListener != null) {
-                mEventListener.action(v, entity, CLICK_ACTION);
-            }
-        }
-
-        @Override
-        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            if (!buttonView.isPressed()) return;
-            int position = getAdapterPosition();
-            if (position == -1) return;
-            PigFarmEntity entity = mList.get(position);
-            switch (buttonView.getId()) {
-                case R.id.checkbox: {
-                    if (mEventListener != null) {
-                        mEventListener.action(buttonView, entity, CLICK_DELETE);
-                    }
-                    break;
-                }
-            }
-        }
-    }
-
-    public void notifyDataSetChanged(List<PigFarmEntity> list) {
+    public void notifyDataSetChanged(List<PigstyEntity> list) {
         mList.clear();
         mCheckedMap.clear();
         if (!CollectionUtils.isEmpty(list)) {
@@ -118,28 +68,28 @@ public class PigstyAdapter extends RecyclerView.Adapter<PigstyAdapter.ViewHolder
         }
     }
 
-    public void notifyItemInserted(List<PigFarmEntity> list) {
+    public void notifyItemInserted(List<PigstyEntity> list) {
         if (!CollectionUtils.isEmpty(list)) {
             mList.addAll(list);
             notifyItemRangeInserted(mList.size(), list.size());
         }
     }
 
-    public void notifyItemChanged(PigFarmEntity entity) {
+    public void notifyItemChanged(PigstyEntity entity) {
         for (int i = 0; i < mList.size(); i++) {
-            PigFarmEntity item = mList.get(i);
-            if (StringUtils.equals(entity.getPigfarmId(), item.getPigfarmId())) {
+            PigstyEntity item = mList.get(i);
+            if (StringUtils.equals(entity.getPigstyId(), item.getPigstyId())) {
                 notifyItemChanged(i);
                 break;
             }
         }
     }
 
-    public void notifyItemChecked(PigFarmEntity entity, boolean checked) {
+    public void notifyItemChecked(PigstyEntity entity, boolean checked) {
         if (checked) {
-            mCheckedMap.put(entity.getPigfarmId(), entity);
+            mCheckedMap.put(entity.getPigstyId(), entity);
         } else {
-            mCheckedMap.remove(entity.getPigfarmId());
+            mCheckedMap.remove(entity.getPigstyId());
         }
         notifyItemChanged(entity);
     }
@@ -147,12 +97,12 @@ public class PigstyAdapter extends RecyclerView.Adapter<PigstyAdapter.ViewHolder
     public void notifyCheckedAll(boolean checked) {
         if (checked) {
             for (int i = 0; i < mList.size(); i++) {
-                PigFarmEntity itemEntity = mList.get(i);
+                PigstyEntity itemEntity = mList.get(i);
                 if (mCheckedMap.size() >= PigFarmConstant.PIG_FARM_DELETE_ALL_MAX) {
                     break;
                 }
-                if (!mCheckedMap.containsKey(itemEntity.getPigfarmId())) {
-                    mCheckedMap.put(itemEntity.getPigfarmId(), itemEntity);
+                if (!mCheckedMap.containsKey(itemEntity.getPigstyId())) {
+                    mCheckedMap.put(itemEntity.getPigstyId(), itemEntity);
                     notifyItemChanged(i);
                 }
             }
@@ -161,8 +111,8 @@ public class PigstyAdapter extends RecyclerView.Adapter<PigstyAdapter.ViewHolder
             for (String itemId: ids) {
                 int position = -1;
                 for (int i = 0; i < mList.size(); i++) {
-                    PigFarmEntity itemEntity = mList.get(i);
-                    if (StringUtils.equals(itemId, itemEntity.getPigfarmId())) {
+                    PigstyEntity itemEntity = mList.get(i);
+                    if (StringUtils.equals(itemId, itemEntity.getPigstyId())) {
                         position = i;
                         break;
                     }
@@ -179,8 +129,8 @@ public class PigstyAdapter extends RecyclerView.Adapter<PigstyAdapter.ViewHolder
         for (String itemId: mCheckedMap.keySet()) {
             int position = -1;
             for (int i = 0; i < mList.size(); i++) {
-                PigFarmEntity itemEntity = mList.get(i);
-                if (StringUtils.equals(itemId, itemEntity.getPigfarmId())) {
+                PigstyEntity itemEntity = mList.get(i);
+                if (StringUtils.equals(itemId, itemEntity.getPigstyId())) {
                     position = i;
                     break;
                 }
@@ -193,8 +143,12 @@ public class PigstyAdapter extends RecyclerView.Adapter<PigstyAdapter.ViewHolder
         mCheckedMap.clear();
     }
 
-    public List<PigFarmEntity> getList() {
+    public List<PigstyEntity> getList() {
         return mList;
+    }
+
+    public void setEventListener(Function3<View, PigstyEntity, Integer> eventListener) {
+        mEventListener = eventListener;
     }
 
     public Map<String, Object> getCheckedMap() {
@@ -210,7 +164,53 @@ public class PigstyAdapter extends RecyclerView.Adapter<PigstyAdapter.ViewHolder
         return isEdit;
     }
 
-    public void setEventListener(Function3<View, PigFarmEntity, Integer> eventListener) {
-        mEventListener = eventListener;
+    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
+
+        @BindView(R.id.checkbox)
+        AppCompatCheckBox mCheckBoxView;
+        @BindView(R.id.name)
+        AppCompatTextView mNameView;
+
+        public ViewHolder(@NonNull View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
+
+            itemView.setOnClickListener(this);
+            mCheckBoxView.setOnCheckedChangeListener(this);
+        }
+
+        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+            PigstyEntity entity = mList.get(position);
+            mNameView.setText(entity.getPigstyName());
+
+            mCheckBoxView.setVisibility(isEdit ? View.VISIBLE : View.GONE);
+            mCheckBoxView.setChecked(mCheckedMap.containsKey(entity.getPigstyId()));
+        }
+
+        @Override
+        public void onClick(View v) {
+            int position = getAdapterPosition();
+            if (position == -1) return;
+            PigstyEntity entity = mList.get(position);
+            if (!isEdit && mEventListener != null) {
+                mEventListener.action(v, entity, CLICK_ACTION);
+            }
+        }
+
+        @Override
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            if (!buttonView.isPressed()) return;
+            int position = getAdapterPosition();
+            if (position == -1) return;
+            PigstyEntity entity = mList.get(position);
+            switch (buttonView.getId()) {
+                case R.id.checkbox: {
+                    if (mEventListener != null) {
+                        mEventListener.action(buttonView, entity, CLICK_DELETE);
+                    }
+                    break;
+                }
+            }
+        }
     }
 }

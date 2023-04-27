@@ -13,6 +13,4 @@ public class Constant {
     // net cache 文件名称
     public static String NET_CACHE_DIR = "net_cache";
 
-    public static int PAGE_SIZE = 50;
-
 }

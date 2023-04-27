@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.wuzi.pig.R;
 import com.wuzi.pig.base.BaseFragment;
-import com.wuzi.pig.entity.PigstyEntity;
+import com.wuzi.pig.entity.PigstyStatisEntity;
 import com.wuzi.pig.module.monitor.adapter.PigstyAdapter;
 import com.wuzi.pig.utils.SpannableUtils;
 import com.wuzi.pig.utils.StatusBarUtils;
@@ -64,9 +64,9 @@ public class MonitorFragment extends BaseFragment {
             }
         });
 
-        List<PigstyEntity> list = new ArrayList<>();
+        List<PigstyStatisEntity> list = new ArrayList<>();
         for (int i = 0; i < 20; i++) {
-            PigstyEntity entity = new PigstyEntity();
+            PigstyStatisEntity entity = new PigstyStatisEntity();
             entity.setName("猪栏" + (i + 1));
             entity.setOnlineCount(1490 + i);
             entity.setTemperature(35);

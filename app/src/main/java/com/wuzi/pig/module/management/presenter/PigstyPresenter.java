@@ -1,10 +1,9 @@
 package com.wuzi.pig.module.management.presenter;
 
 import com.wuzi.pig.base.BasePresenter;
-import com.wuzi.pig.entity.PigFarmListEntity;
-import com.wuzi.pig.module.management.contract.PigFarmContract;
+import com.wuzi.pig.entity.PigstyEntity;
+import com.wuzi.pig.entity.PigstyListEntity;
 import com.wuzi.pig.module.management.contract.PigstyContract;
-import com.wuzi.pig.module.management.model.PigFarmModel;
 import com.wuzi.pig.module.management.model.PigstyModel;
 import com.wuzi.pig.net.factory.ResponseException;
 import com.wuzi.pig.net.factory.ResponseListener;
@@ -15,71 +14,71 @@ import java.util.List;
 public class PigstyPresenter extends BasePresenter<PigstyContract.IView, PigstyModel> implements PigstyContract.IPresenter {
 
     @Override
-    public void addPigFarm(String name) {
+    public void addPigsty(PigstyEntity entity) {
         ResponseObserver<Object> commonResponse = getCommonResponse(new ResponseListener<Object>() {
             @Override
             public void onSuccess(Object entity) {
-                getView().performSuccess(PigFarmContract.TAG_PIG_FARM_ADD);
+                getView().performSuccess(PigstyContract.TAG_PIGSTY_ADD);
             }
 
             @Override
             public void onError(ResponseException exception) {
-                getView().performError(exception, PigFarmContract.TAG_PIG_FARM_ADD);
+                getView().performError(exception, PigstyContract.TAG_PIGSTY_ADD);
             }
         });
-        mModel.addPigFarm(name, commonResponse);
+        mModel.addPigsty(entity, commonResponse);
     }
 
     @Override
-    public void updatePigFarm(String id, String name) {
+    public void updatePigsty(PigstyEntity entity) {
         ResponseObserver<Object> commonResponse = getCommonResponse(new ResponseListener<Object>() {
             @Override
             public void onSuccess(Object entity) {
-                getView().performSuccess(PigFarmContract.TAG_PIG_FARM_UPDATE);
+                getView().performSuccess(PigstyContract.TAG_PIGSTY_UPDATE);
             }
 
             @Override
             public void onError(ResponseException exception) {
-                getView().performError(exception, PigFarmContract.TAG_PIG_FARM_UPDATE);
+                getView().performError(exception, PigstyContract.TAG_PIGSTY_UPDATE);
             }
         });
-        mModel.updatePigFarm(id, name, commonResponse);
+        mModel.updatePigsty(entity, commonResponse);
     }
 
     @Override
-    public void deletePigFarm(List<String> ids) {
+    public void deletePigsty(List<String> ids) {
         ResponseObserver<Object> commonResponse = getCommonResponse(new ResponseListener<Object>() {
             @Override
             public void onSuccess(Object entity) {
-                getView().performSuccess(PigFarmContract.TAG_PIG_FARM_DELETE);
+                getView().performSuccess(PigstyContract.TAG_PIGSTY_DELETE);
             }
 
             @Override
             public void onError(ResponseException exception) {
-                getView().performError(exception, PigFarmContract.TAG_PIG_FARM_DELETE);
+                getView().performError(exception, PigstyContract.TAG_PIGSTY_DELETE);
             }
         });
-        mModel.deletePigFarm(ids, commonResponse);
+        mModel.deletePigsty(ids, commonResponse);
     }
 
     @Override
-    public void getPigFarmList(int pageNum) {
-        ResponseObserver<PigFarmListEntity> commonResponse = getCommonResponse(new ResponseListener<PigFarmListEntity>() {
+    public void getPigstyList(int pageNum) {
+        ResponseObserver<PigstyListEntity> commonResponse = getCommonResponse(new ResponseListener<PigstyListEntity>() {
             @Override
-            public void onSuccess(PigFarmListEntity listEntity) {
+            public void onSuccess(PigstyListEntity listEntity) {
                 if (listEntity.getTotal() == 0) {
                     ResponseException error = new ResponseException(ResponseException.ERROR.RESULT_CODE_201);
                     onError(error);
                 } else {
-                    getView().performPigFarmList(listEntity, pageNum);
+                    getView().performPigstyList(listEntity, pageNum);
                 }
             }
 
             @Override
             public void onError(ResponseException exception) {
-                getView().performError(exception, PigFarmContract.TAG_PIG_FARM_LIST);
+                getView().performError(exception, PigstyContract.TAG_PIGSTY_LIST);
             }
         });
-        mModel.getPigFarmList(pageNum, commonResponse);
+        mModel.getPigstyList(pageNum, commonResponse);
     }
 }

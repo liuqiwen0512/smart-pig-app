@@ -1,41 +1,58 @@
 package com.wuzi.pig.entity;
 
+/*
+{
+  "baseStation": "string",
+  "createBy": "string",
+  "createId": "string",
+  "createTime": "2023-04-26T18:43:34.665Z",
+  "params": {},
+  "pigfarmId": "string",
+  "pigstyId": 0,
+  "pigstyName": "string",
+  "remark": "string",
+  "searchValue": "string",
+  "updateBy": "string",
+  "updateId": "string",
+  "updateTime": "2023-04-26T18:43:34.665Z"
+}
+* */
 public class PigstyEntity {
 
-    private String mName;
-    private int mOnlineCount;
-    private int mTemperature;
-    private int mLiveness;
+    private String pigstyId;
+    private String pigfarmId;
+    private String pigstyName;
+    private String baseStation;
 
-    public String getName() {
-        return mName;
+    public String getPigstyId() {
+        return pigstyId;
     }
 
-    public void setName(String name) {
-        mName = name;
+    public void setPigstyId(String pigstyId) {
+        this.pigstyId = pigstyId;
     }
 
-    public int getOnlineCount() {
-        return mOnlineCount;
+    public String getPigfarmId() {
+        return pigfarmId;
     }
 
-    public void setOnlineCount(int onlineCount) {
-        mOnlineCount = onlineCount;
+    public void setPigfarmId(String pigfarmId) {
+        this.pigfarmId = pigfarmId;
     }
 
-    public int getTemperature() {
-        return mTemperature;
+    public String getPigstyName() {
+        return pigstyName;
     }
 
-    public void setTemperature(int temperature) {
-        mTemperature = temperature;
+    public void setPigstyName(String pigstyName) {
+        this.pigstyName = pigstyName;
     }
 
-    public int getLiveness() {
-        return mLiveness;
+    public String getBaseStation() {
+        return baseStation;
     }
 
-    public void setLiveness(int liveness) {
-        mLiveness = liveness;
+    public void setBaseStation(String baseStation) {
+        this.baseStation = baseStation;
     }
 }

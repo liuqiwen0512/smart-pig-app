@@ -1,10 +1,10 @@
 package com.wuzi.pig.module.management.model;
 
 import com.wuzi.pig.base.BaseModel;
-import com.wuzi.pig.constant.Constant;
-import com.wuzi.pig.entity.PigFarmListEntity;
+import com.wuzi.pig.constant.PigstyConstant;
+import com.wuzi.pig.entity.PigstyEntity;
+import com.wuzi.pig.entity.PigstyListEntity;
 import com.wuzi.pig.entity.ResponseEntity;
-import com.wuzi.pig.module.management.contract.PigFarmContract;
 import com.wuzi.pig.module.management.contract.PigstyContract;
 import com.wuzi.pig.net.ApiManager;
 import com.wuzi.pig.net.RequestParams;
@@ -17,41 +17,45 @@ import io.reactivex.Observable;
 
 public class PigstyModel extends BaseModel implements PigstyContract.IModel {
     @Override
-    public void addPigFarm(String name, ResponseObserver observer) {
+    public void addPigsty(PigstyEntity entity, ResponseObserver observer) {
         RequestParams requestParams = RequestParams.getCommonParams();
-        requestParams.put(RequestParams.PIG_FARM_NAME, name);
-        Observable<ResponseEntity<Object>> observable = ApiManager.getApiService().addPigfarm(requestParams);
+        requestParams.put(RequestParams.PIGSTY_PIGFARM_ID, entity.getPigfarmId());
+        requestParams.put(RequestParams.PIGSTY_PIGSTY_NAME, entity.getPigstyName());
+        requestParams.put(RequestParams.PIGSTY_BASE_STATION, entity.getBaseStation());
+        Observable<ResponseEntity<Object>> observable = ApiManager.getApiService().addPigsty(requestParams);
         apiSubscribe(observable, observer);
     }
 
     @Override
-    public void updatePigFarm(String id, String name, ResponseObserver observer) {
+    public void updatePigsty(PigstyEntity entity, ResponseObserver observer) {
         RequestParams requestParams = RequestParams.getCommonParams();
-        requestParams.put(RequestParams.PIG_FARM_PIGFARMID, id);
-        requestParams.put(RequestParams.PIG_FARM_NAME, name);
-        Observable<ResponseEntity<Object>> observable = ApiManager.getApiService().updatePigfarm(requestParams);
+        requestParams.put(RequestParams.PIGSTY_PIGFARM_ID, entity.getPigfarmId());
+        requestParams.put(RequestParams.PIGSTY_PIGSTY_ID, entity.getPigstyId());
+        requestParams.put(RequestParams.PIGSTY_PIGSTY_NAME, entity.getPigstyName());
+        requestParams.put(RequestParams.PIGSTY_BASE_STATION, entity.getBaseStation());
+        Observable<ResponseEntity<Object>> observable = ApiManager.getApiService().addPigsty(requestParams);
         apiSubscribe(observable, observer);
     }
 
     @Override
-    public void deletePigFarm(List<String> ids, ResponseObserver observer) {
-        String pigfarmIds = "";
-        for (String itemId: ids) {
-            if (!StringUtils.isEmpty(pigfarmIds)) {
-                pigfarmIds += ",";
+    public void deletePigsty(List<String> ids, ResponseObserver observer) {
+        String pigstyIds = "";
+        for (String itemId : ids) {
+            if (!StringUtils.isEmpty(pigstyIds)) {
+                pigstyIds += ",";
             }
-            pigfarmIds += itemId;
+            pigstyIds += itemId;
         }
-        Observable<ResponseEntity<Object>> observable = ApiManager.getApiService().deletePigfarm(pigfarmIds);
+        Observable<ResponseEntity<Object>> observable = ApiManager.getApiService().deletePigsty(pigstyIds);
         apiSubscribe(observable, observer);
     }
 
     @Override
-    public void getPigFarmList(int pageNum, ResponseObserver observer) {
+    public void getPigstyList(int pageNum, ResponseObserver observer) {
         RequestParams requestParams = RequestParams.getCommonParams();
-        requestParams.put(RequestParams.PAGE_SIZE, Constant.PAGE_SIZE);
+        requestParams.put(RequestParams.PAGE_SIZE, PigstyConstant.PAGE_SIZE);
         requestParams.put(RequestParams.PAGE_NUMBER, pageNum);
-        Observable<ResponseEntity<PigFarmListEntity>> observable = ApiManager.getApiService().getPigFarmList(requestParams);
+        Observable<ResponseEntity<PigstyListEntity>> observable = ApiManager.getApiService().getPigstyList(requestParams);
         apiSubscribe(observable, observer);
     }
 }

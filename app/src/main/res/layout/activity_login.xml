@@ -164,7 +164,7 @@
         android:textColor="@android:color/white"
         android:text="立刻登录"
         android:backgroundTint="@color/colorSelected"
-        android:background="@drawable/shape_round_corner_12"/>
+        android:background="@drawable/shape_outline_round_corner_30" />
     
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/register"

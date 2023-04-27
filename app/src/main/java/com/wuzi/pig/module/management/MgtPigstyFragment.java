@@ -18,15 +18,12 @@ import com.scwang.smart.refresh.layout.api.RefreshLayout;
 import com.scwang.smart.refresh.layout.listener.OnRefreshLoadMoreListener;
 import com.wuzi.pig.R;
 import com.wuzi.pig.base.BaseFragment;
-import com.wuzi.pig.constant.Constant;
-import com.wuzi.pig.constant.PigFarmConstant;
+import com.wuzi.pig.constant.PigstyConstant;
 import com.wuzi.pig.entity.PigFarmEntity;
-import com.wuzi.pig.entity.PigFarmListEntity;
-import com.wuzi.pig.module.management.adapter.PigFarmAdapter;
+import com.wuzi.pig.entity.PigstyEntity;
+import com.wuzi.pig.entity.PigstyListEntity;
 import com.wuzi.pig.module.management.adapter.PigstyAdapter;
-import com.wuzi.pig.module.management.contract.PigFarmContract;
 import com.wuzi.pig.module.management.contract.PigstyContract;
-import com.wuzi.pig.module.management.presenter.PigFarmPresenter;
 import com.wuzi.pig.module.management.presenter.PigstyPresenter;
 import com.wuzi.pig.net.factory.ResponseException;
 import com.wuzi.pig.utils.PromptUtils;
@@ -74,7 +71,7 @@ public class MgtPigstyFragment extends BaseFragment<PigstyPresenter> implements 
 
     private Function<Boolean> mMainMenuListener;
     private Function2<String, Object> mFragmentEventListener;
-    private PigFarmAddDialog mPigstyAddDialog;
+    private PigstyEditDialog mPigstyEditDialog;
     private PigstyAdapter mPigstyAdapter;
     private PigFarmEntity mPigFarmEntity;
     private int mPigstyCount = 1;
@@ -107,28 +104,29 @@ public class MgtPigstyFragment extends BaseFragment<PigstyPresenter> implements 
     @OnClick({R.id.back, R.id.edit_back, R.id.pigsty_add, R.id.pigsty_edit, R.id.checkbox_all, R.id.delete_all})
     public void onClickView(View v) {
         switch (v.getId()) {
-            case R.id.back:{
+            case R.id.back: {
                 performClickBack();
                 break;
             }
-            case R.id.edit_back:{
+            case R.id.edit_back: {
                 performClickEditBack();
                 break;
             }
-            case R.id.pigsty_add:{
-                if (mPigstyAddDialog == null) {
-                    mPigstyAddDialog = new PigFarmAddDialog();
-                    mPigstyAddDialog.setOnDismissListener(dialog -> {
-                        mPigstyAddDialog = null;
+            case R.id.pigsty_add: {
+                if (mPigstyEditDialog == null) {
+                    mPigstyEditDialog = new PigstyEditDialog();
+                    mPigstyEditDialog.setPigFarmEntity(mPigFarmEntity);
+                    mPigstyEditDialog.setOnDismissListener(dialog -> {
+                        mPigstyEditDialog = null;
                     });
-                    mPigstyAddDialog.setSubmitListener(object -> {
+                    mPigstyEditDialog.setSubmitListener(object -> {
                         mRefreshLayout.autoRefresh();
                     });
                 }
-                mPigstyAddDialog.showNow(getChildFragmentManager());
+                mPigstyEditDialog.showNow(getChildFragmentManager());
                 break;
             }
-            case R.id.pigsty_edit:{
+            case R.id.pigsty_edit: {
                 if (mMainMenuListener != null) {
                     mMainMenuListener.action(false);
                 }
@@ -142,7 +140,7 @@ public class MgtPigstyFragment extends BaseFragment<PigstyPresenter> implements 
                 } else {
                     MgtPromptDialog.startPigstyPrompt(getChildFragmentManager(), ok -> {
                         List<String> ids = new ArrayList<>(checkedMap.keySet());
-                        mPresenter.deletePigFarm(ids);
+                        mPresenter.deletePigsty(ids);
                     });
                 }
                 mPigstyDeleteCount = checkedMap.size();
@@ -175,28 +173,86 @@ public class MgtPigstyFragment extends BaseFragment<PigstyPresenter> implements 
         }
     }
 
-    //修改猪场名字
-    private class ItemEditListenerImpl implements Function3<View, PigFarmEntity, Integer> {
-        private PigFarmEditDialog mPigstyEditDialog;
-        @Override
-        public void action(View view, PigFarmEntity entity, Integer evenTag) {
-            if (evenTag == PigFarmAdapter.CLICK_EDIT) {
-                if (mPigstyEditDialog == null) {
-                    mPigstyEditDialog = new PigFarmEditDialog();
-                    mPigstyEditDialog.setPigFarmEntity(entity);
-                    mPigstyEditDialog.setOnDismissListener(dialog -> {
-                        mPigstyEditDialog = null;
-                    });
-                    mPigstyEditDialog.setSubmitListener(object -> {
-                        entity.setPigfarmName(object.toString());
-                        mPigstyAdapter.notifyItemChanged(entity);
-                    });
+    @Override
+    public void performSuccess(int fromTag) {
+        switch (fromTag) {
+            case PigstyContract.TAG_PIGSTY_DELETE: {
+                mPigstyAdapter.notifyItemRemovedByChecked();
+                setPigstyCount(mPigstyCount - mPigstyDeleteCount);
+                setCheckedMessage();
+                mPigstyDeleteCount = 0;
+                List<PigstyEntity> allList = mPigstyAdapter.getList();
+                if (allList.size() == 0) {
+                    mRefreshLayout.autoRefresh();
                 }
-                mPigstyEditDialog.showNow(getChildFragmentManager());
-            } else if (evenTag == PigFarmAdapter.CLICK_DELETE) {
+                break;
+            }
+        }
+    }
+
+    @Override
+    public void performPigstyList(PigstyListEntity listEntity, int pageNum) {
+        mRefreshLayout.finishRefresh();
+        mRefreshLayout.finishLoadMore();
+        mPigstyRecyclerView.setVisibility(View.VISIBLE);
+        PromptUtils.hidePrompt(mPromptView);
+        int total = listEntity.getTotal();
+        List<PigstyEntity> list = listEntity.getRows();
+        setPigstyCount(total);
+        if (pageNum <= 1) {
+            mPigstyAdapter.notifyDataSetChanged(list);
+        } else {
+            mPigstyAdapter.notifyItemInserted(list);
+        }
+        if (CollectionUtils.isEmpty(list) || list.size() < PigstyConstant.PAGE_SIZE) {
+            mRefreshLayout.setNoMoreData(true);
+        } else {
+            mRefreshLayout.setNoMoreData(false);
+        }
+    }
+
+    @Override
+    public void performError(ResponseException error, int fromTag) {
+        if (fromTag == PigstyContract.TAG_PIGSTY_LIST) {
+            mRefreshLayout.finishRefresh();
+            mRefreshLayout.finishLoadMore();
+            if (mPageNumber == 1) {
+                setPigstyCount(0);
+                mPigstyRecyclerView.setVisibility(View.GONE);
+                if (error.code == ResponseException.ERROR.RESULT_CODE_201) {
+                    PromptUtils.showEmptyPrompt(mPromptView, getString(R.string.mgt_pigsty_empty));
+                } else {
+                    PromptUtils.showEmptyPrompt(mPromptView, error.getMessage() + " 下拉刷新试试");
+                }
+            } else {
+                ToastUtils.show(error.getMessage());
+            }
+        } else {
+            mPigstyDeleteCount = 0;
+            ToastUtils.show(error.getMessage());
+        }
+    }
+
+    private void setCheckedMessage() {
+        Resources res = mContext.getResources();
+        List<PigstyEntity> allList = mPigstyAdapter.getList();
+        Map<String, Object> checkedMap = mPigstyAdapter.getCheckedMap();
+        int checkedSize = checkedMap.size();
+        mCheckedtMsgView.setText(res.getString(R.string.mgt_select_message, String.valueOf(checkedMap.size()), String.valueOf(mPigstyCount)));
+        mCheckedAllView.setChecked(checkedSize > 0
+                && (checkedMap.size() >= PigstyConstant.PIG_FARM_DELETE_ALL_MAX || checkedMap.size() == allList.size()));
+    }
+
+    //修改猪场名字
+    private class ItemEditListenerImpl implements Function3<View, PigstyEntity, Integer> {
+        @Override
+        public void action(View view, PigstyEntity entity, Integer evenTag) {
+            if (evenTag == PigstyAdapter.CLICK_EDIT) {
+
+            } else if (evenTag == PigstyAdapter.CLICK_DELETE) {
                 Map<String, Object> checkedMap = mPigstyAdapter.getCheckedMap();
                 CompoundButton checkBox = (CompoundButton) view;
-                if (checkedMap.size() >= PigFarmConstant.PIG_FARM_DELETE_ALL_MAX) {
+                if (checkedMap.size() >= PigstyConstant.PIG_FARM_DELETE_ALL_MAX) {
                     mPigstyAdapter.notifyItemChecked(entity, false);
                     ToastUtils.show(R.string.mgt_select_max_prompt);
                 } else {
@@ -212,83 +268,13 @@ public class MgtPigstyFragment extends BaseFragment<PigstyPresenter> implements 
         @Override
         public void onRefresh(RefreshLayout refreshLayout) {
             mPageNumber = 1;
-            mPresenter.getPigFarmList(mPageNumber);
+            mPresenter.getPigstyList(mPageNumber);
         }
 
         @Override
         public void onLoadMore(RefreshLayout refreshLayout) {
             mPageNumber += 1;
-            mPresenter.getPigFarmList(mPageNumber);
-        }
-    }
-
-    private class CheckedAllChangeListenerImpl implements CompoundButton.OnCheckedChangeListener {
-
-        @Override
-        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            if (!buttonView.isPressed()) return;
-            mPigstyAdapter.notifyCheckedAll(isChecked);
-            setCheckedMessage();
-        }
-    }
-
-    @Override
-    public void performSuccess(int fromTag) {
-        switch (fromTag) {
-            case PigFarmContract.TAG_PIG_FARM_DELETE:{
-                mPigstyAdapter.notifyItemRemovedByChecked();
-                setPigstyCount(mPigstyCount - mPigstyDeleteCount);
-                setCheckedMessage();
-                mPigstyDeleteCount = 0;
-                List<PigFarmEntity> allList = mPigstyAdapter.getList();
-                if (allList.size() == 0) {
-                    mRefreshLayout.autoRefresh();
-                }
-                break;
-            }
-        }
-    }
-
-    @Override
-    public void performPigFarmList(PigFarmListEntity listEntity, int pageNum) {
-        mRefreshLayout.finishRefresh();
-        mRefreshLayout.finishLoadMore();
-        mPigstyRecyclerView.setVisibility(View.VISIBLE);
-        PromptUtils.hidePrompt(mPromptView);
-        int total = listEntity.getTotal();
-        List<PigFarmEntity> list = listEntity.getRows();
-        setPigstyCount(total);
-        if (pageNum <= 1) {
-            mPigstyAdapter.notifyDataSetChanged(list);
-        } else {
-            mPigstyAdapter.notifyItemInserted(list);
-        }
-        if (CollectionUtils.isEmpty(list) || list.size() < Constant.PAGE_SIZE) {
-            mRefreshLayout.setNoMoreData(true);
-        } else {
-            mRefreshLayout.setNoMoreData(false);
-        }
-    }
-
-    @Override
-    public void performError(ResponseException error, int fromTag) {
-        if (fromTag == PigFarmContract.TAG_PIG_FARM_LIST) {
-            mRefreshLayout.finishRefresh();
-            mRefreshLayout.finishLoadMore();
-            if (mPageNumber == 1) {
-                setPigstyCount(0);
-                mPigstyRecyclerView.setVisibility(View.GONE);
-                if (error.code == ResponseException.ERROR.RESULT_CODE_201) {
-                    PromptUtils.showEmptyPrompt(mPromptView,getString(R.string.mgt_pigsty_empty));
-                } else {
-                    PromptUtils.showEmptyPrompt(mPromptView, error.getMessage());
-                }
-            } else {
-                ToastUtils.show(error.getMessage());
-            }
-        } else {
-            mPigstyDeleteCount = 0;
-            ToastUtils.show(error.getMessage());
+            mPresenter.getPigstyList(mPageNumber);
         }
     }
 
@@ -314,14 +300,15 @@ public class MgtPigstyFragment extends BaseFragment<PigstyPresenter> implements 
         }
     }
 
-    private void setCheckedMessage() {
-        Resources res = mContext.getResources();
-        List<PigFarmEntity> allList = mPigstyAdapter.getList();
-        Map<String, Object> checkedMap = mPigstyAdapter.getCheckedMap();
-        int checkedSize = checkedMap.size();
-        mCheckedtMsgView.setText(res.getString(R.string.mgt_select_message, String.valueOf(checkedMap.size()), String.valueOf(mPigstyCount)));
-        mCheckedAllView.setChecked(checkedSize > 0
-                && (checkedMap.size() >= PigFarmConstant.PIG_FARM_DELETE_ALL_MAX || checkedMap.size() == allList.size()));
+    //删除全选
+    private class CheckedAllChangeListenerImpl implements CompoundButton.OnCheckedChangeListener {
+
+        @Override
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            if (!buttonView.isPressed()) return;
+            mPigstyAdapter.notifyCheckedAll(isChecked);
+            setCheckedMessage();
+        }
     }
 
     private void editStatus(final boolean edit) {

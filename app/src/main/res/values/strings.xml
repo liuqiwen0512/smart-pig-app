@@ -6,6 +6,10 @@
     <string name="cancel">取消</string>
     <string name="error_empty">对不起，目前没有数据</string>
 
+    <!--权限-->
+    <string name="permissions_refuse_authorization" translatable="false">被永久拒绝授权，请手动授予权限</string>
+    <string name="permissions_rror" translatable="false">获取权限失败</string>
+
     <!-- 注册 -->
     <string name="verification_code_send">获取验证码</string>
     <string name="verification_code_timer">%1$ss后重新获取</string>
@@ -25,6 +29,10 @@
 
     <string name="mgt_select_max_prompt">一次最多选择50条</string>
     <string name="mgt_select_message">选中%1$s个 / 共%2$s个</string>
+
+    <!--==新增猪栏==-->
+    <string name="mgt_pigsty_add_name_hint">扫描二维码获取猪栏名称</string>
+    <string name="mgt_pigsty_add_code_hint">点击扫描基站背部二维码</string>
 
 
 </resources>

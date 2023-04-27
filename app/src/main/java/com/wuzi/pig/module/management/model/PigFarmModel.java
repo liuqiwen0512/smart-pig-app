@@ -1,13 +1,12 @@
 package com.wuzi.pig.module.management.model;
 
 import com.wuzi.pig.base.BaseModel;
-import com.wuzi.pig.constant.Constant;
+import com.wuzi.pig.constant.PigFarmConstant;
 import com.wuzi.pig.entity.PigFarmListEntity;
 import com.wuzi.pig.entity.ResponseEntity;
 import com.wuzi.pig.module.management.contract.PigFarmContract;
 import com.wuzi.pig.net.ApiManager;
 import com.wuzi.pig.net.RequestParams;
-import com.wuzi.pig.net.entity.ResponsePigFarmEntity;
 import com.wuzi.pig.net.factory.ResponseObserver;
 import com.wuzi.pig.utils.StringUtils;
 
@@ -49,7 +48,7 @@ public class PigFarmModel extends BaseModel implements PigFarmContract.IModel {
     @Override
     public void getPigFarmList(int pageNum, ResponseObserver observer) {
         RequestParams requestParams = RequestParams.getCommonParams();
-        requestParams.put(RequestParams.PAGE_SIZE, Constant.PAGE_SIZE);
+        requestParams.put(RequestParams.PAGE_SIZE, PigFarmConstant.PAGE_SIZE);
         requestParams.put(RequestParams.PAGE_NUMBER, pageNum);
         Observable<ResponseEntity<PigFarmListEntity>> observable = ApiManager.getApiService().getPigFarmList(requestParams);
         apiSubscribe(observable, observer);

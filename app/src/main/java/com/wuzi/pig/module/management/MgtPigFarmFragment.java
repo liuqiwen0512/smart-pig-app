@@ -18,7 +18,6 @@ import com.scwang.smart.refresh.layout.api.RefreshLayout;
 import com.scwang.smart.refresh.layout.listener.OnRefreshLoadMoreListener;
 import com.wuzi.pig.R;
 import com.wuzi.pig.base.BaseFragment;
-import com.wuzi.pig.constant.Constant;
 import com.wuzi.pig.constant.PigFarmConstant;
 import com.wuzi.pig.entity.PigFarmEntity;
 import com.wuzi.pig.entity.PigFarmListEntity;
@@ -241,7 +240,7 @@ public class MgtPigFarmFragment extends BaseFragment<PigFarmPresenter> implement
         } else {
             mPigFarmAdapter.notifyItemInserted(list);
         }
-        if (CollectionUtils.isEmpty(list) || list.size() < Constant.PAGE_SIZE) {
+        if (CollectionUtils.isEmpty(list) || list.size() < PigFarmConstant.PAGE_SIZE) {
             mRefreshLayout.setNoMoreData(true);
         } else {
             mRefreshLayout.setNoMoreData(false);
@@ -259,7 +258,7 @@ public class MgtPigFarmFragment extends BaseFragment<PigFarmPresenter> implement
                 if (error.code == ResponseException.ERROR.RESULT_CODE_201) {
                     PromptUtils.showEmptyPrompt(mPromptView,getString(R.string.mgt_pigfarm_empty));
                 } else {
-                    PromptUtils.showEmptyPrompt(mPromptView, error.getMessage());
+                    PromptUtils.showEmptyPrompt(mPromptView, error.getMessage() + " 下拉刷新试试");
                 }
             } else {
                 ToastUtils.show(error.getMessage());
