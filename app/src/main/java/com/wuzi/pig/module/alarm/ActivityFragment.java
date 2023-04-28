@@ -1,4 +1,4 @@
-package com.wuzi.pig.module.warm;
+package com.wuzi.pig.module.alarm;
 
 import android.os.Bundle;
 import android.view.View;

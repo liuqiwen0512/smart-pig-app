@@ -1,4 +1,4 @@
-package com.wuzi.pig.module.warm;
+package com.wuzi.pig.module.alarm;
 
 import android.graphics.Rect;
 import android.os.Bundle;
@@ -14,11 +14,11 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.wuzi.pig.R;
 import com.wuzi.pig.base.BaseFragment;
-import com.wuzi.pig.constant.WarmConstant;
+import com.wuzi.pig.constant.AlarmConstant;
 import com.wuzi.pig.entity.OptionEntity;
-import com.wuzi.pig.module.warm.adapter.TabsAdapter;
-import com.wuzi.pig.module.warm.contract.WarmContract;
-import com.wuzi.pig.module.warm.presenter.WarmPresenter;
+import com.wuzi.pig.module.alarm.adapter.TabsAdapter;
+import com.wuzi.pig.module.alarm.contract.AlarmContract;
+import com.wuzi.pig.module.alarm.presenter.AlarmPresenter;
 import com.wuzi.pig.net.factory.ResponseException;
 import com.wuzi.pig.utils.StatusBarUtils;
 import com.wuzi.pig.utils.StringUtils;
@@ -27,7 +27,7 @@ import com.wuzi.pig.utils.fun.Function;
 
 import butterknife.BindView;
 
-public class WarmFragment extends BaseFragment<WarmPresenter> implements WarmContract.IView {
+public class AlarmMainFragment extends BaseFragment<AlarmPresenter> implements AlarmContract.IView {
 
     @BindView(R.id.tabs)
     RecyclerView mTabRecyclerView;
@@ -35,12 +35,12 @@ public class WarmFragment extends BaseFragment<WarmPresenter> implements WarmCon
     ViewPager2 mViewPager;
 
     private SparseArray<Fragment> mFragments = new SparseArray<>();
-    private final OptionEntity[] mTabEntitys = WarmConstant.PAGE_TABS;
+    private final OptionEntity[] mTabEntitys = AlarmConstant.PAGE_TABS;
     private TabsAdapter mTabsAdapter;
 
     @Override
     protected int getLayoutID() {
-        return R.layout.fragment_warm;
+        return R.layout.fragment_main_alarm;
     }
 
     @Override
@@ -60,7 +60,7 @@ public class WarmFragment extends BaseFragment<WarmPresenter> implements WarmCon
 
         mTabsAdapter = new TabsAdapter(mContext);
         mTabsAdapter.setItemListener(new TabListenerImpl());
-        mTabRecyclerView.setLayoutManager(new GridLayoutManager(mContext, WarmConstant.PAGE_TABS.length));
+        mTabRecyclerView.setLayoutManager(new GridLayoutManager(mContext, AlarmConstant.PAGE_TABS.length));
         mTabRecyclerView.setAdapter(mTabsAdapter);
 
         mTabRecyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
@@ -116,23 +116,23 @@ public class WarmFragment extends BaseFragment<WarmPresenter> implements WarmCon
             OptionEntity tabEntity = mTabEntitys[position];
             if (fragment == null) {
                 switch (tabEntity.key) {
-                    case WarmConstant.FRAGMENT_TEMPERATURE: {
+                    case AlarmConstant.FRAGMENT_TEMPERATURE: {
                         fragment = new TemperatureFragment();
                         break;
                     }
-                    case WarmConstant.FRAGMENT_ACTIVITY: {
+                    case AlarmConstant.FRAGMENT_ACTIVITY: {
                         fragment = new ActivityFragment();
                         break;
                     }
-                    case WarmConstant.FRAGMENT_EAR_TAG: {
+                    case AlarmConstant.FRAGMENT_EAR_TAG: {
                         fragment = new TemperatureFragment();
                         break;
                     }
-                    case WarmConstant.FRAGMENT_BASE_STATION: {
+                    case AlarmConstant.FRAGMENT_BASE_STATION: {
                         fragment = new ActivityFragment();
                         break;
                     }
-                    case WarmConstant.FRAGMENT_OUTAGE: {
+                    case AlarmConstant.FRAGMENT_OUTAGE: {
                         fragment = new TemperatureFragment();
                         break;
                     }

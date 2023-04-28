@@ -1,5 +1,6 @@
 package com.wuzi.pig.net;
 
+import com.wuzi.pig.entity.AlarmListEntity;
 import com.wuzi.pig.entity.PigFarmListEntity;
 import com.wuzi.pig.entity.PigstyListEntity;
 import com.wuzi.pig.entity.ResponseEntity;
@@ -96,6 +97,10 @@ public interface ApiSercice {
     @Headers({"Content-type:application/json;charset=UTF-8"})
     @DELETE("/prod-api/system/pigsty/{pigstyIds}")
     Observable<ResponseEntity<Object>> deletePigsty(@Path("pigstyIds") String pigdtyIds);
+
+    //告警list
+    @GET("/prod-api/alarm/app/getAlarms")
+    Observable<ResponseEntity<AlarmListEntity>> getAlarms(@QueryMap HashMap<String, Object> map);
 
 
 }

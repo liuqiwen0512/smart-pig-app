@@ -1,4 +1,4 @@
-package com.wuzi.pig.module.warm.adapter;
+package com.wuzi.pig.module.alarm.adapter;
 
 import android.content.Context;
 import android.text.TextPaint;
@@ -12,7 +12,7 @@ import androidx.constraintlayout.utils.widget.ImageFilterView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.wuzi.pig.R;
-import com.wuzi.pig.constant.WarmConstant;
+import com.wuzi.pig.constant.AlarmConstant;
 import com.wuzi.pig.entity.OptionEntity;
 import com.wuzi.pig.utils.StringUtils;
 import com.wuzi.pig.utils.fun.Function;
@@ -24,9 +24,9 @@ public class TabsAdapter extends RecyclerView.Adapter<TabsAdapter.ViewHolder> {
 
     private Context mContext;
     private Function<OptionEntity> mItemListener;
-    private final OptionEntity[] mTabEntitys = WarmConstant.PAGE_TABS;
+    private final OptionEntity[] mTabEntitys = AlarmConstant.PAGE_TABS;
 
-    private String mSelectedTab = WarmConstant.FRAGMENT_TEMPERATURE;
+    private String mSelectedTab = AlarmConstant.FRAGMENT_TEMPERATURE;
 
     public TabsAdapter(Context context) {
         mContext = context;
@@ -35,7 +35,7 @@ public class TabsAdapter extends RecyclerView.Adapter<TabsAdapter.ViewHolder> {
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(mContext).inflate(R.layout.adapter_warm_tab, parent, false);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.adapter_alarm_tab, parent, false);
         return new ViewHolder(view);
     }
 
@@ -45,11 +45,11 @@ public class TabsAdapter extends RecyclerView.Adapter<TabsAdapter.ViewHolder> {
         holder.mLabelView.setText(tabEntity.label);
 
         if (position == 0) {
-            holder.mBgView.setImageResource(R.drawable.selector_warm_tab_bg1);
+            holder.mBgView.setImageResource(R.drawable.selector_alarm_tab_bg1);
         } else if (position == getItemCount() - 1) {
-            holder.mBgView.setImageResource(R.drawable.selector_warm_tab_bg3);
+            holder.mBgView.setImageResource(R.drawable.selector_alarm_tab_bg3);
         } else {
-            holder.mBgView.setImageResource(R.drawable.selector_warm_tab_bg2);
+            holder.mBgView.setImageResource(R.drawable.selector_alarm_tab_bg2);
         }
 
         boolean selected = StringUtils.equals(mSelectedTab, tabEntity.key);
@@ -90,6 +90,10 @@ public class TabsAdapter extends RecyclerView.Adapter<TabsAdapter.ViewHolder> {
     }
 
     public void notifyItemChanged(OptionEntity entity) {
+        //TODO 去掉这个判断 notifyItemChanged无效
+        if (StringUtils.equals(entity.key, mSelectedTab)) {
+            return;
+        }
         String oldSelectedTab = mSelectedTab;
         mSelectedTab = entity.key;
         for (int i = 0; i < mTabEntitys.length; i++) {

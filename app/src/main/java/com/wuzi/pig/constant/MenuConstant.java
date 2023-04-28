@@ -9,7 +9,7 @@ import java.util.List;
 public class MenuConstant {
 
     public final static String MAIN_MENU_HOME = "main_menu_home";
-    public final static String MAIN_MENU_WARM = "main_menu_warm";
+    public final static String MAIN_MENU_ALARM = "main_menu_alarm";
     public final static String MAIN_MENU_MONITOR = "main_menu_monitor";
     public final static String MAIN_MENU_MANAGE = "main_menu_manage";
     public final static String MAIN_MENU_MINE = "main_menu_mine";
@@ -23,8 +23,8 @@ public class MenuConstant {
         list.add(entity);
 
         entity = new MenuEntity();
-        entity.key = MAIN_MENU_WARM;
-        entity.iconRes = R.drawable.selector_main_menu_warm;
+        entity.key = MAIN_MENU_ALARM;
+        entity.iconRes = R.drawable.selector_main_menu_alarm;
         entity.label = "告警";
         list.add(entity);
 

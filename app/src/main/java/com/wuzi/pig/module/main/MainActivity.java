@@ -14,10 +14,10 @@ import com.wuzi.pig.R;
 import com.wuzi.pig.base.BaseActivity;
 import com.wuzi.pig.constant.MenuConstant;
 import com.wuzi.pig.entity.MenuEntity;
+import com.wuzi.pig.module.alarm.AlarmMainFragment;
 import com.wuzi.pig.module.management.MgtMainFragment;
 import com.wuzi.pig.module.monitor.MonitorFragment;
 import com.wuzi.pig.module.user.UserMainFragment;
-import com.wuzi.pig.module.warm.WarmFragment;
 import com.wuzi.pig.utils.StatusBarUtils;
 import com.wuzi.pig.utils.StatusbarColorUtils;
 import com.wuzi.pig.utils.fun.Function;
@@ -87,19 +87,19 @@ public class MainActivity extends BaseActivity {
             return fragment;
         }
         switch (key) {
-            case MenuConstant.MAIN_MENU_HOME:{
+            case MenuConstant.MAIN_MENU_HOME: {
                 fragment = new MainFragment();
                 break;
             }
-            case MenuConstant.MAIN_MENU_WARM:{
-                fragment = new WarmFragment();
+            case MenuConstant.MAIN_MENU_ALARM: {
+                fragment = new AlarmMainFragment();
                 break;
             }
-            case MenuConstant.MAIN_MENU_MONITOR:{
+            case MenuConstant.MAIN_MENU_MONITOR: {
                 fragment = new MonitorFragment();
                 break;
             }
-            case MenuConstant.MAIN_MENU_MANAGE:{
+            case MenuConstant.MAIN_MENU_MANAGE: {
                 MgtMainFragment mgtFragment = new MgtMainFragment();
                 mgtFragment.setMainMenuListener(show -> {
                     showMenusView(show);

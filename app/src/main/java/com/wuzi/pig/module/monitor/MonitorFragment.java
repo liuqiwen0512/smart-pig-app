@@ -37,7 +37,7 @@ public class MonitorFragment extends BaseFragment {
 
     @Override
     protected int getLayoutID() {
-        return R.layout.fragment_monitor;
+        return R.layout.fragment_main_monitor;
     }
 
     @Override

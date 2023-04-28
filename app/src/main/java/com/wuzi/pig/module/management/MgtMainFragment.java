@@ -25,7 +25,7 @@ public class MgtMainFragment extends BaseFragment {
 
     @Override
     protected int getLayoutID() {
-        return R.layout.fragment_mgt_main;
+        return R.layout.fragment_main_mgt;
     }
 
     @Override
