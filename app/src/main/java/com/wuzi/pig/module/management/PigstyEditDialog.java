@@ -78,7 +78,7 @@ public class PigstyEditDialog extends BaseDialogFragment<PigstyPresenter> implem
                 LogUtils.e(TAG, "扫描结果 :" + result);
             }
         });
-        setOldPigstyEntity(mOldPigstyEntity);
+        setPigstyEntity(mOldPigstyEntity);
     }
 
     @OnClick({R.id.back, R.id.name_value, R.id.code_value, R.id.submit})
@@ -153,7 +153,7 @@ public class PigstyEditDialog extends BaseDialogFragment<PigstyPresenter> implem
         mPigFarmEntity = pigFarmEntity;
     }
 
-    public void setOldPigstyEntity(PigstyEntity oldPigstyEntity) {
+    public void setPigstyEntity(PigstyEntity oldPigstyEntity) {
         mOldPigstyEntity = oldPigstyEntity;
         if (oldPigstyEntity != null) {
             setPigstyMessage(mOldPigstyEntity.getPigstyName(), mOldPigstyEntity.getBaseStation());
@@ -164,7 +164,7 @@ public class PigstyEditDialog extends BaseDialogFragment<PigstyPresenter> implem
 
     private void setPigstyMessage(String name, String code) {
         if (mNameValueView != null) {
-            mNameValueView.setText(!StringUtils.isEmpty(name) ? name
+            mNameValueView.setText(!StringUtils.isEmpty(name) ? StringUtils.ASCII16ToString(name)
                     : getString(R.string.mgt_pigsty_add_name_hint));
         }
         if (mCodeValueView != null) {

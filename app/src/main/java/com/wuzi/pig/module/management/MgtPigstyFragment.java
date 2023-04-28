@@ -224,6 +224,7 @@ public class MgtPigstyFragment extends BaseFragment<PigstyPresenter> implements 
                 } else {
                     PromptUtils.showEmptyPrompt(mPromptView, error.getMessage() + " 下拉刷新试试");
                 }
+                mRefreshLayout.setNoMoreData(true);
             } else {
                 ToastUtils.show(error.getMessage());
             }

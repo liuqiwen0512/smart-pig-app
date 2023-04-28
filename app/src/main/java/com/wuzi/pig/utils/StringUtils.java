@@ -63,6 +63,21 @@ public class StringUtils {
         return s == null || s.isEmpty();
     }
 
+    public static String ASCII16ToString(String text) {
+        if (text == null) {
+            return "";
+        }
+        if (!text.contains(",")) {
+            return text;
+        }
+        StringBuffer buffer = new StringBuffer();
+        String[] split = text.split(",");
+        for (String item : split) {
+            buffer.append((char) Integer.parseInt(item, 16));
+        }
+        return buffer.toString();
+    }
+
     public static String md5(String input) {
         if (TextUtils.isEmpty(input)) {
             return "";

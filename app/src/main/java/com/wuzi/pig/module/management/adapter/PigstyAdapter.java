@@ -181,7 +181,7 @@ public class PigstyAdapter extends RecyclerView.Adapter<PigstyAdapter.ViewHolder
 
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
             PigstyEntity entity = mList.get(position);
-            mNameView.setText(entity.getPigstyName());
+            mNameView.setText(StringUtils.ASCII16ToString(entity.getPigstyName()));
 
             mCheckBoxView.setVisibility(isEdit ? View.VISIBLE : View.GONE);
             mCheckBoxView.setChecked(mCheckedMap.containsKey(entity.getPigstyId()));
