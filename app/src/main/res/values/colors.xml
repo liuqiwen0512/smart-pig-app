@@ -29,5 +29,6 @@
 
     <color name="pig_farm_item_bg_activated">#F4E8CA</color>
     <color name="pig_farm_item_bg_selected">#80FFFFFF</color>
+    <color name="alarm_item_bg_selected">#80FFFFFF</color>
 
 </resources>

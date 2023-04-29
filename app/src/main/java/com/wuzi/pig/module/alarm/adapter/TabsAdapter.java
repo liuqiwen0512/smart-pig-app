@@ -26,7 +26,7 @@ public class TabsAdapter extends RecyclerView.Adapter<TabsAdapter.ViewHolder> {
     private Function<OptionEntity> mItemListener;
     private final OptionEntity[] mTabEntitys = AlarmConstant.PAGE_TABS;
 
-    private String mSelectedTab = AlarmConstant.FRAGMENT_TEMPERATURE;
+    private String mSelectedTab = AlarmConstant.TYPE_TEMPERATURE;
 
     public TabsAdapter(Context context) {
         mContext = context;

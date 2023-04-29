@@ -37,6 +37,16 @@ public class RequestParams extends HashMap<String, Object> {
     public final static String PIGSTY_PIGSTY_NAME = "pigstyName";
     public final static String PIGSTY_BASE_STATION = "baseStation";
 
+    //告警
+    public final static String ALARM_PIGFARM_ID = "pigfarmId";
+    public final static String ALARM_BEGIN_TIME = "beginTime"; //yyyy-mm-dd
+    public final static String ALARM_END_TIME = "endTime"; //yyyy-mm-dd
+    public final static String ALARM_TYPE = "type";
+    public final static String ALARM_STATUS = "status";
+    public final static String ALARM_ALL_STATUS = "allStatus";
+    public final static String ALARM_COLUMN = "column";
+    public final static String ALARM_ASC_OR_DESC = "ascOrDesc";
+
     private RequestParams() {
     }
 

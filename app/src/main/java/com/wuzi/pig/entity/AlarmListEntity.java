@@ -5,7 +5,7 @@ import java.util.List;
 public class AlarmListEntity {
 
     private int total;
-    private List<PigFarmEntity> rows;
+    private List<AlarmEntity> rows;
 
     public int getTotal() {
         return total;
@@ -15,11 +15,11 @@ public class AlarmListEntity {
         this.total = total;
     }
 
-    public List<PigFarmEntity> getRows() {
+    public List<AlarmEntity> getRows() {
         return rows;
     }
 
-    public void setRows(List<PigFarmEntity> rows) {
+    public void setRows(List<AlarmEntity> rows) {
         this.rows = rows;
     }
 }

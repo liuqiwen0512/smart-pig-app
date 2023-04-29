@@ -16,8 +16,7 @@ import com.wuzi.pig.utils.ToastUtils;
 import butterknife.BindView;
 import butterknife.OnClick;
 
-
-public class TemperatureFragment extends AlarmListFragment {
+public class EarTagFragment extends AlarmListFragment {
 
     @BindView(R.id.time_icon)
     ImageFilterView mTimeIconView;
@@ -26,12 +25,12 @@ public class TemperatureFragment extends AlarmListFragment {
 
     @Override
     protected int getLayoutID() {
-        return R.layout.page_fragment_temperature;
+        return R.layout.page_fragment_activity;
     }
 
     @Override
     protected void initView(View view, Bundle savedInstanceState) {
-        mType = AlarmConstant.TYPE_TEMPERATURE;
+        mType = AlarmConstant.TYPE_EAR_TAG;
         super.initView(view, savedInstanceState);
         mQuery.type = mType;
         mQuery.desc = true;
@@ -91,5 +90,4 @@ public class TemperatureFragment extends AlarmListFragment {
             mNameIconView.setSelected(!query.desc);
         }
     }
-
 }

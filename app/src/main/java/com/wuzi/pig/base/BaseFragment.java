@@ -2,9 +2,7 @@ package com.wuzi.pig.base;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Message;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -12,8 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-
-import com.wuzi.pig.utils.LogUtils;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -26,6 +22,7 @@ import butterknife.Unbinder;
  */
 public abstract class BaseFragment<P extends IContract.IPresenter> extends Fragment implements IContract.IView {
     protected String TAG = getClass().getSimpleName();
+    private final String mRootClassName = "BaseFragment";
     private Unbinder mBind;
     protected P mPresenter;
     protected Context mContext;
@@ -101,13 +98,18 @@ public abstract class BaseFragment<P extends IContract.IPresenter> extends Fragm
             return mPresenter;
         }
         try {
-            Type type = getClass().getGenericSuperclass();
-            if (type != null && type instanceof ParameterizedType) {
-                Type[] actualTypeArguments = ((ParameterizedType) type).getActualTypeArguments();
-                if (actualTypeArguments != null && actualTypeArguments.length > 0) {
-                    Class<P> clazz = (Class<P>) actualTypeArguments[0];
-                    mPresenter = clazz.newInstance();
+            Class parentClazz = getClass();
+            while (parentClazz != null) {
+                Type type = parentClazz.getGenericSuperclass();
+                if (type != null && type instanceof ParameterizedType) {
+                    Type[] actualTypeArguments = ((ParameterizedType) type).getActualTypeArguments();
+                    if (actualTypeArguments != null && actualTypeArguments.length > 0) {
+                        Class<P> clazz = (Class<P>) actualTypeArguments[0];
+                        mPresenter = clazz.newInstance();
+                    }
+                    break;
                 }
+                parentClazz = parentClazz.getSuperclass();
             }
         } catch (Exception e) {
             e.printStackTrace();

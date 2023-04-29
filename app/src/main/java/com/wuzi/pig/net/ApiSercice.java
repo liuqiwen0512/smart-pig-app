@@ -80,19 +80,19 @@ public interface ApiSercice {
     @GET("/prod-api/system/pigsty/list")
     Observable<ResponseEntity<PigstyListEntity>> getPigstyList(@QueryMap HashMap<String, Object> map);
 
-    //猪场添加
+    //猪栏添加
     @ResponseNull
     @Headers({"Content-type:application/json;charset=UTF-8"})
     @POST("/prod-api/system/pigsty")
     Observable<ResponseEntity<Object>> addPigsty(@Body HashMap<String, Object> map);
 
-    //猪场修改
+    //猪栏修改
     @ResponseNull
     @Headers({"Content-type:application/json;charset=UTF-8"})
     @PUT("/prod-api/system/pigsty")
     Observable<ResponseEntity<Object>> updatePigsty(@Body HashMap<String, Object> map);
 
-    //猪场删除
+    //猪栏删除
     @ResponseNull
     @Headers({"Content-type:application/json;charset=UTF-8"})
     @DELETE("/prod-api/system/pigsty/{pigstyIds}")
@@ -101,7 +101,6 @@ public interface ApiSercice {
     //告警list
     @GET("/prod-api/alarm/app/getAlarms")
     Observable<ResponseEntity<AlarmListEntity>> getAlarms(@QueryMap HashMap<String, Object> map);
-
 
 }
 

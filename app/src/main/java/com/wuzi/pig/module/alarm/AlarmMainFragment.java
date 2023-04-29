@@ -6,26 +6,34 @@ import android.util.SparseArray;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatTextView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.viewpager2.adapter.FragmentViewHolder;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.wuzi.pig.R;
 import com.wuzi.pig.base.BaseFragment;
 import com.wuzi.pig.constant.AlarmConstant;
+import com.wuzi.pig.entity.AlarmListEntity;
 import com.wuzi.pig.entity.OptionEntity;
+import com.wuzi.pig.entity.PigFarmEntity;
 import com.wuzi.pig.module.alarm.adapter.TabsAdapter;
 import com.wuzi.pig.module.alarm.contract.AlarmContract;
 import com.wuzi.pig.module.alarm.presenter.AlarmPresenter;
 import com.wuzi.pig.net.factory.ResponseException;
+import com.wuzi.pig.utils.LogUtils;
 import com.wuzi.pig.utils.StatusBarUtils;
 import com.wuzi.pig.utils.StringUtils;
 import com.wuzi.pig.utils.UIUtils;
 import com.wuzi.pig.utils.fun.Function;
 
+import java.util.List;
+
 import butterknife.BindView;
+import butterknife.OnClick;
 
 public class AlarmMainFragment extends BaseFragment<AlarmPresenter> implements AlarmContract.IView {
 
@@ -33,10 +41,14 @@ public class AlarmMainFragment extends BaseFragment<AlarmPresenter> implements A
     RecyclerView mTabRecyclerView;
     @BindView(R.id.pages)
     ViewPager2 mViewPager;
+    @BindView(R.id.pigsty_name)
+    AppCompatTextView mPigstyNameView;
 
-    private SparseArray<Fragment> mFragments = new SparseArray<>();
     private final OptionEntity[] mTabEntitys = AlarmConstant.PAGE_TABS;
     private TabsAdapter mTabsAdapter;
+    private FragmentStateAdapterImpl mFragmentStateAdapter;
+    private PigFarmEntity mCurrentPigFarmEntity = null;
+    private int mSelectedPosition = -1;
 
     @Override
     protected int getLayoutID() {
@@ -46,7 +58,19 @@ public class AlarmMainFragment extends BaseFragment<AlarmPresenter> implements A
     @Override
     protected void initView(View view, Bundle savedInstanceState) {
         StatusBarUtils.setPadding(mContext, view);
-        mViewPager.setAdapter(new FragmentStateAdapterImpl(this));
+
+        mCurrentPigFarmEntity = new PigFarmEntity();
+        mCurrentPigFarmEntity.setPigfarmId("15");
+        mPigstyNameView.setText("猪场15");
+
+        mTabsAdapter = new TabsAdapter(mContext);
+        mTabsAdapter.setItemListener(new TabListenerImpl());
+        mTabRecyclerView.setLayoutManager(new GridLayoutManager(mContext, AlarmConstant.PAGE_TABS.length));
+        mTabRecyclerView.setAdapter(mTabsAdapter);
+        mTabRecyclerView.addItemDecoration(new ItemDecorationImpl());
+
+        mFragmentStateAdapter = new FragmentStateAdapterImpl(this);
+        mViewPager.setAdapter(mFragmentStateAdapter);
         View childAt = mViewPager.getChildAt(0);
         if (childAt instanceof RecyclerView) {
             childAt.setOverScrollMode(View.OVER_SCROLL_NEVER);
@@ -54,33 +78,46 @@ public class AlarmMainFragment extends BaseFragment<AlarmPresenter> implements A
         mViewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageSelected(int position) {
+                LogUtils.d(TAG, "onPageSelected : " + position);
                 mTabsAdapter.notifyItemChanged(mTabEntitys[position]);
-            }
-        });
-
-        mTabsAdapter = new TabsAdapter(mContext);
-        mTabsAdapter.setItemListener(new TabListenerImpl());
-        mTabRecyclerView.setLayoutManager(new GridLayoutManager(mContext, AlarmConstant.PAGE_TABS.length));
-        mTabRecyclerView.setAdapter(mTabsAdapter);
-
-        mTabRecyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
-            private int mMargin = UIUtils.dip2px(6);
-
-            @Override
-            public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
-                super.getItemOffsets(outRect, view, parent, state);
-                int itemCount = state.getItemCount();
-                int position = parent.getChildAdapterPosition(view);
-                if (position == 0) {
-                    outRect.right = mMargin;
-                } else if (position == itemCount - 1) {
-                    outRect.left = mMargin;
-                } else {
-                    outRect.left = mMargin / 2;
-                    outRect.right = mMargin / 2;
+                //显示新的页面
+                Fragment fragment = getChildFragmentManager().findFragmentByTag("f" + position);
+                if (fragment != null && fragment.isAdded() && fragment instanceof AlarmListFragment) {
+                    fragment.onHiddenChanged(false);
                 }
+                //隐藏之前显示的页面
+                fragment = getChildFragmentManager().findFragmentByTag("f" + mSelectedPosition);
+                if (fragment != null && fragment.isAdded() && fragment instanceof AlarmListFragment) {
+                    fragment.onHiddenChanged(false);
+                }
+                mSelectedPosition = position;
             }
         });
+
+    }
+
+    @OnClick({R.id.alarm_selection})
+    protected void onClickView(View v) {
+        switch (v.getId()) {
+            case R.id.alarm_selection: {
+                if (StringUtils.equals(mCurrentPigFarmEntity.getPigfarmId(), "15")) {
+                    mCurrentPigFarmEntity = new PigFarmEntity();
+                    mCurrentPigFarmEntity.setPigfarmId("14");
+                    mPigstyNameView.setText("猪场14");
+                } else {
+                    mCurrentPigFarmEntity = new PigFarmEntity();
+                    mCurrentPigFarmEntity.setPigfarmId("15");
+                    mPigstyNameView.setText("猪场15");
+                }
+                mFragmentStateAdapter.notifyDataSetChanged();
+                break;
+            }
+        }
+    }
+
+    @Override
+    public void performList(AlarmListEntity list, AlarmContract.QueryEntity query) {
+
     }
 
     @Override
@@ -88,6 +125,7 @@ public class AlarmMainFragment extends BaseFragment<AlarmPresenter> implements A
 
     }
 
+    // tab click listener
     private class TabListenerImpl implements Function<OptionEntity> {
 
         @Override
@@ -105,6 +143,9 @@ public class AlarmMainFragment extends BaseFragment<AlarmPresenter> implements A
     // viewpage adapter
     private class FragmentStateAdapterImpl extends FragmentStateAdapter {
 
+        private SparseArray<Fragment> mFragments = new SparseArray();
+        private int mNextPosition = -1;
+
         public FragmentStateAdapterImpl(@NonNull Fragment fragment) {
             super(fragment);
         }
@@ -112,39 +153,85 @@ public class AlarmMainFragment extends BaseFragment<AlarmPresenter> implements A
         @NonNull
         @Override
         public Fragment createFragment(int position) {
-            Fragment fragment = mFragments.get(position);
+            Fragment fragment = null;
             OptionEntity tabEntity = mTabEntitys[position];
-            if (fragment == null) {
-                switch (tabEntity.key) {
-                    case AlarmConstant.FRAGMENT_TEMPERATURE: {
-                        fragment = new TemperatureFragment();
-                        break;
-                    }
-                    case AlarmConstant.FRAGMENT_ACTIVITY: {
-                        fragment = new ActivityFragment();
-                        break;
-                    }
-                    case AlarmConstant.FRAGMENT_EAR_TAG: {
-                        fragment = new TemperatureFragment();
-                        break;
-                    }
-                    case AlarmConstant.FRAGMENT_BASE_STATION: {
-                        fragment = new ActivityFragment();
-                        break;
-                    }
-                    case AlarmConstant.FRAGMENT_OUTAGE: {
-                        fragment = new TemperatureFragment();
-                        break;
-                    }
+            switch (tabEntity.key) {
+                case AlarmConstant.TYPE_TEMPERATURE: {
+                    fragment = new TemperatureFragment();
+                    break;
                 }
-                mFragments.put(position, fragment);
+                case AlarmConstant.TYPE_ACTIVITY: {
+                    fragment = new ActivityFragment();
+                    break;
+                }
+                case AlarmConstant.TYPE_EAR_TAG: {
+                    fragment = new EarTagFragment();
+                    break;
+                }
+                case AlarmConstant.TYPE_BASE_STATION: {
+                    fragment = new BaseStationFragment();
+                    break;
+                }
+                case AlarmConstant.TYPE_OUTAGE: {
+                    fragment = new OutageFragment();
+                    break;
+                }
             }
+            if (fragment instanceof AlarmListFragment) {
+                ((AlarmListFragment) fragment).setPigFarmEntity(mCurrentPigFarmEntity);
+            }
+            mFragments.put(position, fragment);
             return fragment;
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull FragmentViewHolder holder, int position, @NonNull List<Object> payloads) {
+            LogUtils.d("FragmentStateAdapterImpl", "onBindViewHolder - position : " + position + "(" + mTabEntitys[position].key + ")");
+            super.onBindViewHolder(holder, position, payloads);
+            holder.setIsRecyclable(false);
+            //当前显示界面
+            if (mSelectedPosition == position) {
+                Fragment fragment = mFragments.get(position);
+                if (fragment != null && fragment instanceof AlarmListFragment) {
+                    AlarmListFragment listFragment = (AlarmListFragment) fragment;
+                    listFragment.setPigFarmEntity(mCurrentPigFarmEntity);
+                    listFragment.onHiddenChanged(false);
+                }
+            }
+            //预进入界面
+            if (mNextPosition != position) {
+                Fragment fragment = mFragments.get(position);
+                if (fragment != null && fragment instanceof AlarmListFragment) {
+                    AlarmListFragment listFragment = (AlarmListFragment) fragment;
+                    listFragment.setPigFarmEntity(mCurrentPigFarmEntity);
+                }
+                mNextPosition = position;
+            }
         }
 
         @Override
         public int getItemCount() {
             return mTabEntitys.length;
+        }
+    }
+
+    //tab recyclerview Decoration
+    private class ItemDecorationImpl extends RecyclerView.ItemDecoration {
+        private int mMargin = UIUtils.dip2px(6);
+
+        @Override
+        public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
+            super.getItemOffsets(outRect, view, parent, state);
+            int itemCount = state.getItemCount();
+            int position = parent.getChildAdapterPosition(view);
+            if (position == 0) {
+                outRect.right = mMargin;
+            } else if (position == itemCount - 1) {
+                outRect.left = mMargin;
+            } else {
+                outRect.left = mMargin / 2;
+                outRect.right = mMargin / 2;
+            }
         }
     }
 }

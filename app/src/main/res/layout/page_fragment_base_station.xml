@@ -15,17 +15,30 @@
         android:layout_marginLeft="27dp"
         android:layout_marginTop="10dp"
         android:layout_marginRight="27dp"
-        app:constraint_referenced_ids="id,time,name" />
+        app:constraint_referenced_ids="name,time,status" />
 
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/id"
-        style="@style/text_content"
+    <LinearLayout
+        android:id="@+id/name"
         android:layout_width="0dp"
         android:layout_height="30dp"
         app:layout_constraintHorizontal_weight="2"
-        android:gravity="center"
-        android:textColor="@color/grey_3a"
-        android:text="@string/alarm_list_title_ear_tag" />
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/name_label"
+            style="@style/text_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/grey_3a"
+            android:text="@string/alarm_list_title_pigsty_name" />
+
+        <androidx.constraintlayout.utils.widget.ImageFilterView
+            android:id="@+id/name_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/selector_ascend_descend" />
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/time"
@@ -51,7 +64,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/name"
+        android:id="@+id/status"
         android:layout_width="0dp"
         android:layout_height="30dp"
         app:layout_constraintHorizontal_weight="2"
@@ -59,18 +72,17 @@
         android:gravity="center">
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/name_label"
+            android:id="@+id/status_label"
             style="@style/text_content"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/grey_3a"
-            android:text="@string/alarm_list_title_pigsty_name" />
+            android:text="@string/alarm_list_title_status_all" />
 
         <androidx.constraintlayout.utils.widget.ImageFilterView
-            android:id="@+id/name_icon"
+            android:id="@+id/status_icon"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/selector_ascend_descend" />
+            android:layout_height="wrap_content" />
     </LinearLayout>
 
     <View
