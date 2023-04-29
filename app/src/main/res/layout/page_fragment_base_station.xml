@@ -82,7 +82,8 @@
         <androidx.constraintlayout.utils.widget.ImageFilterView
             android:id="@+id/status_icon"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="2dp" />
     </LinearLayout>
 
     <View

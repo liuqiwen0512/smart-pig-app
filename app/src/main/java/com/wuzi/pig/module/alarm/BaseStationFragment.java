@@ -1,11 +1,10 @@
 package com.wuzi.pig.module.alarm;
 
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.View;
 
+import androidx.appcompat.widget.AppCompatTextView;
 import androidx.constraintlayout.utils.widget.ImageFilterView;
-import androidx.core.content.ContextCompat;
 
 import com.scwang.smart.refresh.layout.constant.RefreshState;
 import com.wuzi.pig.R;
@@ -25,6 +24,8 @@ public class BaseStationFragment extends AlarmListFragment {
     ImageFilterView mNameIconView;
     @BindView(R.id.time_icon)
     ImageFilterView mTimeIconView;
+    @BindView(R.id.status_label)
+    AppCompatTextView mStatusLabelView;
     @BindView(R.id.status_icon)
     ImageFilterView mStatusIconView;
 
@@ -109,11 +110,14 @@ public class BaseStationFragment extends AlarmListFragment {
             mNameIconView.setSelected(!query.desc);
         }
         if (StringUtils.equals(mQuery.allStatus, AlarmConstant.ALLSTATUS_ALL)) {
-            mStatusIconView.setImageDrawable(new ColorDrawable(ContextCompat.getColor(mContext, android.R.color.transparent)));
+            mStatusLabelView.setText(R.string.alarm_list_title_status_normal);
+            mStatusIconView.setImageResource(R.drawable.img_alarm_status2);
         } else if (StringUtils.equals(mQuery.allStatus, AlarmConstant.ALLSTATUS_NORMAL)) {
-            mStatusIconView.setImageResource(R.drawable.img_ascend);
+            mStatusLabelView.setText(R.string.alarm_list_title_status_abnormal);
+            mStatusIconView.setImageResource(R.drawable.img_alarm_status1);
         } else if (StringUtils.equals(mQuery.allStatus, AlarmConstant.ALLSTATUS_ABNORMAL)) {
-            mStatusIconView.setImageResource(R.drawable.img_descend);
+            mStatusLabelView.setText(R.string.alarm_list_title_status_all);
+            mStatusIconView.setImageResource(R.drawable.img_alarm_status3);
         }
     }
 
