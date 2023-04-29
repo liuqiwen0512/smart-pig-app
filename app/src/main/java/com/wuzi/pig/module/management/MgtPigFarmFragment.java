@@ -1,5 +1,6 @@
 package com.wuzi.pig.module.management;
 
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.Bundle;
@@ -296,7 +297,15 @@ public class MgtPigFarmFragment extends BaseFragment<PigFarmPresenter> implement
         int checkedSize = checkedMap.size();
         mCheckedtMsgView.setText(res.getString(R.string.mgt_select_message, String.valueOf(checkedMap.size()), String.valueOf(mPigFarmCount)));
         mCheckedAllView.setChecked(checkedSize > 0
-                && (checkedMap.size() >= PigFarmConstant.PIG_FARM_DELETE_ALL_MAX || checkedMap.size() == allList.size()));
+                && (checkedSize >= PigFarmConstant.PIG_FARM_DELETE_ALL_MAX || checkedSize == allList.size()));
+        if (!mCheckedAllView.isChecked()) {
+            if (checkedSize > 0) {
+                ColorStateList stateList = new ColorStateList(new int[][]{{}}, new int[]{getResources().getColor(R.color.colorSelected)});
+                mCheckedAllView.setButtonTintList(stateList);
+            } else {
+                mCheckedAllView.setButtonTintList(null);
+            }
+        }
     }
 
     private void editStatus(final boolean edit) {

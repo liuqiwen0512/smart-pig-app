@@ -10,12 +10,14 @@
         android:id="@+id/checkbox"
         style="@style/text_content"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:buttonTint="@color/colorSelected"
-        android:background="@null"/>
+        android:layout_marginLeft="5dp"
+        android:paddingRight="5dp"
+        android:button="@drawable/selector_radio"
+        android:background="@null" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/name"
@@ -25,7 +27,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginLeft="5dp"
         app:layout_goneMarginLeft="10dp"
         android:textSize="14sp"
         android:textColor="@color/grey_3a"/>

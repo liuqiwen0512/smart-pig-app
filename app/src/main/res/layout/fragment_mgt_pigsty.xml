@@ -169,12 +169,12 @@
             android:id="@+id/checkbox_all"
             style="@style/text_content"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             android:layout_marginLeft="16dp"
-            android:buttonTint="@color/colorSelected"
+            android:button="@drawable/selector_radio"
             android:background="@null"
             android:text="全选"/>
 
