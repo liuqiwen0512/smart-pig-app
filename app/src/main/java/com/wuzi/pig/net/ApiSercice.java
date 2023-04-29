@@ -46,6 +46,7 @@ public interface ApiSercice {
     Observable<ResponseEntity<UserEntity>> register(@Body HashMap<String, Object> map);
 
     //忘记密码
+    @ResponseNull
     @PUT("/prod-api/system/user/profile/forgetPwd")
     Observable<ResponseEntity<UserEntity>> forgetPwd(@QueryMap HashMap<String, Object> map);
 

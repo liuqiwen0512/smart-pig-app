@@ -50,7 +50,7 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
         mLoadingDialog = new LoadingDialog(mContext);
         StatusBarUtils.immersive(getWindow());
         StatusbarColorUtils.setStatusBarDarkIcon(getWindow(), true);
-        mUserNameValueView.setText(LoginManager.getUserName());
+        mUserNameValueView.setText(StringUtils.nullToString(LoginManager.getUserName()));
     }
 
     @OnClick({R.id.password_visible, R.id.submit, R.id.register, R.id.update_pwd})
