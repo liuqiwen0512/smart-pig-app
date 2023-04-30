@@ -133,8 +133,8 @@ public class PigFarmAdapter extends RecyclerView.Adapter<PigFarmAdapter.ViewHold
         mCheckedMap.clear();
         if (!CollectionUtils.isEmpty(list)) {
             mList.addAll(list);
-            notifyDataSetChanged();
         }
+        notifyDataSetChanged();
     }
 
     public void notifyItemInserted(List<PigFarmEntity> list) {

@@ -57,9 +57,9 @@ final class CustomizeResponseBodyConverter<T> implements Converter<ResponseBody,
             if (responseObject == null) {
                 throw new ResponseException(ResponseException.ERROR.RESULT_CODE_201);
             }
-            if (responseObject instanceof ResponsePigFarmEntity) {
+            /*if (responseObject instanceof ResponsePigFarmEntity) {
                 return handleResponsePigFarmEntity((ResponsePigFarmEntity) responseObject);
-            }
+            }*/
 
             return handleResponseEntity((ResponseEntity) responseObject);
         } finally {

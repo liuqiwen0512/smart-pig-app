@@ -47,6 +47,10 @@ public class RequestParams extends HashMap<String, Object> {
     public final static String ALARM_COLUMN = "column";
     public final static String ALARM_ASC_OR_DESC = "ascOrDesc";
 
+    //监测
+    public final static String MONITOR_PIGFARM_ID = "pigfarmId";
+
+
     private RequestParams() {
     }
 

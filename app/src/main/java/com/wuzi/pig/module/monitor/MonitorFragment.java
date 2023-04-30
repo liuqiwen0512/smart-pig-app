@@ -10,30 +10,53 @@ import androidx.appcompat.widget.AppCompatTextView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.scwang.smart.refresh.layout.SmartRefreshLayout;
+import com.scwang.smart.refresh.layout.api.RefreshLayout;
+import com.scwang.smart.refresh.layout.listener.OnRefreshLoadMoreListener;
 import com.wuzi.pig.R;
 import com.wuzi.pig.base.BaseFragment;
-import com.wuzi.pig.entity.PigstyStatisEntity;
+import com.wuzi.pig.constant.Constant;
+import com.wuzi.pig.constant.PigFarmConstant;
+import com.wuzi.pig.entity.PigFarmEntity;
+import com.wuzi.pig.entity.PigstyEntity;
+import com.wuzi.pig.entity.PigstyListEntity;
+import com.wuzi.pig.entity.Statis72HourEntity;
 import com.wuzi.pig.module.monitor.adapter.PigstyAdapter;
+import com.wuzi.pig.module.monitor.contract.MonitorContract;
+import com.wuzi.pig.module.monitor.presenter.MonitorPresenter;
+import com.wuzi.pig.net.factory.ResponseException;
+import com.wuzi.pig.utils.PromptUtils;
 import com.wuzi.pig.utils.SpannableUtils;
 import com.wuzi.pig.utils.StatusBarUtils;
+import com.wuzi.pig.utils.StringUtils;
+import com.wuzi.pig.utils.ToastUtils;
 import com.wuzi.pig.utils.UIUtils;
+import com.wuzi.pig.utils.tools.CollectionUtils;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.OnClick;
 
-public class MonitorFragment extends BaseFragment {
+public class MonitorFragment extends BaseFragment<MonitorPresenter> implements MonitorContract.IView {
 
     @BindView(R.id.pigsty_count)
     AppCompatTextView mPigstyCountView;
     @BindView(R.id.pig_count)
     AppCompatTextView mPigCountView;
+    @BindView(R.id.refresh_layout)
+    SmartRefreshLayout mRefreshLayout;
     @BindView(R.id.pigsty_recycler)
     RecyclerView mPigstyRecyclerView;
+    @BindView(R.id.prompt)
+    AppCompatTextView mPromptView;
 
+    private Map<String, String> mNetLoadedMap = new HashMap<>();
     private PigstyAdapter mPigstyAdapter;
+    private PigFarmEntity mPigFarmEntity;
+    private int mPageNumber = 1;
 
     @Override
     protected int getLayoutID() {
@@ -43,45 +66,143 @@ public class MonitorFragment extends BaseFragment {
     @Override
     protected void initView(View view, Bundle savedInstanceState) {
         StatusBarUtils.setPadding(mContext, view);
+        mPigFarmEntity = Constant.getTestPigFarm();
 
-        int color = getResources().getColor(R.color.grey_3a);
-        SpannableStringBuilder highlightSpannable = SpannableUtils.getHighlightSpannable("90808 头", "90808", color);
-        SpannableStringBuilder boldSpannable = SpannableUtils.getBoldSpannable(highlightSpannable, "90808 头", "90808");
-        SpannableStringBuilder sizeSpannable = SpannableUtils.getSizeSpannable(boldSpannable, "90808 头", "90808", 22);
-
-        mPigstyCountView.setText(sizeSpannable);
-        mPigCountView.setText(sizeSpannable);
-
+        mRefreshLayout.setEnableLoadMore(false);
+        mRefreshLayout.setOnRefreshLoadMoreListener(new OnRefreshLoadMoreListenerImpl());
         mPigstyAdapter = new PigstyAdapter(mContext);
         mPigstyRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
         mPigstyRecyclerView.setAdapter(mPigstyAdapter);
         mPigstyRecyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
             private int mMargin = UIUtils.dip2px(18);
+
             @Override
             public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
                 super.getItemOffsets(outRect, view, parent, state);
                 outRect.top = mMargin;
             }
         });
-
-        List<PigstyStatisEntity> list = new ArrayList<>();
-        for (int i = 0; i < 20; i++) {
-            PigstyStatisEntity entity = new PigstyStatisEntity();
-            entity.setName("猪栏" + (i + 1));
-            entity.setOnlineCount(1490 + i);
-            entity.setTemperature(35);
-            entity.setLiveness(25);
-            list.add(entity);
-        }
-        mPigstyAdapter.setList(list);
+        mRefreshLayout.autoRefresh();
     }
 
     @OnClick({R.id.pig_farm_search})
     public void onClickView(View v) {
         switch (v.getId()) {
-            case R.id.pig_farm_search:{
+            case R.id.pig_farm_search: {
                 break;
             }
+        }
+    }
+
+    //下拉刷新、上拉加载
+    private class OnRefreshLoadMoreListenerImpl implements OnRefreshLoadMoreListener {
+        @Override
+        public void onRefresh(RefreshLayout refreshLayout) {
+            mNetLoadedMap.clear();
+            mPageNumber = 1;
+            String pigfarmId = mPigFarmEntity.getPigfarmId();
+            mPresenter.getPigstyList(pigfarmId, mPageNumber);
+            mPresenter.getPigstyCount(pigfarmId);
+            mPresenter.getStatis72Hour(pigfarmId);
+        }
+
+        @Override
+        public void onLoadMore(RefreshLayout refreshLayout) {
+            mPageNumber += 1;
+            String pigfarmId = mPigFarmEntity.getPigfarmId();
+            mPresenter.getPigstyList(pigfarmId, mPageNumber);
+        }
+    }
+
+    @Override
+    public void performPigstyCountSuccess(String count) {
+        finishRefresh(String.valueOf(MonitorContract.TAG_PIGSTY_COUNT));
+        setCountView(mPigstyCountView, count + " 个", count);
+    }
+
+    @Override
+    public void performStatis72HourSuccess(Statis72HourEntity entity) {
+        finishRefresh(String.valueOf(MonitorContract.TAG_STATIS_72_HOUR));
+        String count = String.valueOf(entity.getToday());
+        setCountView(mPigCountView, count + " 头", count);
+    }
+
+    @Override
+    public void performPigstyList(PigstyListEntity listEntity, int pageNum, String pagfarmId) {
+        finishRefresh(String.valueOf(MonitorContract.TAG_PIGSTY_LIST));
+        mRefreshLayout.finishLoadMore();
+        mPigstyRecyclerView.setVisibility(View.VISIBLE);
+        PromptUtils.hidePrompt(mPromptView);
+        int total = listEntity.getTotal();
+        List<PigstyEntity> list = listEntity.getRows();
+        setPigFarmCount(total);
+        if (pageNum <= 1) {
+            mPigstyAdapter.notifyDataSetChanged(list);
+        } else {
+            mPigstyAdapter.notifyItemInserted(list);
+        }
+        if (CollectionUtils.isEmpty(list) || list.size() < PigFarmConstant.PAGE_SIZE) {
+            mRefreshLayout.setNoMoreData(true);
+        } else {
+            mRefreshLayout.setNoMoreData(false);
+        }
+    }
+
+    @Override
+    public void performError(ResponseException error, int fromTag) {
+        finishRefresh(String.valueOf(fromTag));
+        if (fromTag == MonitorContract.TAG_PIGSTY_LIST) {
+            mRefreshLayout.finishLoadMore();
+            if (mPageNumber == 1) {
+                setPigFarmCount(0);
+                mPigstyRecyclerView.setVisibility(View.GONE);
+                if (error.code == ResponseException.ERROR.RESULT_CODE_201) {
+                    PromptUtils.showEmptyPrompt(mPromptView, getString(R.string.mgt_pigsty_empty));
+                } else {
+                    PromptUtils.showEmptyPrompt(mPromptView, error.getMessage() + " 下拉刷新试试");
+                }
+                mRefreshLayout.setNoMoreData(true);
+            } else {
+                ToastUtils.show(error.getMessage());
+            }
+        }
+        if (fromTag == MonitorContract.TAG_PIGSTY_COUNT) {
+            setCountView(mPigstyCountView, null, null);
+        }
+        if (fromTag == MonitorContract.TAG_STATIS_72_HOUR) {
+            setCountView(mPigCountView, null, null);
+        } else {
+            ToastUtils.show(error.getMessage());
+        }
+    }
+
+    private void setPigFarmCount(int count) {
+
+    }
+
+    private void setCountView(AppCompatTextView textView, String text, String keyword) {
+        if (StringUtils.isEmpty(text)) {
+            text = "数据异常";
+            keyword = text;
+            int color = getResources().getColor(R.color.grey_3a);
+            int textSize = 12;
+            SpannableStringBuilder highlightSpannable = SpannableUtils.getHighlightSpannable(text, keyword, color);
+            SpannableStringBuilder sizeSpannable = SpannableUtils.getSizeSpannable(highlightSpannable, text, keyword, textSize);
+            textView.setText(sizeSpannable);
+        } else {
+            int color = getResources().getColor(R.color.grey_3a);
+            int textSize = 22;
+            SpannableStringBuilder highlightSpannable = SpannableUtils.getHighlightSpannable(text, keyword, color);
+            SpannableStringBuilder boldSpannable = SpannableUtils.getBoldSpannable(highlightSpannable, text, keyword);
+            SpannableStringBuilder sizeSpannable = SpannableUtils.getSizeSpannable(boldSpannable, text, keyword, textSize);
+            textView.setText(sizeSpannable);
+        }
+    }
+
+    private void finishRefresh(String tag) {
+        mNetLoadedMap.put(tag, tag);
+        if (mNetLoadedMap.size() >= 2) {
+            mRefreshLayout.finishRefresh();
         }
     }
 }
