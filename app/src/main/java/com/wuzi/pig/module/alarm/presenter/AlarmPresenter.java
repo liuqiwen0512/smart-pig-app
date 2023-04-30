@@ -1,7 +1,6 @@
 package com.wuzi.pig.module.alarm.presenter;
 
 import com.wuzi.pig.base.BasePresenter;
-import com.wuzi.pig.constant.AlarmConstant;
 import com.wuzi.pig.entity.AlarmEntity;
 import com.wuzi.pig.entity.AlarmListEntity;
 import com.wuzi.pig.module.alarm.contract.AlarmContract;
@@ -9,7 +8,6 @@ import com.wuzi.pig.module.alarm.model.AlarmModel;
 import com.wuzi.pig.net.factory.ResponseException;
 import com.wuzi.pig.net.factory.ResponseListener;
 import com.wuzi.pig.net.factory.ResponseObserver;
-import com.wuzi.pig.utils.StringUtils;
 
 import java.util.List;
 
@@ -20,6 +18,7 @@ public class AlarmPresenter extends BasePresenter<AlarmContract.IView, AlarmMode
         ResponseObserver<AlarmListEntity> commonResponse = getCommonResponse(new ResponseListener<AlarmListEntity>() {
             @Override
             public void onSuccess(AlarmListEntity listEntity) {
+/*
                 if (StringUtils.equals(queryClone.pigfarmId, "15")) {
                     if (StringUtils.equals(queryClone.type, AlarmConstant.TYPE_BASE_STATION)) {
                         initBaseStation15(listEntity);
@@ -37,6 +36,7 @@ public class AlarmPresenter extends BasePresenter<AlarmContract.IView, AlarmMode
                         init14(listEntity);
                     }
                 }
+*/
 
 
                 if (listEntity.getTotal() == 0) {

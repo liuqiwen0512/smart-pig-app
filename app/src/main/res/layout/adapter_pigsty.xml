@@ -42,7 +42,6 @@
         app:layout_constraintTop_toTopOf="@id/pig_count"
         app:layout_constraintLeft_toRightOf="@id/pig_count"
         app:layout_constraintRight_toLeftOf="@id/pig_liveness"
-        android:paddingLeft="8dp"
         android:textSize="12sp"
         android:textStyle="normal"
         android:text="平均温度：34"/>
@@ -55,7 +54,6 @@
         app:layout_constraintTop_toTopOf="@id/pig_temperature"
         app:layout_constraintLeft_toRightOf="@id/pig_temperature"
         app:layout_constraintRight_toRightOf="parent"
-        android:paddingLeft="8dp"
         android:textSize="12sp"
         android:textStyle="normal"
         android:text="平均活跃度：23"/>

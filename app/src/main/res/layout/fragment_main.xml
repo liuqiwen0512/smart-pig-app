@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/img_main_bg">
@@ -32,16 +33,22 @@
                     android:src="@drawable/selector_vertical_arrow" />
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/swinery_name"
+                    android:id="@+id/pig_farm_name"
                     style="@style/text_content"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="5dp"
-                    android:text="猪栏11" />
+                    android:layout_marginLeft="5dp" />
             </LinearLayout>
 
+            <com.wuzi.pig.utils.ui.view.GroupWrap
+                android:id="@+id/info_group"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="pig_farm_title,pig_farm_temperature,pig_farm_humidity,pig_farm_concentration,pigsty_count,pig_statis_top,pig_statis"
+                tools:ignore="MissingConstraints" />
+
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/pig_farm_name"
+                android:id="@+id/pig_farm_title"
                 style="@style/text_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -58,7 +65,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/pig_farm_name"
+                app:layout_constraintTop_toBottomOf="@id/pig_farm_title"
                 app:layout_constraintRight_toRightOf="parent"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
@@ -261,6 +268,7 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.utils.widget.ImageFilterView
+                android:id="@+id/pig_statis_top"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintLeft_toLeftOf="parent"

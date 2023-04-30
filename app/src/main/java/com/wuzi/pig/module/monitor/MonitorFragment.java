@@ -2,6 +2,7 @@ package com.wuzi.pig.module.monitor;
 
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.os.Message;
 import android.text.SpannableStringBuilder;
 import android.view.View;
 
@@ -15,12 +16,13 @@ import com.scwang.smart.refresh.layout.api.RefreshLayout;
 import com.scwang.smart.refresh.layout.listener.OnRefreshLoadMoreListener;
 import com.wuzi.pig.R;
 import com.wuzi.pig.base.BaseFragment;
-import com.wuzi.pig.constant.Constant;
+import com.wuzi.pig.constant.MsgConstant;
 import com.wuzi.pig.constant.PigFarmConstant;
 import com.wuzi.pig.entity.PigFarmEntity;
 import com.wuzi.pig.entity.PigstyEntity;
 import com.wuzi.pig.entity.PigstyListEntity;
 import com.wuzi.pig.entity.Statis72HourEntity;
+import com.wuzi.pig.manager.MsgManager;
 import com.wuzi.pig.module.monitor.adapter.PigstyAdapter;
 import com.wuzi.pig.module.monitor.contract.MonitorContract;
 import com.wuzi.pig.module.monitor.presenter.MonitorPresenter;
@@ -32,6 +34,7 @@ import com.wuzi.pig.utils.StringUtils;
 import com.wuzi.pig.utils.ToastUtils;
 import com.wuzi.pig.utils.UIUtils;
 import com.wuzi.pig.utils.tools.CollectionUtils;
+import com.wuzi.pig.utils.ui.view.GroupWrap;
 
 import java.util.HashMap;
 import java.util.List;
@@ -42,6 +45,10 @@ import butterknife.OnClick;
 
 public class MonitorFragment extends BaseFragment<MonitorPresenter> implements MonitorContract.IView {
 
+    @BindView(R.id.pig_farm_name)
+    AppCompatTextView mPigFarmNameView;
+    @BindView(R.id.pig_farm_title)
+    AppCompatTextView mPigFarmTitleView;
     @BindView(R.id.pigsty_count)
     AppCompatTextView mPigstyCountView;
     @BindView(R.id.pig_count)
@@ -52,6 +59,8 @@ public class MonitorFragment extends BaseFragment<MonitorPresenter> implements M
     RecyclerView mPigstyRecyclerView;
     @BindView(R.id.prompt)
     AppCompatTextView mPromptView;
+    @BindView(R.id.info_group)
+    GroupWrap mInfoGroupView;
 
     private Map<String, String> mNetLoadedMap = new HashMap<>();
     private PigstyAdapter mPigstyAdapter;
@@ -66,7 +75,6 @@ public class MonitorFragment extends BaseFragment<MonitorPresenter> implements M
     @Override
     protected void initView(View view, Bundle savedInstanceState) {
         StatusBarUtils.setPadding(mContext, view);
-        mPigFarmEntity = Constant.getTestPigFarm();
 
         mRefreshLayout.setEnableLoadMore(false);
         mRefreshLayout.setOnRefreshLoadMoreListener(new OnRefreshLoadMoreListenerImpl());
@@ -82,15 +90,31 @@ public class MonitorFragment extends BaseFragment<MonitorPresenter> implements M
                 outRect.top = mMargin;
             }
         });
-        mRefreshLayout.autoRefresh();
+        setPigFarmEntity(mPigFarmEntity, true);
+        if (mPigFarmEntity != null) {
+            mRefreshLayout.autoRefresh();
+        }
     }
 
-    @OnClick({R.id.pig_farm_search})
+    @OnClick({R.id.pig_farm_selection, R.id.pig_farm_search})
     public void onClickView(View v) {
         switch (v.getId()) {
-            case R.id.pig_farm_search: {
+            case R.id.pig_farm_selection: {
+                MsgManager.showPigFarmDialog();
                 break;
             }
+            case R.id.pig_farm_search: {
+                MsgManager.showPigFarmDialog();
+                break;
+            }
+        }
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        if (!hidden && mIsRefresh) {
+            setPigFarmEntity(mPigFarmEntity, mIsRefresh);
+            mIsRefresh = false;
         }
     }
 
@@ -173,6 +197,43 @@ public class MonitorFragment extends BaseFragment<MonitorPresenter> implements M
             setCountView(mPigCountView, null, null);
         } else {
             ToastUtils.show(error.getMessage());
+        }
+    }
+
+    public void setPigFarmEntity(PigFarmEntity entity, boolean refresh) {
+        if (!PigFarmEntity.equals(mPigFarmEntity, entity) || refresh) {
+            if (mRefreshLayout != null) {
+                if (entity == null) {
+                    getView().setBackgroundResource(R.drawable.img_main_bg2);
+                    mPromptView.setVisibility(View.GONE);
+                    mInfoGroupView.setVisibility(View.INVISIBLE);
+                    mPigFarmTitleView.setText("");
+                    mPigFarmNameView.setText(R.string.selection_pig_farm_default);
+                } else {
+                    getView().setBackgroundResource(R.drawable.img_main_bg);
+                    mInfoGroupView.setVisibility(View.VISIBLE);
+                    mPigFarmTitleView.setText(StringUtils.nullToString(entity.getPigfarmName()));
+                    mPigFarmNameView.setText(StringUtils.nullToString(entity.getPigfarmName()));
+                    if (isVisible()) {
+                        mRefreshLayout.autoRefresh();
+                    }
+                }
+            }
+        }
+        mPigFarmEntity = entity;
+    }
+
+    @Override
+    public void onMessage(int what, Message message) {
+        switch (what) {
+            case MsgConstant.MSG_WHAT_PIGFARM_CHANGE: {
+                if (isVisible()) {
+                    setPigFarmEntity((PigFarmEntity) message.obj, false);
+                } else {
+                    mIsRefresh = true;
+                }
+                break;
+            }
         }
     }
 

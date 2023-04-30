@@ -1,5 +1,7 @@
 package com.wuzi.pig.entity;
 
+import com.wuzi.pig.utils.StringUtils;
+
 /*
             "searchValue": null,
             "createBy": "admin",
@@ -32,5 +34,15 @@ public class PigFarmEntity {
 
     public void setPigfarmName(String pigfarmName) {
         this.pigfarmName = pigfarmName;
+    }
+
+    public static boolean equals(PigFarmEntity entity1, PigFarmEntity entity2) {
+        if (entity1 == entity2) {
+            return true;
+        }
+        if (entity1 == null || entity2 == null) {
+            return false;
+        }
+        return StringUtils.equals(entity1.getPigfarmId(), entity2.getPigfarmId());
     }
 }

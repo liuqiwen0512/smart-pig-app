@@ -29,13 +29,14 @@ public class RequestParams extends HashMap<String, Object> {
     //猪场
     public final static String PIG_FARM_PIGFARMID = "pigfarmId";
     public final static String PIG_FARM_NAME = "pigfarmName";
-    public final static String PIG_FARM_PIGFARMIDS = "pigfarmIds";
+    public final static String PIG_FARM_SEARCH_VALUE = "searchValue";
 
     //猪栏
     public final static String PIGSTY_PIGFARM_ID = "pigfarmId";
     public final static String PIGSTY_PIGSTY_ID = "pigstyId";
     public final static String PIGSTY_PIGSTY_NAME = "pigstyName";
     public final static String PIGSTY_BASE_STATION = "baseStation";
+    public final static String PIGSTY_SEARCH_VALUE = "searchValue";
 
     //告警
     public final static String ALARM_PIGFARM_ID = "pigfarmId";

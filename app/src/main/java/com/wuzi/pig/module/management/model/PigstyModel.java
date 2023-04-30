@@ -51,8 +51,9 @@ public class PigstyModel extends BaseModel implements PigstyContract.IModel {
     }
 
     @Override
-    public void getPigstyList(int pageNum, ResponseObserver observer) {
+    public void getPigstyList(String pigfarmId, int pageNum, ResponseObserver observer) {
         RequestParams requestParams = RequestParams.getCommonParams();
+        requestParams.put(RequestParams.PIGSTY_PIGFARM_ID, pigfarmId);
         requestParams.put(RequestParams.PAGE_SIZE, PigstyConstant.PAGE_SIZE);
         requestParams.put(RequestParams.PAGE_NUMBER, pageNum);
         Observable<ResponseEntity<PigstyListEntity>> observable = ApiManager.getApiService().getPigstyList(requestParams);

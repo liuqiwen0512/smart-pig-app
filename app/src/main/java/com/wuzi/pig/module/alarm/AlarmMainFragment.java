@@ -2,6 +2,7 @@ package com.wuzi.pig.module.alarm;
 
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.os.Message;
 import android.util.SparseArray;
 import android.view.View;
 
@@ -17,9 +18,11 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.wuzi.pig.R;
 import com.wuzi.pig.base.BaseFragment;
 import com.wuzi.pig.constant.AlarmConstant;
+import com.wuzi.pig.constant.MsgConstant;
 import com.wuzi.pig.entity.AlarmListEntity;
 import com.wuzi.pig.entity.OptionEntity;
 import com.wuzi.pig.entity.PigFarmEntity;
+import com.wuzi.pig.manager.MsgManager;
 import com.wuzi.pig.module.alarm.adapter.TabsAdapter;
 import com.wuzi.pig.module.alarm.contract.AlarmContract;
 import com.wuzi.pig.module.alarm.presenter.AlarmPresenter;
@@ -29,6 +32,7 @@ import com.wuzi.pig.utils.StatusBarUtils;
 import com.wuzi.pig.utils.StringUtils;
 import com.wuzi.pig.utils.UIUtils;
 import com.wuzi.pig.utils.fun.Function;
+import com.wuzi.pig.utils.ui.view.GroupWrap;
 
 import java.util.List;
 
@@ -37,6 +41,8 @@ import butterknife.OnClick;
 
 public class AlarmMainFragment extends BaseFragment<AlarmPresenter> implements AlarmContract.IView {
 
+    @BindView(R.id.info_group)
+    GroupWrap mInfoGroupView;
     @BindView(R.id.tabs)
     RecyclerView mTabRecyclerView;
     @BindView(R.id.pages)
@@ -47,7 +53,7 @@ public class AlarmMainFragment extends BaseFragment<AlarmPresenter> implements A
     private final OptionEntity[] mTabEntitys = AlarmConstant.PAGE_TABS;
     private TabsAdapter mTabsAdapter;
     private FragmentStateAdapterImpl mFragmentStateAdapter;
-    private PigFarmEntity mCurrentPigFarmEntity = null;
+    private PigFarmEntity mPigFarmEntity;
     private int mSelectedPosition = -1;
 
     @Override
@@ -58,10 +64,6 @@ public class AlarmMainFragment extends BaseFragment<AlarmPresenter> implements A
     @Override
     protected void initView(View view, Bundle savedInstanceState) {
         StatusBarUtils.setPadding(mContext, view);
-
-        mCurrentPigFarmEntity = new PigFarmEntity();
-        mCurrentPigFarmEntity.setPigfarmId("15");
-        mPigstyNameView.setText("猪场15");
 
         mTabsAdapter = new TabsAdapter(mContext);
         mTabsAdapter.setItemListener(new TabListenerImpl());
@@ -94,24 +96,24 @@ public class AlarmMainFragment extends BaseFragment<AlarmPresenter> implements A
             }
         });
 
+        setPigFarmEntity(mPigFarmEntity, true);
     }
 
     @OnClick({R.id.alarm_selection})
     protected void onClickView(View v) {
         switch (v.getId()) {
             case R.id.alarm_selection: {
-                if (StringUtils.equals(mCurrentPigFarmEntity.getPigfarmId(), "15")) {
-                    mCurrentPigFarmEntity = new PigFarmEntity();
-                    mCurrentPigFarmEntity.setPigfarmId("14");
-                    mPigstyNameView.setText("猪场14");
-                } else {
-                    mCurrentPigFarmEntity = new PigFarmEntity();
-                    mCurrentPigFarmEntity.setPigfarmId("15");
-                    mPigstyNameView.setText("猪场15");
-                }
-                mFragmentStateAdapter.notifyDataSetChanged();
+                MsgManager.showPigFarmDialog();
                 break;
             }
+        }
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        if (!hidden && mIsRefresh) {
+            setPigFarmEntity(mPigFarmEntity, mIsRefresh);
+            mIsRefresh = false;
         }
     }
 
@@ -178,7 +180,7 @@ public class AlarmMainFragment extends BaseFragment<AlarmPresenter> implements A
                 }
             }
             if (fragment instanceof AlarmListFragment) {
-                ((AlarmListFragment) fragment).setPigFarmEntity(mCurrentPigFarmEntity);
+                ((AlarmListFragment) fragment).setPigFarmEntity(mPigFarmEntity);
             }
             mFragments.put(position, fragment);
             return fragment;
@@ -194,7 +196,7 @@ public class AlarmMainFragment extends BaseFragment<AlarmPresenter> implements A
                 Fragment fragment = mFragments.get(position);
                 if (fragment != null && fragment instanceof AlarmListFragment) {
                     AlarmListFragment listFragment = (AlarmListFragment) fragment;
-                    listFragment.setPigFarmEntity(mCurrentPigFarmEntity);
+                    listFragment.setPigFarmEntity(mPigFarmEntity);
                     listFragment.onHiddenChanged(false);
                 }
             }
@@ -203,7 +205,7 @@ public class AlarmMainFragment extends BaseFragment<AlarmPresenter> implements A
                 Fragment fragment = mFragments.get(position);
                 if (fragment != null && fragment instanceof AlarmListFragment) {
                     AlarmListFragment listFragment = (AlarmListFragment) fragment;
-                    listFragment.setPigFarmEntity(mCurrentPigFarmEntity);
+                    listFragment.setPigFarmEntity(mPigFarmEntity);
                 }
                 mNextPosition = position;
             }
@@ -231,6 +233,40 @@ public class AlarmMainFragment extends BaseFragment<AlarmPresenter> implements A
             } else {
                 outRect.left = mMargin / 2;
                 outRect.right = mMargin / 2;
+            }
+        }
+    }
+
+    public void setPigFarmEntity(PigFarmEntity entity, boolean refresh) {
+        if (!mPigFarmEntity.equals(mPigFarmEntity, entity) || refresh) {
+            if (mViewPager != null) {
+                if (entity == null) {
+                    getView().setBackgroundResource(R.drawable.img_main_bg2);
+                    mInfoGroupView.setVisibility(View.INVISIBLE);
+                    mPigstyNameView.setText(R.string.selection_pig_farm_default);
+                } else {
+                    getView().setBackgroundResource(R.drawable.img_main_bg);
+                    mInfoGroupView.setVisibility(View.VISIBLE);
+                    mPigstyNameView.setText(StringUtils.nullToString(entity.getPigfarmName()));
+                    if (isVisible()) {
+                        mFragmentStateAdapter.notifyDataSetChanged();
+                    }
+                }
+            }
+        }
+        mPigFarmEntity = entity;
+    }
+
+    @Override
+    public void onMessage(int what, Message message) {
+        switch (what) {
+            case MsgConstant.MSG_WHAT_PIGFARM_CHANGE: {
+                if (isVisible()) {
+                    setPigFarmEntity((PigFarmEntity) message.obj, false);
+                } else {
+                    mIsRefresh = true;
+                }
+                break;
             }
         }
     }

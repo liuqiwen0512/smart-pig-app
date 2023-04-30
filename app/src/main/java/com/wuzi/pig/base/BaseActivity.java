@@ -1,24 +1,19 @@
 package com.wuzi.pig.base;
 
 import android.app.Activity;
-import android.app.ActivityManager;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
-import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
-import androidx.lifecycle.Lifecycle;
 
-import com.wuzi.pig.BuildConfig;
 import com.wuzi.pig.utils.StatusBarUtils;
-import com.wuzi.pig.utils.StatusbarColorUtils;
+import com.wuzi.pig.utils.msg.IMsgObserver;
+import com.wuzi.pig.utils.msg.MsgObserverManager;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -29,7 +24,7 @@ import butterknife.Unbinder;
 /**
  * view 层
  */
-public abstract class BaseActivity<P extends IContract.IPresenter> extends AppCompatActivity implements IContract.IView {
+public abstract class BaseActivity<P extends IContract.IPresenter> extends AppCompatActivity implements IContract.IView, IMsgObserver {
     protected String TAG = getClass().getSimpleName();
     private Unbinder mBind;
     protected Context mContext;
@@ -52,6 +47,7 @@ public abstract class BaseActivity<P extends IContract.IPresenter> extends AppCo
         if (mPresenter != null) {
             mPresenter.attachView(this);
         }
+        MsgObserverManager.getInstances().addObserver(this);
         init(savedInstanceState);
     }
 
@@ -74,6 +70,7 @@ public abstract class BaseActivity<P extends IContract.IPresenter> extends AppCo
         if (mPresenter != null) {
             mPresenter.detachView();
         }
+        MsgObserverManager.getInstances().removeObserver(this);
     }
 
     // 改变状态栏的背景色
@@ -118,5 +115,8 @@ public abstract class BaseActivity<P extends IContract.IPresenter> extends AppCo
             e.printStackTrace();
         }
         return mPresenter;
+    }
+
+    public void onMessage(int what, Message message) {
     }
 }

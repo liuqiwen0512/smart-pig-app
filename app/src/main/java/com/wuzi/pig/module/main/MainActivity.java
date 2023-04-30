@@ -1,6 +1,7 @@
 package com.wuzi.pig.module.main;
 
 import android.os.Bundle;
+import android.os.Message;
 import android.widget.FrameLayout;
 
 import androidx.constraintlayout.motion.widget.MotionLayout;
@@ -13,7 +14,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.wuzi.pig.R;
 import com.wuzi.pig.base.BaseActivity;
 import com.wuzi.pig.constant.MenuConstant;
+import com.wuzi.pig.constant.MsgConstant;
 import com.wuzi.pig.entity.MenuEntity;
+import com.wuzi.pig.entity.PigFarmEntity;
 import com.wuzi.pig.module.alarm.AlarmMainFragment;
 import com.wuzi.pig.module.management.MgtMainFragment;
 import com.wuzi.pig.module.monitor.MonitorFragment;
@@ -35,7 +38,9 @@ public class MainActivity extends BaseActivity {
     @BindView(R.id.menus)
     RecyclerView mMenuRecyclerView;
 
+    private PigFarmSearchDialog mPigFarmSearchDialog;
     private MenuAdapter mMenuAdapter;
+    private PigFarmEntity mPigFarmEntity;
 
     @Override
     protected int getLayoutID() {
@@ -79,6 +84,23 @@ public class MainActivity extends BaseActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        switch (key) {
+            case MenuConstant.MAIN_MENU_HOME: {
+                MainFragment mainFragment = (MainFragment) fragment;
+                mainFragment.setPigFarmEntity(mPigFarmEntity, false);
+                break;
+            }
+            case MenuConstant.MAIN_MENU_ALARM: {
+                AlarmMainFragment alarmMainFragment = (AlarmMainFragment) fragment;
+                alarmMainFragment.setPigFarmEntity(mPigFarmEntity, false);
+                break;
+            }
+            case MenuConstant.MAIN_MENU_MONITOR: {
+                MonitorFragment monitorFragment = (MonitorFragment) fragment;
+                monitorFragment.setPigFarmEntity(mPigFarmEntity, false);
+                break;
+            }
+        }
     }
 
     private Fragment getFragment(String key) {
@@ -88,15 +110,21 @@ public class MainActivity extends BaseActivity {
         }
         switch (key) {
             case MenuConstant.MAIN_MENU_HOME: {
-                fragment = new MainFragment();
+                MainFragment mainFragment = new MainFragment();
+                mainFragment.setPigFarmEntity(mPigFarmEntity, true);
+                fragment = mainFragment;
                 break;
             }
             case MenuConstant.MAIN_MENU_ALARM: {
-                fragment = new AlarmMainFragment();
+                AlarmMainFragment alarmMainFragment = new AlarmMainFragment();
+                alarmMainFragment.setPigFarmEntity(mPigFarmEntity, true);
+                fragment = alarmMainFragment;
                 break;
             }
             case MenuConstant.MAIN_MENU_MONITOR: {
-                fragment = new MonitorFragment();
+                MonitorFragment monitorFragment = new MonitorFragment();
+                monitorFragment.setPigFarmEntity(mPigFarmEntity, true);
+                fragment = monitorFragment;
                 break;
             }
             case MenuConstant.MAIN_MENU_MANAGE: {
@@ -119,6 +147,7 @@ public class MainActivity extends BaseActivity {
         mMotionLayout.transitionToState(show ? R.id.menu_start : R.id.menu_end);
     }
 
+    // menu click
     private class MenuClickListenerImpl implements Function<MenuEntity> {
 
         @Override
@@ -138,6 +167,26 @@ public class MainActivity extends BaseActivity {
 
         } else {
             super.onBackPressed();
+        }
+    }
+
+    @Override
+    public void onMessage(int what, Message message) {
+        switch (what) {
+            case MsgConstant.MSG_WHAT_SHOW_PIGFARM_DIALOG: {
+                if (mPigFarmSearchDialog == null) {
+                    mPigFarmSearchDialog = new PigFarmSearchDialog();
+                    mPigFarmSearchDialog.setOnDismissListener(dialog -> {
+
+                    });
+                }
+                mPigFarmSearchDialog.showNow(getSupportFragmentManager());
+                break;
+            }
+            case MsgConstant.MSG_WHAT_PIGFARM_CHANGE: {
+                mPigFarmEntity = (PigFarmEntity) message.obj;
+                break;
+            }
         }
     }
 }

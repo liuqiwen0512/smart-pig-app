@@ -51,7 +51,7 @@ public class MgtPigstyFragment extends BaseFragment<PigstyPresenter> implements 
     MotionLayout mMotionLayout;
     @BindView(R.id.back)
     AppCompatTextView mBackView;
-    @BindView(R.id.pigfarm_name)
+    @BindView(R.id.pig_farm_name)
     AppCompatTextView mPigFarmNameView;
     @BindView(R.id.pigsty_edit)
     AppCompatTextView mPigstyEditView;
@@ -278,13 +278,15 @@ public class MgtPigstyFragment extends BaseFragment<PigstyPresenter> implements 
         @Override
         public void onRefresh(RefreshLayout refreshLayout) {
             mPageNumber = 1;
-            mPresenter.getPigstyList(mPageNumber);
+            String pigfarmId = mPigFarmEntity.getPigfarmId();
+            mPresenter.getPigstyList(pigfarmId, mPageNumber);
         }
 
         @Override
         public void onLoadMore(RefreshLayout refreshLayout) {
             mPageNumber += 1;
-            mPresenter.getPigstyList(mPageNumber);
+            String pigfarmId = mPigFarmEntity.getPigfarmId();
+            mPresenter.getPigstyList(pigfarmId, mPageNumber);
         }
     }
 

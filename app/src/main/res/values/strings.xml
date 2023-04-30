@@ -6,6 +6,7 @@
     <string name="cancel">取消</string>
     <string name="error_empty">对不起，目前没有数据</string>
     <string name="prompt_loading">正在加载数据</string>
+    <string name="selection_pig_farm_default">请选择猪场</string>
 
     <!--权限-->
     <string name="permissions_refuse_authorization" translatable="false">被永久拒绝授权，请手动授予权限</string>

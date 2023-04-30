@@ -62,7 +62,7 @@ public class PigstyPresenter extends BasePresenter<PigstyContract.IView, PigstyM
     }
 
     @Override
-    public void getPigstyList(int pageNum) {
+    public void getPigstyList(String pigfarmId, int pageNum) {
         ResponseObserver<PigstyListEntity> commonResponse = getCommonResponse(new ResponseListener<PigstyListEntity>() {
             @Override
             public void onSuccess(PigstyListEntity listEntity) {
@@ -79,6 +79,6 @@ public class PigstyPresenter extends BasePresenter<PigstyContract.IView, PigstyM
                 getView().performError(exception, PigstyContract.TAG_PIGSTY_LIST);
             }
         });
-        mModel.getPigstyList(pageNum, commonResponse);
+        mModel.getPigstyList(pigfarmId, pageNum, commonResponse);
     }
 }

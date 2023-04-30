@@ -2,6 +2,7 @@ package com.wuzi.pig.base;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+
+import com.wuzi.pig.utils.msg.IMsgObserver;
+import com.wuzi.pig.utils.msg.MsgObserverManager;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -20,7 +24,7 @@ import butterknife.Unbinder;
 /**
  * fragment 基类
  */
-public abstract class BaseFragment<P extends IContract.IPresenter> extends Fragment implements IContract.IView {
+public abstract class BaseFragment<P extends IContract.IPresenter> extends Fragment implements IContract.IView, IMsgObserver {
     protected String TAG = getClass().getSimpleName();
     private final String mRootClassName = "BaseFragment";
     private Unbinder mBind;
@@ -32,12 +36,14 @@ public abstract class BaseFragment<P extends IContract.IPresenter> extends Fragm
     public void onAttach(Context context) {
         super.onAttach(context);
         mContext = context;
+        MsgObserverManager.getInstances().addObserver(this);
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
         mContext = null;
+        MsgObserverManager.getInstances().removeObserver(this);
     }
 
     @Nullable
@@ -117,5 +123,6 @@ public abstract class BaseFragment<P extends IContract.IPresenter> extends Fragm
         return mPresenter;
     }
 
-
+    public void onMessage(int what, Message message) {
+    }
 }

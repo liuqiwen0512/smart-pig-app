@@ -102,7 +102,7 @@ public class AlarmListAdapter extends RecyclerView.Adapter<AlarmListAdapter.View
             itemView.setSelected(position % 2 == 0 ? false : true);
             mIdView.setText(entity.getEarTag());
             mTimeView.setText(entity.getCreateTime());
-            mNameView.setText(entity.getPigstyName());
+            mNameView.setText(StringUtils.ASCII16ToString(entity.getPigstyName()));
             mTypeView.setText(entity.getLevel());
 
             mTypeView.setSelected(StringUtils.equals(entity.getLevel(), AlarmConstant.TEMPERATURE_LOW));
@@ -128,7 +128,7 @@ public class AlarmListAdapter extends RecyclerView.Adapter<AlarmListAdapter.View
             itemView.setSelected(position % 2 == 0 ? false : true);
             mIdView.setText(entity.getEarTag());
             mTimeView.setText(entity.getCreateTime());
-            mNameView.setText(entity.getPigstyName());
+            mNameView.setText(StringUtils.ASCII16ToString(entity.getPigstyName()));
         }
     }
 
@@ -149,7 +149,7 @@ public class AlarmListAdapter extends RecyclerView.Adapter<AlarmListAdapter.View
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
             AlarmEntity entity = mList.get(position);
             itemView.setSelected(position % 2 == 0 ? false : true);
-            mIdView.setText(entity.getPigstyName());
+            mIdView.setText(StringUtils.ASCII16ToString(entity.getPigstyName()));
             mTimeView.setText(entity.getCreateTime());
             mNameView.setText(entity.getLevel());
         }
@@ -172,7 +172,7 @@ public class AlarmListAdapter extends RecyclerView.Adapter<AlarmListAdapter.View
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
             AlarmEntity entity = mList.get(position);
             itemView.setSelected(position % 2 == 0 ? false : true);
-            mIdView.setText(entity.getPigstyName());
+            mIdView.setText(StringUtils.ASCII16ToString(entity.getPigstyName()));
             mTimeView.setText(entity.getCreateTime());
             mNameView.setText(entity.getLevel());
         }

@@ -1,6 +1,7 @@
 package com.wuzi.pig.module.main;
 
 import android.os.Bundle;
+import android.os.Message;
 import android.text.SpannableStringBuilder;
 import android.view.View;
 
@@ -12,9 +13,10 @@ import com.scwang.smart.refresh.layout.api.RefreshLayout;
 import com.scwang.smart.refresh.layout.listener.OnRefreshListener;
 import com.wuzi.pig.R;
 import com.wuzi.pig.base.BaseFragment;
-import com.wuzi.pig.constant.Constant;
+import com.wuzi.pig.constant.MsgConstant;
 import com.wuzi.pig.entity.PigFarmEntity;
 import com.wuzi.pig.entity.Statis72HourEntity;
+import com.wuzi.pig.manager.MsgManager;
 import com.wuzi.pig.module.main.contract.MainContract;
 import com.wuzi.pig.module.main.presenter.MainPresenter;
 import com.wuzi.pig.net.factory.ResponseException;
@@ -22,16 +24,24 @@ import com.wuzi.pig.utils.SpannableUtils;
 import com.wuzi.pig.utils.StatusBarUtils;
 import com.wuzi.pig.utils.StringUtils;
 import com.wuzi.pig.utils.ToastUtils;
+import com.wuzi.pig.utils.ui.view.GroupWrap;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import butterknife.BindView;
+import butterknife.OnClick;
 
 public class MainFragment extends BaseFragment<MainPresenter> implements MainContract.IView {
 
     @BindView(R.id.refresh_layout)
     SmartRefreshLayout mRefreshLayout;
+    @BindView(R.id.info_group)
+    GroupWrap mInfoGroupView;
+    @BindView(R.id.pig_farm_name)
+    AppCompatTextView mPigFarmNameView;
+    @BindView(R.id.pig_farm_title)
+    AppCompatTextView mPigFarmTitleView;
     @BindView(R.id.pigsty_count_value)
     AppCompatTextView mPigstyCountValueView;
     @BindView(R.id.pig_statis_today_value)
@@ -46,6 +56,7 @@ public class MainFragment extends BaseFragment<MainPresenter> implements MainCon
     AppCompatTextView mPigStatisEquipmentValueView;
 
     private Map<String, String> mNetLoadedMap = new HashMap<>();
+    private PigFarmEntity mPigFarmEntity;
 
     @Override
     protected int getLayoutID() {
@@ -72,14 +83,34 @@ public class MainFragment extends BaseFragment<MainPresenter> implements MainCon
             @Override
             public void onRefresh(@NonNull RefreshLayout refreshLayout) {
                 mNetLoadedMap.clear();
-                PigFarmEntity pigFarm = Constant.getTestPigFarm();
-                String pigfarmId = pigFarm.getPigfarmId();
+                String pigfarmId = mPigFarmEntity.getPigfarmId();
                 mPresenter.getPigstyCount(pigfarmId);
                 mPresenter.getStatis72Hour(pigfarmId);
             }
         });
 
-        mRefreshLayout.autoRefresh();
+        setPigFarmEntity(mPigFarmEntity, true);
+        if (mPigFarmEntity != null) {
+            mRefreshLayout.autoRefresh();
+        }
+    }
+
+    @OnClick({R.id.pig_farm_selection})
+    protected void onClickView(View v) {
+        switch (v.getId()) {
+            case R.id.pig_farm_selection: {
+                MsgManager.showPigFarmDialog();
+                break;
+            }
+        }
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        if (!hidden && mIsRefresh) {
+            setPigFarmEntity(mPigFarmEntity, mIsRefresh);
+            mIsRefresh = false;
+        }
     }
 
     @Override
@@ -144,6 +175,42 @@ public class MainFragment extends BaseFragment<MainPresenter> implements MainCon
         mNetLoadedMap.put(tag, tag);
         if (mNetLoadedMap.size() >= 2) {
             mRefreshLayout.finishRefresh();
+        }
+    }
+
+    public void setPigFarmEntity(PigFarmEntity entity, boolean refresh) {
+        if (!PigFarmEntity.equals(mPigFarmEntity, entity) || refresh) {
+            if (mRefreshLayout != null) {
+                if (entity == null) {
+                    getView().setBackgroundResource(R.drawable.img_main_bg2);
+                    mInfoGroupView.setVisibility(View.INVISIBLE);
+                    mPigFarmTitleView.setText("");
+                    mPigFarmNameView.setText(R.string.selection_pig_farm_default);
+                } else {
+                    getView().setBackgroundResource(R.drawable.img_main_bg);
+                    mInfoGroupView.setVisibility(View.VISIBLE);
+                    mPigFarmTitleView.setText(StringUtils.nullToString(entity.getPigfarmName()));
+                    mPigFarmNameView.setText(StringUtils.nullToString(entity.getPigfarmName()));
+                    if (isVisible()) {
+                        mRefreshLayout.autoRefresh();
+                    }
+                }
+            }
+        }
+        mPigFarmEntity = entity;
+    }
+
+    @Override
+    public void onMessage(int what, Message message) {
+        switch (what) {
+            case MsgConstant.MSG_WHAT_PIGFARM_CHANGE: {
+                if (isVisible()) {
+                    setPigFarmEntity((PigFarmEntity) message.obj, false);
+                } else {
+                    mIsRefresh = true;
+                }
+                break;
+            }
         }
     }
 }

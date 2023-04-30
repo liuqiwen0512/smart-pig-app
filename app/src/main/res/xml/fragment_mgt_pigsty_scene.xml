@@ -20,7 +20,8 @@
             android:layout_marginLeft="16dp"
             android:layout_marginTop="15dp"/>
 
-        <Constraint android:id="@+id/pigfarm_name"
+        <Constraint
+            android:id="@+id/pig_farm_name"
             android:visibility="visible"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -29,7 +30,7 @@
             app:layout_constraintRight_toLeftOf="@id/pigsty_edit_layout"
             app:layout_constraintBottom_toBottomOf="@id/back"
             android:layout_marginLeft="2dp"
-            android:layout_marginRight="5dp"/>
+            android:layout_marginRight="5dp" />
 
         <Constraint android:id="@+id/pigsty_edit_layout"
             android:layout_width="wrap_content"
@@ -79,7 +80,8 @@
             android:layout_marginLeft="16dp"
             android:layout_marginTop="15dp"/>
 
-        <Constraint android:id="@+id/pigfarm_name"
+        <Constraint
+            android:id="@+id/pig_farm_name"
             android:visibility="invisible"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -88,7 +90,7 @@
             app:layout_constraintRight_toLeftOf="@id/pigsty_edit_layout"
             app:layout_constraintBottom_toBottomOf="@id/back"
             android:layout_marginLeft="2dp"
-            android:layout_marginRight="5dp"/>
+            android:layout_marginRight="5dp" />
 
         <Constraint android:id="@+id/pigsty_edit_layout"
             android:layout_width="wrap_content"

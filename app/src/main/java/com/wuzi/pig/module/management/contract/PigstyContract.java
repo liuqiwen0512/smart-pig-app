@@ -30,7 +30,7 @@ public interface PigstyContract {
 
         void deletePigsty(List<String> ids);
 
-        void getPigstyList(int pageNum);
+        void getPigstyList(String pigfarmId, int pageNum);
     }
 
     interface IModel {
@@ -40,7 +40,7 @@ public interface PigstyContract {
 
         void deletePigsty(List<String> ids, ResponseObserver observer);
 
-        void getPigstyList(int pageNum, ResponseObserver observer);
+        void getPigstyList(String pigfarmId, int pageNum, ResponseObserver observer);
     }
 
 }

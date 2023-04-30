@@ -39,11 +39,11 @@ public class AlarmListFragment extends BaseFragment<AlarmPresenter> implements A
     @BindView(R.id.prompt)
     AppCompatTextView mPromptView;
     @BindView(R.id.recycler)
-    RecyclerView mTempRecyclerView;
+    RecyclerView mAlarmRecyclerView;
 
     protected String mType = AlarmConstant.TYPE_TEMPERATURE;
     protected AlarmContract.QueryEntity mQuery = new AlarmContract.QueryEntity();
-    protected AlarmListAdapter mTemperatureAdapter;
+    protected AlarmListAdapter mAlarmListAdapter;
     protected PigFarmEntity mPigFarmEntity;
     protected boolean mInitData = false;
 
@@ -56,14 +56,16 @@ public class AlarmListFragment extends BaseFragment<AlarmPresenter> implements A
     protected void initView(View view, Bundle savedInstanceState) {
         LogUtils.d(TAG, "initView : ");
         mRefreshLayout.setOnRefreshLoadMoreListener(new OnRefreshLoadMoreListenerImpl());
-        mTemperatureAdapter = new AlarmListAdapter(mContext, mType);
-        mTempRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
-        mTempRecyclerView.setAdapter(mTemperatureAdapter);
+        mAlarmListAdapter = new AlarmListAdapter(mContext, mType);
+        mAlarmRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
+        mAlarmRecyclerView.setAdapter(mAlarmListAdapter);
 
         mRefreshLayout.post(new Runnable() {
             @Override
             public void run() {
-                mRefreshLayout.autoRefresh();
+                if (mPigFarmEntity != null) {
+                    mRefreshLayout.autoRefresh();
+                }
             }
         });
     }
@@ -90,15 +92,15 @@ public class AlarmListFragment extends BaseFragment<AlarmPresenter> implements A
         LogUtils.d(TAG, "performList : " + listEntity.getTotal());
         mRefreshLayout.finishRefresh();
         mRefreshLayout.finishLoadMore();
-        mTempRecyclerView.setVisibility(View.VISIBLE);
+        mAlarmRecyclerView.setVisibility(View.VISIBLE);
         PromptUtils.hidePrompt(mPromptView);
         int total = listEntity.getTotal();
         List<AlarmEntity> list = listEntity.getRows();
         setTemperatureCount(total);
         if (query.pageNum <= 1) {
-            mTemperatureAdapter.notifyDataSetChanged(list);
+            mAlarmListAdapter.notifyDataSetChanged(list);
         } else {
-            mTemperatureAdapter.notifyItemInserted(list);
+            mAlarmListAdapter.notifyItemInserted(list);
         }
         if (CollectionUtils.isEmpty(list) || list.size() < PigFarmConstant.PAGE_SIZE) {
             mRefreshLayout.setNoMoreData(true);
@@ -114,7 +116,7 @@ public class AlarmListFragment extends BaseFragment<AlarmPresenter> implements A
         mRefreshLayout.finishLoadMore();
         if (mQuery.pageNum == 1) {
             setTemperatureCount(0);
-            mTempRecyclerView.setVisibility(View.GONE);
+            mAlarmRecyclerView.setVisibility(View.GONE);
             if (error.code == ResponseException.ERROR.RESULT_CODE_201) {
                 PromptUtils.showEmptyPrompt(mPromptView, getString(R.string.alarm_list_empty, mType));
             } else {
@@ -131,9 +133,9 @@ public class AlarmListFragment extends BaseFragment<AlarmPresenter> implements A
     }
 
     public void setPigFarmEntity(PigFarmEntity pigFarmEntity) {
-        if (mTempRecyclerView != null && mPigFarmEntity != null && pigFarmEntity != null) {
+        if (mAlarmRecyclerView != null && mPigFarmEntity != null && pigFarmEntity != null) {
             if (!StringUtils.equals(mPigFarmEntity.getPigfarmId(), pigFarmEntity.getPigfarmId())) {
-                mTemperatureAdapter.notifyDataSetChanged(null);
+                mAlarmListAdapter.notifyDataSetChanged(null);
                 mInitData = false;
             }
         }
@@ -146,7 +148,9 @@ public class AlarmListFragment extends BaseFragment<AlarmPresenter> implements A
             mRefreshLayout.post(new Runnable() {
                 @Override
                 public void run() {
-                    mRefreshLayout.autoRefresh();
+                    if (mPigFarmEntity != null) {
+                        mRefreshLayout.autoRefresh();
+                    }
                 }
             });
         }
