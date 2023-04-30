@@ -28,6 +28,7 @@ import com.wuzi.pig.module.management.contract.PigFarmContract;
 import com.wuzi.pig.net.factory.ResponseException;
 import com.wuzi.pig.utils.PromptUtils;
 import com.wuzi.pig.utils.StatusBarUtils;
+import com.wuzi.pig.utils.StatusbarColorUtils;
 import com.wuzi.pig.utils.ToastUtils;
 import com.wuzi.pig.utils.UIUtils;
 import com.wuzi.pig.utils.fun.Function3;
@@ -122,6 +123,8 @@ public class PigFarmSearchDialog extends BaseDialogFragment<SearchPresenter> imp
     @Override
     protected void initWindowTheme(Dialog dialog, Window window) {
         fullDialog(dialog, window);
+        StatusBarUtils.immersive(window);
+        StatusbarColorUtils.setStatusBarDarkIcon(window, true);
     }
 
     @Override

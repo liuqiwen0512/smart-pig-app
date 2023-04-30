@@ -14,6 +14,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginLeft="16dp"
+        android:layout_marginTop="10dp"
         android:drawableLeft="@drawable/img_back" />
 
     <androidx.appcompat.widget.AppCompatEditText
@@ -29,7 +30,7 @@
         android:paddingLeft="10dp"
         android:singleLine="true"
         android:imeOptions="actionGo"
-        android:hint="请输入"
+        android:hint="请输入猪场名称"
         android:background="@drawable/shape_outline_round_corner_12" />
 
     <com.scwang.smart.refresh.layout.SmartRefreshLayout

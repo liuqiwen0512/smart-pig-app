@@ -183,11 +183,13 @@ public class MainFragment extends BaseFragment<MainPresenter> implements MainCon
             if (mRefreshLayout != null) {
                 if (entity == null) {
                     getView().setBackgroundResource(R.drawable.img_main_bg2);
+                    mRefreshLayout.setEnableRefresh(false);
                     mInfoGroupView.setVisibility(View.INVISIBLE);
                     mPigFarmTitleView.setText("");
                     mPigFarmNameView.setText(R.string.selection_pig_farm_default);
                 } else {
                     getView().setBackgroundResource(R.drawable.img_main_bg);
+                    mRefreshLayout.setEnableRefresh(true);
                     mInfoGroupView.setVisibility(View.VISIBLE);
                     mPigFarmTitleView.setText(StringUtils.nullToString(entity.getPigfarmName()));
                     mPigFarmNameView.setText(StringUtils.nullToString(entity.getPigfarmName()));
