@@ -16,6 +16,7 @@ import androidx.appcompat.widget.AppCompatTextView;
 
 import com.wuzi.pig.R;
 import com.wuzi.pig.base.BaseDialogFragment;
+import com.wuzi.pig.manager.LoginManager;
 import com.wuzi.pig.module.main.SplashActivity;
 import com.wuzi.pig.module.user.contract.PasswordContract;
 import com.wuzi.pig.module.user.presenter.PasswordPresenter;
@@ -25,7 +26,6 @@ import com.wuzi.pig.utils.StatusbarColorUtils;
 import com.wuzi.pig.utils.StringUtils;
 import com.wuzi.pig.utils.ToastUtils;
 import com.wuzi.pig.utils.UIUtils;
-import com.wuzi.pig.utils.manager.LoginManager;
 import com.wuzi.pig.utils.ui.LoadingDialog;
 import com.wuzi.pig.utils.ui.ViewCompat;
 

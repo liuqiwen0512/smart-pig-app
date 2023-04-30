@@ -12,6 +12,7 @@ import androidx.appcompat.widget.AppCompatTextView;
 import com.wuzi.pig.R;
 import com.wuzi.pig.base.BaseActivity;
 import com.wuzi.pig.entity.UserEntity;
+import com.wuzi.pig.manager.LoginManager;
 import com.wuzi.pig.module.main.SplashActivity;
 import com.wuzi.pig.module.user.contract.LoginContract;
 import com.wuzi.pig.module.user.presenter.LoginPresenter;
@@ -19,7 +20,6 @@ import com.wuzi.pig.net.factory.ResponseException;
 import com.wuzi.pig.utils.StatusBarUtils;
 import com.wuzi.pig.utils.StatusbarColorUtils;
 import com.wuzi.pig.utils.StringUtils;
-import com.wuzi.pig.utils.manager.LoginManager;
 import com.wuzi.pig.utils.ui.LoadingDialog;
 
 import butterknife.BindView;

@@ -1,11 +1,14 @@
 package com.wuzi.pig.net.factory;
+
+import com.wuzi.pig.manager.LoginManager;
 import com.wuzi.pig.net.RequestParams;
 import com.wuzi.pig.utils.LogUtils;
 import com.wuzi.pig.utils.StringUtils;
-import com.wuzi.pig.utils.manager.LoginManager;
 
 import org.jetbrains.annotations.NotNull;
+
 import java.io.IOException;
+
 import okhttp3.FormBody;
 import okhttp3.Interceptor;
 import okhttp3.Request;

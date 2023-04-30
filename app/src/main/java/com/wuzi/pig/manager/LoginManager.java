@@ -1,4 +1,4 @@
-package com.wuzi.pig.utils.manager;
+package com.wuzi.pig.manager;
 
 import com.google.gson.Gson;
 import com.wuzi.pig.entity.UserEntity;

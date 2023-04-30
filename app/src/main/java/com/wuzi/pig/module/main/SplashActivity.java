@@ -1,19 +1,15 @@
 package com.wuzi.pig.module.main;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.wuzi.pig.R;
+import com.wuzi.pig.manager.LoginManager;
 import com.wuzi.pig.module.user.LoginActivity;
 import com.wuzi.pig.utils.StatusBarUtils;
 import com.wuzi.pig.utils.StatusbarColorUtils;
-import com.wuzi.pig.utils.manager.LoginManager;
 
 public class SplashActivity extends AppCompatActivity {
 

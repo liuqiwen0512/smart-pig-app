@@ -9,8 +9,8 @@ import androidx.appcompat.widget.AppCompatTextView;
 import com.wuzi.pig.BuildConfig;
 import com.wuzi.pig.R;
 import com.wuzi.pig.base.BaseFragment;
+import com.wuzi.pig.manager.LoginManager;
 import com.wuzi.pig.module.main.SplashActivity;
-import com.wuzi.pig.utils.manager.LoginManager;
 
 import butterknife.BindView;
 import butterknife.OnClick;
