@@ -49,6 +49,8 @@ public class MonitorFragment extends BaseFragment<MonitorPresenter> implements M
     AppCompatTextView mPigFarmNameView;
     @BindView(R.id.pig_farm_title)
     AppCompatTextView mPigFarmTitleView;
+    @BindView(R.id.pig_farm_title_prompt)
+    AppCompatTextView mPigFarmTitlePromptView;
     @BindView(R.id.pigsty_count)
     AppCompatTextView mPigstyCountView;
     @BindView(R.id.pig_count)
@@ -208,13 +210,15 @@ public class MonitorFragment extends BaseFragment<MonitorPresenter> implements M
                     mRefreshLayout.setEnableRefresh(false);
                     mPromptView.setVisibility(View.GONE);
                     mInfoGroupView.setVisibility(View.INVISIBLE);
-                    mPigFarmTitleView.setText("");
+                    mPigFarmTitleView.setText(R.string.selection_pig_farm_default);
+                    mPigFarmTitlePromptView.setVisibility(View.VISIBLE);
                     mPigFarmNameView.setText(R.string.selection_pig_farm_default);
                 } else {
                     getView().setBackgroundResource(R.drawable.img_main_bg);
                     mRefreshLayout.setEnableRefresh(true);
                     mInfoGroupView.setVisibility(View.VISIBLE);
                     mPigFarmTitleView.setText(StringUtils.nullToString(entity.getPigfarmName()));
+                    mPigFarmTitlePromptView.setVisibility(View.GONE);
                     mPigFarmNameView.setText(StringUtils.nullToString(entity.getPigfarmName()));
                     if (isVisible()) {
                         mRefreshLayout.autoRefresh();

@@ -43,6 +43,10 @@ public class AlarmMainFragment extends BaseFragment<AlarmPresenter> implements A
 
     @BindView(R.id.info_group)
     GroupWrap mInfoGroupView;
+    @BindView(R.id.alarm_title)
+    AppCompatTextView mAlarmTitleView;
+    @BindView(R.id.alarm_title_prompt)
+    AppCompatTextView mAlarmTitlePromptView;
     @BindView(R.id.tabs)
     RecyclerView mTabRecyclerView;
     @BindView(R.id.pages)
@@ -243,10 +247,14 @@ public class AlarmMainFragment extends BaseFragment<AlarmPresenter> implements A
                 if (entity == null) {
                     getView().setBackgroundResource(R.drawable.img_main_bg2);
                     mInfoGroupView.setVisibility(View.INVISIBLE);
+                    mAlarmTitleView.setText(R.string.selection_pig_farm_default);
+                    mAlarmTitlePromptView.setVisibility(View.VISIBLE);
                     mPigstyNameView.setText(R.string.selection_pig_farm_default);
                 } else {
                     getView().setBackgroundResource(R.drawable.img_main_bg);
                     mInfoGroupView.setVisibility(View.VISIBLE);
+                    mAlarmTitleView.setText(R.string.alarm_title);
+                    mAlarmTitlePromptView.setVisibility(View.GONE);
                     mPigstyNameView.setText(StringUtils.nullToString(entity.getPigfarmName()));
                     if (isVisible()) {
                         mFragmentStateAdapter.notifyDataSetChanged();

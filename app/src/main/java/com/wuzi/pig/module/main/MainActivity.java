@@ -177,7 +177,7 @@ public class MainActivity extends BaseActivity {
                 if (mPigFarmSearchDialog == null) {
                     mPigFarmSearchDialog = new PigFarmSearchDialog();
                     mPigFarmSearchDialog.setOnDismissListener(dialog -> {
-
+                        mPigFarmSearchDialog = null;
                     });
                 }
                 mPigFarmSearchDialog.showNow(getSupportFragmentManager());

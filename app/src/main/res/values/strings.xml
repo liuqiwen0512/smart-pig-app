@@ -7,6 +7,7 @@
     <string name="error_empty">对不起，目前没有数据</string>
     <string name="prompt_loading">正在加载数据</string>
     <string name="selection_pig_farm_default">请选择猪场</string>
+    <string name="selection_pig_farm_default_prompt">选择猪场后才能查看猪猪们哦～～</string>
 
     <!--权限-->
     <string name="permissions_refuse_authorization" translatable="false">被永久拒绝授权，请手动授予权限</string>
@@ -17,6 +18,7 @@
     <string name="verification_code_timer">%1$ss后重新获取</string>
 
     <!--告警-->
+    <string name="alarm_title">告警信息</string>
     <string name="alarm_list_empty">目前没有%1$s数据，下拉刷新试试</string>
     <string name="alarm_list_title_ear_tag">耳标编号</string>
     <string name="alarm_list_title_time">发生时间  </string>

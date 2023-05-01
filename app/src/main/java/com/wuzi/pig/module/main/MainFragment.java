@@ -42,6 +42,8 @@ public class MainFragment extends BaseFragment<MainPresenter> implements MainCon
     AppCompatTextView mPigFarmNameView;
     @BindView(R.id.pig_farm_title)
     AppCompatTextView mPigFarmTitleView;
+    @BindView(R.id.pig_farm_title_prompt)
+    AppCompatTextView mPigFarmTitlePromptView;
     @BindView(R.id.pigsty_count_value)
     AppCompatTextView mPigstyCountValueView;
     @BindView(R.id.pig_statis_today_value)
@@ -185,13 +187,15 @@ public class MainFragment extends BaseFragment<MainPresenter> implements MainCon
                     getView().setBackgroundResource(R.drawable.img_main_bg2);
                     mRefreshLayout.setEnableRefresh(false);
                     mInfoGroupView.setVisibility(View.INVISIBLE);
-                    mPigFarmTitleView.setText("");
+                    mPigFarmTitleView.setText(R.string.selection_pig_farm_default);
+                    mPigFarmTitlePromptView.setVisibility(View.VISIBLE);
                     mPigFarmNameView.setText(R.string.selection_pig_farm_default);
                 } else {
                     getView().setBackgroundResource(R.drawable.img_main_bg);
                     mRefreshLayout.setEnableRefresh(true);
                     mInfoGroupView.setVisibility(View.VISIBLE);
                     mPigFarmTitleView.setText(StringUtils.nullToString(entity.getPigfarmName()));
+                    mPigFarmTitlePromptView.setVisibility(View.GONE);
                     mPigFarmNameView.setText(StringUtils.nullToString(entity.getPigfarmName()));
                     if (isVisible()) {
                         mRefreshLayout.autoRefresh();

@@ -36,7 +36,7 @@
         android:id="@+id/info_group"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:constraint_referenced_ids="alarm_title,tabs,pages"
+        app:constraint_referenced_ids="tabs,pages"
         tools:ignore="MissingConstraints" />
 
     <androidx.appcompat.widget.AppCompatTextView
@@ -50,7 +50,25 @@
         android:layout_marginTop="70dp"
         android:textSize="24sp"
         android:textStyle="bold"
-        android:text="告警信息" />
+        android:text="@string/alarm_title" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:visibility="gone"
+        android:id="@+id/alarm_title_prompt"
+        style="@style/text_content"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/alarm_title"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="100dp"
+        android:drawableTop="@drawable/img_empty"
+        android:drawablePadding="25dp"
+        android:gravity="center"
+        android:textColor="@color/grey_ca"
+        android:text="@string/selection_pig_farm_default_prompt" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/tabs"

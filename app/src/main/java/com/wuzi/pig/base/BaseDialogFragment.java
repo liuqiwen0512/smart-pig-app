@@ -19,7 +19,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.wuzi.pig.R;
-import com.wuzi.pig.utils.LogUtils;
 import com.wuzi.pig.utils.UIUtils;
 
 import java.lang.reflect.ParameterizedType;
@@ -37,6 +36,7 @@ public abstract class BaseDialogFragment<P extends IContract.IPresenter> extends
     protected P mPresenter;
     protected Context mContext;
     protected DialogInterface.OnDismissListener mDismissListener;
+    protected boolean mSaveInstanceState = false;
 
     @Override
     public void onAttach(Context context) {
@@ -130,7 +130,9 @@ public abstract class BaseDialogFragment<P extends IContract.IPresenter> extends
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
-
+        if (mSaveInstanceState) {
+            super.onSaveInstanceState(outState);
+        }
     }
 
     @Override
