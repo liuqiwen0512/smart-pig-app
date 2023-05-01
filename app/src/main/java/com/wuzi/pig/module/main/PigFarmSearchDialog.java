@@ -3,6 +3,7 @@ package com.wuzi.pig.module.main;
 import android.app.Dialog;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.text.Editable;
 import android.view.View;
 import android.view.Window;
 
@@ -29,9 +30,11 @@ import com.wuzi.pig.net.factory.ResponseException;
 import com.wuzi.pig.utils.PromptUtils;
 import com.wuzi.pig.utils.StatusBarUtils;
 import com.wuzi.pig.utils.StatusbarColorUtils;
+import com.wuzi.pig.utils.StringUtils;
 import com.wuzi.pig.utils.ToastUtils;
 import com.wuzi.pig.utils.UIUtils;
 import com.wuzi.pig.utils.fun.Function3;
+import com.wuzi.pig.utils.listener.TextWatcherImpl;
 import com.wuzi.pig.utils.tools.CollectionUtils;
 
 import java.util.List;
@@ -43,6 +46,8 @@ public class PigFarmSearchDialog extends BaseDialogFragment<SearchPresenter> imp
 
     @BindView(R.id.search_value)
     AppCompatEditText mSearchValueView;
+    @BindView(R.id.search_cancel)
+    View mCancelView;
     @BindView(R.id.refresh_layout)
     SmartRefreshLayout mRefreshLayout;
     @BindView(R.id.pig_farm_recycler)
@@ -51,7 +56,7 @@ public class PigFarmSearchDialog extends BaseDialogFragment<SearchPresenter> imp
     AppCompatTextView mPromptView;
 
     private SearchAdapter mSearchAdapter;
-    private String mSearchKeyword;
+    private String mSearchKeyword = "";
     private int mPageNumber = 1;
 
     @Override
@@ -81,14 +86,33 @@ public class PigFarmSearchDialog extends BaseDialogFragment<SearchPresenter> imp
             }
         });
 
+        mSearchValueView.addTextChangedListener(new TextWatcherImpl() {
+            @Override
+            public void afterTextChanged(Editable s) {
+                String text = s.toString();
+                mCancelView.setVisibility(StringUtils.isEmpty(text) ? View.GONE : View.VISIBLE);
+            }
+        });
+
         mRefreshLayout.autoRefresh();
     }
 
-    @OnClick({R.id.back})
+    @OnClick({R.id.back, R.id.search_cancel, R.id.search_go})
     protected void onClickView(View v) {
         switch (v.getId()) {
             case R.id.back: {
                 dismiss();
+                break;
+            }
+            case R.id.search_cancel: {
+                mSearchValueView.setText("");
+                break;
+            }
+            case R.id.search_go: {
+                String searchValue = mSearchValueView.getText().toString();
+                if (!StringUtils.equals(searchValue, mSearchKeyword)) {
+                    mRefreshLayout.autoRefresh();
+                }
                 break;
             }
         }
