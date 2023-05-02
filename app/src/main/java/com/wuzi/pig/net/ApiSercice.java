@@ -66,6 +66,12 @@ public interface ApiSercice {
     @POST("/prod-api/system/pigfarm")
     Observable<ResponseEntity<Object>> addPigfarm(@Body HashMap<String, Object> map);
 
+    //猪场绑定
+    @ResponseNull
+    @Headers({"Content-type:application/json;charset=UTF-8"})
+    @POST("/prod-api/system/bing")
+    Observable<ResponseEntity<Object>> bindPigfarm(@Body HashMap<String, Object> map);
+
     //猪场修改
     @ResponseNull
     @Headers({"Content-type:application/json;charset=UTF-8"})

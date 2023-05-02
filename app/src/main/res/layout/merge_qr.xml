@@ -9,7 +9,7 @@
         app:zxing_framing_rect_height="50dp"
         app:zxing_framing_rect_width="250dp" />
 
-    <com.wuzi.pig.utils.QR.QrView
+    <com.wuzi.pig.utils.QR.QRView
         android:id="@+id/zxing_viewfinder_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

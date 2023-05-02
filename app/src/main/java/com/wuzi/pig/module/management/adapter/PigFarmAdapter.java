@@ -31,6 +31,7 @@ public class PigFarmAdapter extends RecyclerView.Adapter<PigFarmAdapter.ViewHold
     public final static int CLICK_EDIT = 100;
     public final static int CLICK_DELETE = 200;
     public final static int CLICK_ACTION = 300;
+    public final static int CLICK_QR_CODE = 400;
 
     private Context mContext;
     private Function3<View, PigFarmEntity, Integer> mEventListener;
@@ -67,14 +68,15 @@ public class PigFarmAdapter extends RecyclerView.Adapter<PigFarmAdapter.ViewHold
         AppCompatTextView mNameView;
         @BindView(R.id.edit)
         View mEditView;
-        @BindView(R.id.arrow)
-        View mArrowView;
+        @BindView(R.id.qr_code)
+        View mQRCodeView;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
 
             itemView.setOnClickListener(this);
+            mQRCodeView.setOnClickListener(this);
             mEditView.setOnClickListener(this);
             mCheckBoxView.setOnCheckedChangeListener(this);
         }
@@ -85,7 +87,7 @@ public class PigFarmAdapter extends RecyclerView.Adapter<PigFarmAdapter.ViewHold
 
             mCheckBoxView.setVisibility(isEdit ? View.VISIBLE : View.GONE);
             mEditView.setVisibility(isEdit ? View.VISIBLE : View.GONE);
-            mArrowView.setVisibility(!isEdit ? View.VISIBLE : View.GONE);
+            mQRCodeView.setVisibility(!isEdit ? View.VISIBLE : View.GONE);
 
             mCheckBoxView.setChecked(mCheckedMap.containsKey(entity.getPigfarmId()));
         }
@@ -96,13 +98,19 @@ public class PigFarmAdapter extends RecyclerView.Adapter<PigFarmAdapter.ViewHold
             if (position == -1) return;
             PigFarmEntity entity = mList.get(position);
             switch (v.getId()) {
+                case R.id.qr_code: {
+                    if (mEventListener != null) {
+                        mEventListener.action(v, entity, CLICK_QR_CODE);
+                    }
+                    break;
+                }
                 case R.id.edit: {
                     if (mEventListener != null) {
                         mEventListener.action(v, entity, CLICK_EDIT);
                     }
                     break;
                 }
-                default:{
+                default: {
                     if (!isEdit && mEventListener != null) {
                         mEventListener.action(v, entity, CLICK_ACTION);
                     }

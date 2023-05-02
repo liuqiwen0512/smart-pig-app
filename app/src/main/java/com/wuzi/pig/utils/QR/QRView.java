@@ -18,7 +18,7 @@ import java.util.List;
  * 自定义扫描界面
  */
 
-public class QrView extends ViewfinderView {
+public class QRView extends ViewfinderView {
 
     public int laserLinePosition = 0;
     public float[] position = new float[]{0f, 0.5f, 1f};
@@ -26,7 +26,7 @@ public class QrView extends ViewfinderView {
     public LinearGradient linearGradient;
     private int ScreenRate;
 
-    public QrView(Context context, AttributeSet attrs) {
+    public QRView(Context context, AttributeSet attrs) {
         super(context, attrs);
         float density = context.getResources().getDisplayMetrics().density;
         ScreenRate = (int) (15 * density);

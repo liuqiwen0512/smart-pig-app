@@ -80,4 +80,20 @@ public class PigFarmPresenter extends BasePresenter<PigFarmContract.IView, PigFa
         });
         mModel.getPigFarmList(pageNum, commonResponse);
     }
+
+    @Override
+    public void bindPigFarm(String id) {
+        ResponseObserver<Object> commonResponse = getCommonResponse(new ResponseListener<Object>() {
+            @Override
+            public void onSuccess(Object entity) {
+                getView().performSuccess(PigFarmContract.TAG_PIG_FARM_BIND);
+            }
+
+            @Override
+            public void onError(ResponseException exception) {
+                getView().performError(exception, PigFarmContract.TAG_PIG_FARM_BIND);
+            }
+        });
+        mModel.bindPigFarm(id, commonResponse);
+    }
 }

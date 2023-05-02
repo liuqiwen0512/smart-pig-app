@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.CompoundButton;
 
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatCheckBox;
 import androidx.appcompat.widget.AppCompatTextView;
@@ -14,6 +16,7 @@ import androidx.constraintlayout.motion.widget.MotionLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.gson.Gson;
 import com.scwang.smart.refresh.layout.SmartRefreshLayout;
 import com.scwang.smart.refresh.layout.api.RefreshLayout;
 import com.scwang.smart.refresh.layout.listener.OnRefreshLoadMoreListener;
@@ -26,16 +29,21 @@ import com.wuzi.pig.module.management.adapter.PigFarmAdapter;
 import com.wuzi.pig.module.management.contract.PigFarmContract;
 import com.wuzi.pig.module.management.presenter.PigFarmPresenter;
 import com.wuzi.pig.net.factory.ResponseException;
+import com.wuzi.pig.utils.LogUtils;
 import com.wuzi.pig.utils.PromptUtils;
+import com.wuzi.pig.utils.QR.QRActivityResultContract;
+import com.wuzi.pig.utils.QR.QRDialog;
 import com.wuzi.pig.utils.StatusBarUtils;
 import com.wuzi.pig.utils.ToastUtils;
 import com.wuzi.pig.utils.UIUtils;
+import com.wuzi.pig.utils.XXPermissionsUtils;
 import com.wuzi.pig.utils.fun.Function;
 import com.wuzi.pig.utils.fun.Function2;
 import com.wuzi.pig.utils.fun.Function3;
 import com.wuzi.pig.utils.tools.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
@@ -44,8 +52,8 @@ import butterknife.OnClick;
 
 public class MgtPigFarmFragment extends BaseFragment<PigFarmPresenter> implements PigFarmContract.IView {
 
-    public final static String ACTION_EDIT_BACK = "mgtpigfarmfragment_action_back";
     public final static String ACTION_PIGSTY = "mgtpigfarmfragment_action_pigsty";
+    public final static String ACTION_QR_CODE = "mgtpigfarmfragment_action_qr_code";
 
     @BindView(R.id.motion_layout)
     MotionLayout mMotionLayout;
@@ -68,6 +76,7 @@ public class MgtPigFarmFragment extends BaseFragment<PigFarmPresenter> implement
 
     private Function<Boolean> mMainMenuListener;
     private Function2<String, Object> mFragmentEventListener;
+    private ActivityResultLauncher<Object> mQRCodeLauncher;
     private PigFarmAddDialog mPigFarmAddDialog;
     private PigFarmAdapter mPigFarmAdapter;
     private int mPigFarmCount = 1;
@@ -87,9 +96,9 @@ public class MgtPigFarmFragment extends BaseFragment<PigFarmPresenter> implement
         mPigFarmAdapter.setEventListener(new ItemEventListenerImpl());
         mPigFarmRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
         mPigFarmRecyclerView.setAdapter(mPigFarmAdapter);
-
         mPigFarmRecyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
             private int mMargin = UIUtils.dip2px(32);
+
             @Override
             public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
                 super.getItemOffsets(outRect, view, parent, state);
@@ -99,6 +108,42 @@ public class MgtPigFarmFragment extends BaseFragment<PigFarmPresenter> implement
                 }
             }
         });
+        mQRCodeLauncher = registerForActivityResult(new QRActivityResultContract<Object, String>(getActivity()), new ActivityResultCallback<String>() {
+            private PigFarmBindDialog mPigFarmBindDialog;
+
+            @Override
+            public void onActivityResult(String result) {
+                //new QRCodeReader().decode();
+                try {
+                    String[] qrTexts = new Gson().fromJson(result, String[].class);
+                    String pigfarmId = qrTexts[0];
+                    String pigfarmName = qrTexts[1];
+                    long qrTime = Long.parseLong(qrTexts[2]);
+                    long currentTime = Calendar.getInstance().getTimeInMillis();
+                    if (Math.abs(currentTime - qrTime) > PigFarmConstant.PIG_FARM_QR_PAST_TIME) {
+                        ToastUtils.show("二维码已过时");
+                        return;
+                    }
+                    if (mPigFarmBindDialog == null) {
+                        PigFarmEntity entity = new PigFarmEntity();
+                        entity.setPigfarmId(pigfarmId);
+                        entity.setPigfarmName(pigfarmName);
+                        mPigFarmBindDialog = new PigFarmBindDialog();
+                        mPigFarmBindDialog.setPigFarmEntity(entity);
+                        mPigFarmBindDialog.setOnDismissListener(dialog -> {
+                            mPigFarmBindDialog = null;
+                        });
+                        mPigFarmBindDialog.setSubmitListener(object -> {
+                            mRefreshLayout.autoRefresh();
+                        });
+                    }
+                    mPigFarmBindDialog.showNow(getChildFragmentManager());
+                } catch (Exception e) {
+                    ToastUtils.show("绑定失败");
+                }
+                LogUtils.e(TAG, "扫描结果 :" + result);
+            }
+        });
 
         mCheckedAllView.setOnCheckedChangeListener(new CheckedAllChangeListenerImpl());
 
@@ -106,14 +151,21 @@ public class MgtPigFarmFragment extends BaseFragment<PigFarmPresenter> implement
         mRefreshLayout.autoRefresh();
     }
 
-    @OnClick({R.id.edit_back, R.id.pig_farm_add, R.id.pig_farm_edit, R.id.checkbox_all, R.id.delete_all})
+    @OnClick({R.id.qr_scan, R.id.edit_back, R.id.pig_farm_add,
+            R.id.pig_farm_edit, R.id.checkbox_all, R.id.delete_all})
     public void onClickView(View v) {
         switch (v.getId()) {
-            case R.id.edit_back:{
+            case R.id.qr_scan: {
+                XXPermissionsUtils.getInstances().hasCameraPermission(() -> {
+                    mQRCodeLauncher.launch(null);
+                }, mContext);
+                break;
+            }
+            case R.id.edit_back: {
                 performClickEditBack();
                 break;
             }
-            case R.id.pig_farm_add:{
+            case R.id.pig_farm_add: {
                 if (mPigFarmAddDialog == null) {
                     mPigFarmAddDialog = new PigFarmAddDialog();
                     mPigFarmAddDialog.setOnDismissListener(dialog -> {
@@ -152,12 +204,22 @@ public class MgtPigFarmFragment extends BaseFragment<PigFarmPresenter> implement
     //修改猪场名字
     private class ItemEventListenerImpl implements Function3<View, PigFarmEntity, Integer> {
         private PigFarmEditDialog mPigFarmEditDialog;
+        private QRDialog mQRDialog;
         @Override
         public void action(View view, PigFarmEntity entity, Integer evenTag) {
             if (evenTag == PigFarmAdapter.CLICK_ACTION) {
                 if (mFragmentEventListener != null) {
                     mFragmentEventListener.action(MgtPigFarmFragment.ACTION_PIGSTY, entity);
                 }
+            } else if (evenTag == PigFarmAdapter.CLICK_QR_CODE) {
+                if (mQRDialog == null) {
+                    mQRDialog = new QRDialog();
+                    mQRDialog.setMessage(entity);
+                    mQRDialog.setOnDismissListener(dialog -> {
+                        mQRDialog = null;
+                    });
+                }
+                mQRDialog.showNow(getChildFragmentManager());
             } else if (evenTag == PigFarmAdapter.CLICK_EDIT) {
                 if (mPigFarmEditDialog == null) {
                     mPigFarmEditDialog = new PigFarmEditDialog();

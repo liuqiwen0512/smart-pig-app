@@ -53,4 +53,12 @@ public class PigFarmModel extends BaseModel implements PigFarmContract.IModel {
         Observable<ResponseEntity<PigFarmListEntity>> observable = ApiManager.getApiService().getPigFarmList(requestParams);
         apiSubscribe(observable, observer);
     }
+
+    @Override
+    public void bindPigFarm(String id, ResponseObserver observer) {
+        RequestParams requestParams = RequestParams.getCommonParams();
+        requestParams.put(RequestParams.PIG_FARM_PIGFARMID, id);
+        Observable<ResponseEntity<Object>> observable = ApiManager.getApiService().bindPigfarm(requestParams);
+        apiSubscribe(observable, observer);
+    }
 }

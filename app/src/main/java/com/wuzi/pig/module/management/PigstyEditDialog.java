@@ -1,21 +1,13 @@
 package com.wuzi.pig.module.management;
 
-import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContract;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatTextView;
 
-import com.google.zxing.integration.android.IntentIntegrator;
-import com.google.zxing.integration.android.IntentResult;
 import com.journeyapps.barcodescanner.DecoratedBarcodeView;
 import com.wuzi.pig.R;
 import com.wuzi.pig.base.BaseDialogFragment;
@@ -26,7 +18,7 @@ import com.wuzi.pig.module.management.contract.PigstyContract;
 import com.wuzi.pig.module.management.presenter.PigstyPresenter;
 import com.wuzi.pig.net.factory.ResponseException;
 import com.wuzi.pig.utils.LogUtils;
-import com.wuzi.pig.utils.QR.QRActivity;
+import com.wuzi.pig.utils.QR.QRActivityResultContract;
 import com.wuzi.pig.utils.StatusBarUtils;
 import com.wuzi.pig.utils.StatusbarColorUtils;
 import com.wuzi.pig.utils.StringUtils;
@@ -67,7 +59,7 @@ public class PigstyEditDialog extends BaseDialogFragment<PigstyPresenter> implem
     @Override
     protected void initView(View view, Bundle savedInstanceState) {
         mLoadingDialog = new LoadingDialog(mContext);
-        mQRCodeLauncher = registerForActivityResult(new QRActivityResultContract(), result -> {
+        mQRCodeLauncher = registerForActivityResult(new QRActivityResultContract<Object, String>(getActivity()), result -> {
             if (!StringUtils.isEmpty(result) && result.contains("/")) {
                 String[] split = result.split("/");
                 mNewPigstyEntity = new PigstyEntity();
@@ -180,30 +172,6 @@ public class PigstyEditDialog extends BaseDialogFragment<PigstyPresenter> implem
         } else {
             mErrorView.setText(error);
             mErrorView.setVisibility(View.VISIBLE);
-        }
-    }
-
-    private class QRActivityResultContract extends ActivityResultContract<Object, String> {
-        @NonNull
-        @Override
-        public Intent createIntent(@NonNull Context context, Object input) {
-            IntentIntegrator intentIntegrator = new IntentIntegrator(getActivity());
-            intentIntegrator.setOrientationLocked(false);
-            intentIntegrator.setCaptureActivity(QRActivity.class); // 设置自定义的activity是QRActivity
-            intentIntegrator.setRequestCode(IntentIntegrator.REQUEST_CODE);
-            Intent scanIntent = intentIntegrator.createScanIntent();
-
-            return scanIntent; //new Intent(context, CaptureActivity.class);
-        }
-
-        @Override
-        public String parseResult(int resultCode, @Nullable Intent intent) {
-            if (resultCode == Activity.RESULT_OK) {
-                IntentResult scanResult = IntentIntegrator.parseActivityResult(resultCode, intent);
-                final String qrContent = scanResult.getContents();
-                return qrContent;
-            }
-            return null;
         }
     }
 }
