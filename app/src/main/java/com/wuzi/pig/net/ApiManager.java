@@ -37,7 +37,7 @@ public class ApiManager {
                 .readTimeout(READ_TIME_OUT, TimeUnit.MINUTES)
                 .writeTimeout(WRITE_TIME_OUT, TimeUnit.MINUTES)
                 .connectTimeout(CONNECT_TIME_OUT, TimeUnit.MINUTES)
-                .cache(cache)
+                //.cache(cache)
                 // addNetInterceptor是添加网络拦截器，
                 // addInterceptor是添加应用拦截器，应用拦截器是在网络拦截器前执行的。
                 .addNetworkInterceptor(new HttpInterceptor())
@@ -66,6 +66,10 @@ public class ApiManager {
             }
         }
         return apiSercice;
+    }
+
+    public static void clear() {
+        apiSercice = null;
     }
 
 }
