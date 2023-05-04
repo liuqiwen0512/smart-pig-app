@@ -15,14 +15,14 @@
         android:layout_marginLeft="27dp"
         android:layout_marginTop="10dp"
         android:layout_marginRight="27dp"
-        app:constraint_referenced_ids="id,time,name" />
+        app:constraint_referenced_ids="id,time,name,type" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/id"
         style="@style/text_content"
         android:layout_width="0dp"
         android:layout_height="30dp"
-        app:layout_constraintHorizontal_weight="2"
+        app:layout_constraintHorizontal_weight="1.5"
         android:gravity="center"
         android:textColor="@color/grey_3a"
         android:text="@string/alarm_list_title_ear_tag" />
@@ -31,7 +31,7 @@
         android:id="@+id/time"
         android:layout_width="0dp"
         android:layout_height="30dp"
-        app:layout_constraintHorizontal_weight="4"
+        app:layout_constraintHorizontal_weight="3.5"
         android:orientation="horizontal"
         android:gravity="center">
 
@@ -54,7 +54,7 @@
         android:id="@+id/name"
         android:layout_width="0dp"
         android:layout_height="30dp"
-        app:layout_constraintHorizontal_weight="2"
+        app:layout_constraintHorizontal_weight="1.5"
         android:orientation="horizontal"
         android:gravity="center">
 
@@ -72,6 +72,16 @@
             android:layout_height="wrap_content"
             android:src="@drawable/selector_ascend_descend" />
     </LinearLayout>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/type"
+        style="@style/text_content"
+        android:layout_width="0dp"
+        android:layout_height="30dp"
+        app:layout_constraintHorizontal_weight="1.5"
+        android:gravity="center_vertical|right"
+        android:textColor="@color/grey_3a"
+        android:text="@string/alarm_list_title_type" />
 
     <View
         android:id="@+id/title_line"

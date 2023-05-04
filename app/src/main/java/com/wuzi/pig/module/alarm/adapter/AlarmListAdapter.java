@@ -47,23 +47,23 @@ public class AlarmListAdapter extends RecyclerView.Adapter<AlarmListAdapter.View
         viewType = getViewType();
         switch (viewType) {
             case TYPE_TEMPERATURE: {
-                View view = LayoutInflater.from(mContext).inflate(R.layout.adapter_alarm_temperature, parent, false);
+                View view = LayoutInflater.from(mContext).inflate(R.layout.adapter_alarm_pig_status, parent, false);
                 return new TemperatureViewHolder(view);
             }
             case TYPE_ACTIVITY: {
-                View view = LayoutInflater.from(mContext).inflate(R.layout.adapter_alarm_activity, parent, false);
+                View view = LayoutInflater.from(mContext).inflate(R.layout.adapter_alarm_pig_status, parent, false);
                 return new ActivityViewHolder(view);
             }
             case TYPE_EAR_TAG: {
-                View view = LayoutInflater.from(mContext).inflate(R.layout.adapter_alarm_activity, parent, false);
+                View view = LayoutInflater.from(mContext).inflate(R.layout.adapter_alarm_equip_status, parent, false);
                 return new ActivityViewHolder(view);
             }
             case TYPE_BASE_STATION: {
-                View view = LayoutInflater.from(mContext).inflate(R.layout.adapter_alarm_activity, parent, false);
+                View view = LayoutInflater.from(mContext).inflate(R.layout.adapter_alarm_equip_status, parent, false);
                 return new BaseStationViewHolder(view);
             }
             case TYPE_OUTAGE: {
-                View view = LayoutInflater.from(mContext).inflate(R.layout.adapter_alarm_activity, parent, false);
+                View view = LayoutInflater.from(mContext).inflate(R.layout.adapter_alarm_equip_status, parent, false);
                 return new OutageViewHolder(view);
             }
         }
@@ -100,7 +100,7 @@ public class AlarmListAdapter extends RecyclerView.Adapter<AlarmListAdapter.View
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
             AlarmEntity entity = mList.get(position);
             itemView.setSelected(position % 2 == 0 ? false : true);
-            mIdView.setText(entity.getEarTag());
+            mIdView.setText(StringUtils.ASCII16ToString(entity.getEarTag()));
             mTimeView.setText(entity.getCreateTime());
             mNameView.setText(StringUtils.ASCII16ToString(entity.getPigstyName()));
             mTypeView.setText(entity.getLevel());
@@ -117,6 +117,8 @@ public class AlarmListAdapter extends RecyclerView.Adapter<AlarmListAdapter.View
         AppCompatTextView mTimeView;
         @BindView(R.id.name)
         AppCompatTextView mNameView;
+        @BindView(R.id.type)
+        AppCompatTextView mTypeView;
 
         public ActivityViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -126,9 +128,12 @@ public class AlarmListAdapter extends RecyclerView.Adapter<AlarmListAdapter.View
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
             AlarmEntity entity = mList.get(position);
             itemView.setSelected(position % 2 == 0 ? false : true);
-            mIdView.setText(entity.getEarTag());
+            mIdView.setText(StringUtils.ASCII16ToString(entity.getEarTag()));
             mTimeView.setText(entity.getCreateTime());
             mNameView.setText(StringUtils.ASCII16ToString(entity.getPigstyName()));
+            mTypeView.setText(entity.getLevel());
+
+            mTypeView.setSelected(StringUtils.equals(entity.getLevel(), AlarmConstant.TEMPERATURE_LOW));
         }
     }
 
