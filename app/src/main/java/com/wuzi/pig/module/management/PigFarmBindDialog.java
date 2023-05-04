@@ -81,7 +81,7 @@ public class PigFarmBindDialog extends BaseDialogFragment<PigFarmPresenter> impl
     }
 
     @Override
-    public void performSuccess(int fromTag) {
+    public void performSuccess(Object data, int fromTag) {
         mLoadingDialog.hide();
         ToastUtils.show("绑定成功");
         dismiss();

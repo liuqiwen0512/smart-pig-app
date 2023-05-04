@@ -5,7 +5,7 @@ import android.content.SharedPreferences;
 
 import com.google.gson.Gson;
 import com.wuzi.pig.base.BaseApplication;
-import com.wuzi.pig.constant.Constant;
+import com.wuzi.pig.entity.PigFarmEntity;
 
 
 /**
@@ -15,12 +15,14 @@ public class SharePreferences {
     private static volatile SharePreferences sharePreferences;
     private SharedPreferences prefs;
     private final String SHARE_PREFERENCE_NAME = "wuzi";
-    // 用户信息
-    private final String PREFERENCE_LOGINED_USER_DATA = "preference_logined_user_data";
     // app版本号
     private final String PREFERENCE_APP_VERSION_CODE = "preference_app_version_code";
     // app更新信息版本号
     private final String PREFERENCE_APP_UPGRADE_INFO = "preference_app_upgrade_info";
+    // 用户信息
+    private final String PREFERENCE_LOGINED_USER_DATA = "preference_logined_user_data";
+    // 选择的猪场
+    private final String PREFERENCE_SELECTED_PIG_FARM_DATA = "preference_selected_pig_farm_data";
 
     public void setLoginedUserData(String user) {
         putString(PREFERENCE_LOGINED_USER_DATA, user);
@@ -28,6 +30,26 @@ public class SharePreferences {
 
     public String getLoginedUserData() {
         return getString(PREFERENCE_LOGINED_USER_DATA);
+    }
+
+    public void setSelectedPigFarm(PigFarmEntity entity) {
+        String json = "";
+        if (entity != null) {
+            Gson gson = new Gson();
+            json = gson.toJson(entity);
+        }
+        putString(PREFERENCE_SELECTED_PIG_FARM_DATA, json);
+    }
+
+    public PigFarmEntity getSelectedPigFarm() {
+        String json = getString(PREFERENCE_SELECTED_PIG_FARM_DATA);
+        if (!StringUtils.isEmpty(json)) {
+            try {
+                return new Gson().fromJson(json, PigFarmEntity.class);
+            } catch (Exception e) {
+            }
+        }
+        return null;
     }
 
     public static SharePreferences getInstance() {

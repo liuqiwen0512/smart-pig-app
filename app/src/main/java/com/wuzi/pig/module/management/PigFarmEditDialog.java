@@ -102,7 +102,7 @@ public class PigFarmEditDialog extends BaseDialogFragment<PigFarmPresenter> impl
     }
 
     @Override
-    public void performSuccess(int fromTag) {
+    public void performSuccess(Object data, int fromTag) {
         ToastUtils.show("修改成功");
         dismiss();
         if (mSubmitListener != null) {

@@ -25,6 +25,7 @@ import com.wuzi.pig.base.BaseFragment;
 import com.wuzi.pig.constant.PigFarmConstant;
 import com.wuzi.pig.entity.PigFarmEntity;
 import com.wuzi.pig.entity.PigFarmListEntity;
+import com.wuzi.pig.manager.MsgManager;
 import com.wuzi.pig.module.management.adapter.PigFarmAdapter;
 import com.wuzi.pig.module.management.contract.PigFarmContract;
 import com.wuzi.pig.module.management.presenter.PigFarmPresenter;
@@ -228,8 +229,10 @@ public class MgtPigFarmFragment extends BaseFragment<PigFarmPresenter> implement
                         mPigFarmEditDialog = null;
                     });
                     mPigFarmEditDialog.setSubmitListener(object -> {
-                        entity.setPigfarmName(object.toString());
+                        String pigfarmName = object.toString();
+                        entity.setPigfarmName(pigfarmName);
                         mPigFarmAdapter.notifyItemChanged(entity);
+                        MsgManager.selectionPigFarm(entity);
                     });
                 }
                 mPigFarmEditDialog.showNow(getChildFragmentManager());
@@ -273,9 +276,9 @@ public class MgtPigFarmFragment extends BaseFragment<PigFarmPresenter> implement
     }
 
     @Override
-    public void performSuccess(int fromTag) {
+    public void performSuccess(Object data, int fromTag) {
         switch (fromTag) {
-            case PigFarmContract.TAG_PIG_FARM_DELETE:{
+            case PigFarmContract.TAG_PIG_FARM_DELETE: {
                 mPigFarmAdapter.notifyItemRemovedByChecked();
                 setPigFarmCount(mPigFarmCount - mPigFarmDeleteCount);
                 setCheckedMessage();
@@ -284,6 +287,8 @@ public class MgtPigFarmFragment extends BaseFragment<PigFarmPresenter> implement
                 if (allList.size() == 0) {
                     mRefreshLayout.autoRefresh();
                 }
+                //通知选择猪场是否改变
+                MsgManager.deletePigFarm((List<String>) data);
                 break;
             }
         }

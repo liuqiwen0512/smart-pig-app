@@ -16,7 +16,8 @@ public interface PigFarmContract {
     int TAG_PIG_FARM_BIND = 500;
 
     interface IView extends IContract.IView {
-        void performSuccess(int fromTag);
+        void performSuccess(Object data, int fromTag);
+
         void performPigFarmList(PigFarmListEntity listEntity, int pageNum);
         void performError(ResponseException error, int fromTag);
     }

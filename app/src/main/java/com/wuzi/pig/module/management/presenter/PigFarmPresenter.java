@@ -17,7 +17,7 @@ public class PigFarmPresenter extends BasePresenter<PigFarmContract.IView, PigFa
         ResponseObserver<Object> commonResponse = getCommonResponse(new ResponseListener<Object>() {
             @Override
             public void onSuccess(Object entity) {
-                getView().performSuccess(PigFarmContract.TAG_PIG_FARM_ADD);
+                getView().performSuccess(null, PigFarmContract.TAG_PIG_FARM_ADD);
             }
 
             @Override
@@ -33,7 +33,7 @@ public class PigFarmPresenter extends BasePresenter<PigFarmContract.IView, PigFa
         ResponseObserver<Object> commonResponse = getCommonResponse(new ResponseListener<Object>() {
             @Override
             public void onSuccess(Object entity) {
-                getView().performSuccess(PigFarmContract.TAG_PIG_FARM_UPDATE);
+                getView().performSuccess(null, PigFarmContract.TAG_PIG_FARM_UPDATE);
             }
 
             @Override
@@ -49,7 +49,7 @@ public class PigFarmPresenter extends BasePresenter<PigFarmContract.IView, PigFa
         ResponseObserver<Object> commonResponse = getCommonResponse(new ResponseListener<Object>() {
             @Override
             public void onSuccess(Object entity) {
-                getView().performSuccess(PigFarmContract.TAG_PIG_FARM_DELETE);
+                getView().performSuccess(ids, PigFarmContract.TAG_PIG_FARM_DELETE);
             }
 
             @Override
@@ -86,7 +86,7 @@ public class PigFarmPresenter extends BasePresenter<PigFarmContract.IView, PigFa
         ResponseObserver<Object> commonResponse = getCommonResponse(new ResponseListener<Object>() {
             @Override
             public void onSuccess(Object entity) {
-                getView().performSuccess(PigFarmContract.TAG_PIG_FARM_BIND);
+                getView().performSuccess(null, PigFarmContract.TAG_PIG_FARM_BIND);
             }
 
             @Override

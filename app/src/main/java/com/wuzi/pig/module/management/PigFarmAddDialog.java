@@ -97,7 +97,7 @@ public class PigFarmAddDialog extends BaseDialogFragment<PigFarmPresenter> imple
     }
 
     @Override
-    public void performSuccess(int fromTag) {
+    public void performSuccess(Object data, int fromTag) {
         ToastUtils.show("添加成功");
         dismiss();
         if (mSubmitListener != null) {

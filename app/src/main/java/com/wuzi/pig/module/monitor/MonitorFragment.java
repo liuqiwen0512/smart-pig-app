@@ -116,6 +116,14 @@ public class MonitorFragment extends BaseFragment<MonitorPresenter> implements M
     public void onHiddenChanged(boolean hidden) {
         if (!hidden && mIsRefresh) {
             setPigFarmEntity(mPigFarmEntity, mIsRefresh);
+            if (mPigFarmEntity != null) {
+                mRefreshLayout.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mRefreshLayout.autoRefresh();
+                    }
+                });
+            }
             mIsRefresh = false;
         }
     }
@@ -202,10 +210,12 @@ public class MonitorFragment extends BaseFragment<MonitorPresenter> implements M
         }
     }
 
-    public void setPigFarmEntity(PigFarmEntity entity, boolean refresh) {
-        if (!PigFarmEntity.equals(mPigFarmEntity, entity) || refresh) {
+    public void setPigFarmEntity(PigFarmEntity newEntity, boolean refresh) {
+        PigFarmEntity oldEntity = mPigFarmEntity;
+        mPigFarmEntity = newEntity;
+        if (!PigFarmEntity.equals(oldEntity, newEntity) || refresh) {
             if (mRefreshLayout != null) {
-                if (entity == null) {
+                if (newEntity == null) {
                     getView().setBackgroundResource(R.drawable.img_main_bg2);
                     mRefreshLayout.setEnableRefresh(false);
                     mPromptView.setVisibility(View.GONE);
@@ -217,26 +227,37 @@ public class MonitorFragment extends BaseFragment<MonitorPresenter> implements M
                     getView().setBackgroundResource(R.drawable.img_main_bg);
                     mRefreshLayout.setEnableRefresh(true);
                     mInfoGroupView.setVisibility(View.VISIBLE);
-                    mPigFarmTitleView.setText(StringUtils.nullToString(entity.getPigfarmName()));
+                    mPigFarmTitleView.setText(StringUtils.nullToString(newEntity.getPigfarmName()));
                     mPigFarmTitlePromptView.setVisibility(View.GONE);
-                    mPigFarmNameView.setText(StringUtils.nullToString(entity.getPigfarmName()));
-                    if (isVisible()) {
-                        mRefreshLayout.autoRefresh();
-                    }
+                    mPigFarmNameView.setText(StringUtils.nullToString(newEntity.getPigfarmName()));
                 }
             }
         }
-        mPigFarmEntity = entity;
     }
 
     @Override
     public void onMessage(int what, Message message) {
         switch (what) {
             case MsgConstant.MSG_WHAT_PIGFARM_CHANGE: {
+                setPigFarmEntity((PigFarmEntity) message.obj, false);
                 if (isVisible()) {
-                    setPigFarmEntity((PigFarmEntity) message.obj, false);
+                    mRefreshLayout.autoRefresh();
                 } else {
                     mIsRefresh = true;
+                }
+                break;
+            }
+            case MsgConstant.MSG_WHAT_PIGFARM_DELETE: {
+                if (mPigFarmEntity == null) break;
+                List<String> pigfarmIds = (List<String>) message.obj;
+                for (String id : pigfarmIds) {
+                    if (StringUtils.equals(id, mPigFarmEntity.getPigfarmId())) {
+                        if (!isVisible()) {
+                            mIsRefresh = true;
+                        }
+                        setPigFarmEntity(null, false);
+                        break;
+                    }
                 }
                 break;
             }

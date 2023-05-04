@@ -21,8 +21,10 @@ import com.wuzi.pig.module.alarm.AlarmMainFragment;
 import com.wuzi.pig.module.management.MgtMainFragment;
 import com.wuzi.pig.module.monitor.MonitorFragment;
 import com.wuzi.pig.module.user.UserMainFragment;
+import com.wuzi.pig.utils.SharePreferences;
 import com.wuzi.pig.utils.StatusBarUtils;
 import com.wuzi.pig.utils.StatusbarColorUtils;
+import com.wuzi.pig.utils.StringUtils;
 import com.wuzi.pig.utils.fun.Function;
 
 import java.util.List;
@@ -51,6 +53,7 @@ public class MainActivity extends BaseActivity {
     protected void init(Bundle savedInstanceState) {
         StatusBarUtils.immersive(getWindow());
         StatusbarColorUtils.setStatusBarDarkIcon(getWindow(), true);
+        mPigFarmEntity = SharePreferences.getInstance().getSelectedPigFarm();
 
         mMenuAdapter = new MenuAdapter(mContext, MenuConstant.getMainMenus());
         mMenuAdapter.setClickListener(new MenuClickListenerImpl());
@@ -84,7 +87,7 @@ public class MainActivity extends BaseActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        switch (key) {
+        /*switch (key) {
             case MenuConstant.MAIN_MENU_HOME: {
                 MainFragment mainFragment = (MainFragment) fragment;
                 mainFragment.setPigFarmEntity(mPigFarmEntity, false);
@@ -100,7 +103,7 @@ public class MainActivity extends BaseActivity {
                 monitorFragment.setPigFarmEntity(mPigFarmEntity, false);
                 break;
             }
-        }
+        }*/
     }
 
     private Fragment getFragment(String key) {
@@ -185,6 +188,19 @@ public class MainActivity extends BaseActivity {
             }
             case MsgConstant.MSG_WHAT_PIGFARM_CHANGE: {
                 mPigFarmEntity = (PigFarmEntity) message.obj;
+                SharePreferences.getInstance().setSelectedPigFarm(mPigFarmEntity);
+                break;
+            }
+            case MsgConstant.MSG_WHAT_PIGFARM_DELETE: {
+                if (mPigFarmEntity == null) break;
+                List<String> pigfarmIds = (List<String>) message.obj;
+                for (String id : pigfarmIds) {
+                    if (StringUtils.equals(id, mPigFarmEntity.getPigfarmId())) {
+                        SharePreferences.getInstance().setSelectedPigFarm(null);
+                        mPigFarmEntity = null;
+                        break;
+                    }
+                }
                 break;
             }
         }

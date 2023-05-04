@@ -36,12 +36,35 @@ public class PigFarmEntity {
         this.pigfarmName = pigfarmName;
     }
 
-    public static boolean equals(PigFarmEntity entity1, PigFarmEntity entity2) {
-        if (entity1 == entity2) {
-            return true;
+    public void setPigFarmEntity(PigFarmEntity resEntity) {
+        setPigfarmId(resEntity.getPigfarmId());
+        setPigfarmName(resEntity.getPigfarmName());
+    }
+
+    public PigFarmEntity clone() {
+        PigFarmEntity entity = new PigFarmEntity();
+        entity.setPigfarmId(pigfarmId);
+        entity.setPigfarmName(pigfarmName);
+        return entity;
+    }
+
+    public static PigFarmEntity copy(PigFarmEntity resEntity, PigFarmEntity dstEntity) {
+        if (resEntity == null) {
+            return null;
         }
+        if (dstEntity == null) {
+            dstEntity = new PigFarmEntity();
+        }
+        dstEntity.setPigFarmEntity(resEntity);
+        return dstEntity;
+    }
+
+    public static boolean equals(PigFarmEntity entity1, PigFarmEntity entity2) {
         if (entity1 == null || entity2 == null) {
             return false;
+        }
+        if (entity1 == entity2) {
+            return true;
         }
         return StringUtils.equals(entity1.getPigfarmId(), entity2.getPigfarmId());
     }
