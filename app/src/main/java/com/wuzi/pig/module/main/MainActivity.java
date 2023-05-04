@@ -180,7 +180,7 @@ public class MainActivity extends BaseActivity {
                         mPigFarmSearchDialog = null;
                     });
                 }
-                mPigFarmSearchDialog.showNow(getSupportFragmentManager());
+                mPigFarmSearchDialog.showNowAllowingStateLoss(getSupportFragmentManager());
                 break;
             }
             case MsgConstant.MSG_WHAT_PIGFARM_CHANGE: {

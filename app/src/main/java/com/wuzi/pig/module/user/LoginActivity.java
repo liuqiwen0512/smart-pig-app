@@ -125,7 +125,7 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
 
     @Override
     public void performLoginSuccress(UserEntity entity) {
-        mLoadingDialog.hide();
+        mLoadingDialog.dismiss();
         LoginManager.save(entity);
         startActivity(new Intent(mContext, SplashActivity.class));
         finish();
@@ -133,7 +133,7 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
 
     @Override
     public void performLoginError(ResponseException error) {
-        mLoadingDialog.hide();
+        mLoadingDialog.dismiss();
         mErrorView.setText(error.getPromptMessage());
         mErrorView.setVisibility(View.VISIBLE);
     }

@@ -17,6 +17,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.wuzi.pig.R;
 import com.wuzi.pig.utils.UIUtils;
@@ -187,5 +188,25 @@ public abstract class BaseDialogFragment<P extends IContract.IPresenter> extends
             return;
         }
         super.showNow(manager, tag);
+    }
+
+    public void showNowAllowingStateLoss(FragmentManager manager) {
+        showNowAllowingStateLoss(manager, TAG);
+    }
+
+    public void showNowAllowingStateLoss(FragmentManager manager, String tag) {
+        Fragment fragment = manager.findFragmentByTag(tag);
+        if (fragment != null && fragment.isAdded()) {
+            return;
+        }
+        try {
+            FragmentManager temp = null;
+            // super 里有变量需要赋值
+            super.show(temp, tag);
+        } catch (Exception e) {
+        }
+        FragmentTransaction ft = manager.beginTransaction();
+        ft.add(this, tag);
+        ft.commitAllowingStateLoss();
     }
 }
