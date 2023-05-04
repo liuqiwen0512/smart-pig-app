@@ -17,6 +17,7 @@ import com.wuzi.pig.module.main.SplashActivity;
 import com.wuzi.pig.module.user.contract.LoginContract;
 import com.wuzi.pig.module.user.presenter.LoginPresenter;
 import com.wuzi.pig.net.factory.ResponseException;
+import com.wuzi.pig.utils.SharePreferences;
 import com.wuzi.pig.utils.StatusBarUtils;
 import com.wuzi.pig.utils.StatusbarColorUtils;
 import com.wuzi.pig.utils.StringUtils;
@@ -50,6 +51,7 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
         mLoadingDialog = new LoadingDialog(mContext);
         StatusBarUtils.immersive(getWindow());
         StatusbarColorUtils.setStatusBarDarkIcon(getWindow(), true);
+        SharePreferences.getInstance().setSelectedPigFarm(null);
         mUserNameValueView.setText(StringUtils.nullToString(LoginManager.getUserName()));
     }
 
