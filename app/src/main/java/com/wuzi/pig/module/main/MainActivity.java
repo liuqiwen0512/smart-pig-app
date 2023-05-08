@@ -19,7 +19,7 @@ import com.wuzi.pig.entity.MenuEntity;
 import com.wuzi.pig.entity.PigFarmEntity;
 import com.wuzi.pig.module.alarm.AlarmMainFragment;
 import com.wuzi.pig.module.management.MgtMainFragment;
-import com.wuzi.pig.module.monitor.MonitorFragment;
+import com.wuzi.pig.module.monitor.MonPigstyListFragment;
 import com.wuzi.pig.module.user.UserMainFragment;
 import com.wuzi.pig.utils.SharePreferences;
 import com.wuzi.pig.utils.StatusBarUtils;
@@ -125,7 +125,7 @@ public class MainActivity extends BaseActivity {
                 break;
             }
             case MenuConstant.MAIN_MENU_MONITOR: {
-                MonitorFragment monitorFragment = new MonitorFragment();
+                MonPigstyListFragment monitorFragment = new MonPigstyListFragment();
                 monitorFragment.setPigFarmEntity(mPigFarmEntity, true);
                 fragment = monitorFragment;
                 break;

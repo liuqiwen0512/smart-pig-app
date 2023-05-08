@@ -6,7 +6,7 @@ import com.wuzi.pig.entity.Statis72HourEntity;
 import com.wuzi.pig.net.factory.ResponseException;
 import com.wuzi.pig.net.factory.ResponseObserver;
 
-public interface MonitorContract {
+public interface MonPigstyListContract {
 
     int TAG_PIGSTY_COUNT = 100;
     int TAG_STATIS_72_HOUR = 200;

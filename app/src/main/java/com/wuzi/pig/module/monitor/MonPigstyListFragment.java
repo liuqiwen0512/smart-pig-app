@@ -24,8 +24,8 @@ import com.wuzi.pig.entity.PigstyListEntity;
 import com.wuzi.pig.entity.Statis72HourEntity;
 import com.wuzi.pig.manager.MsgManager;
 import com.wuzi.pig.module.monitor.adapter.PigstyAdapter;
-import com.wuzi.pig.module.monitor.contract.MonitorContract;
-import com.wuzi.pig.module.monitor.presenter.MonitorPresenter;
+import com.wuzi.pig.module.monitor.contract.MonPigstyListContract;
+import com.wuzi.pig.module.monitor.presenter.MonPigstyListPresenter;
 import com.wuzi.pig.net.factory.ResponseException;
 import com.wuzi.pig.utils.PromptUtils;
 import com.wuzi.pig.utils.SpannableUtils;
@@ -43,7 +43,7 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.OnClick;
 
-public class MonitorFragment extends BaseFragment<MonitorPresenter> implements MonitorContract.IView {
+public class MonPigstyListFragment extends BaseFragment<MonPigstyListPresenter> implements MonPigstyListContract.IView {
 
     @BindView(R.id.pig_farm_name)
     AppCompatTextView mPigFarmNameView;
@@ -150,20 +150,20 @@ public class MonitorFragment extends BaseFragment<MonitorPresenter> implements M
 
     @Override
     public void performPigstyCountSuccess(String count) {
-        finishRefresh(String.valueOf(MonitorContract.TAG_PIGSTY_COUNT));
+        finishRefresh(String.valueOf(MonPigstyListContract.TAG_PIGSTY_COUNT));
         setCountView(mPigstyCountView, count + " 个", count);
     }
 
     @Override
     public void performStatis72HourSuccess(Statis72HourEntity entity) {
-        finishRefresh(String.valueOf(MonitorContract.TAG_STATIS_72_HOUR));
+        finishRefresh(String.valueOf(MonPigstyListContract.TAG_STATIS_72_HOUR));
         String count = String.valueOf(entity.getToday());
         setCountView(mPigCountView, count + " 头", count);
     }
 
     @Override
     public void performPigstyList(PigstyListEntity listEntity, int pageNum, String pagfarmId) {
-        finishRefresh(String.valueOf(MonitorContract.TAG_PIGSTY_LIST));
+        finishRefresh(String.valueOf(MonPigstyListContract.TAG_PIGSTY_LIST));
         mRefreshLayout.finishLoadMore();
         mPigstyRecyclerView.setVisibility(View.VISIBLE);
         PromptUtils.hidePrompt(mPromptView);
@@ -185,7 +185,7 @@ public class MonitorFragment extends BaseFragment<MonitorPresenter> implements M
     @Override
     public void performError(ResponseException error, int fromTag) {
         finishRefresh(String.valueOf(fromTag));
-        if (fromTag == MonitorContract.TAG_PIGSTY_LIST) {
+        if (fromTag == MonPigstyListContract.TAG_PIGSTY_LIST) {
             mRefreshLayout.finishLoadMore();
             if (mPageNumber == 1) {
                 setPigFarmCount(0);
@@ -200,10 +200,10 @@ public class MonitorFragment extends BaseFragment<MonitorPresenter> implements M
                 ToastUtils.show(error.getMessage());
             }
         }
-        if (fromTag == MonitorContract.TAG_PIGSTY_COUNT) {
+        if (fromTag == MonPigstyListContract.TAG_PIGSTY_COUNT) {
             setCountView(mPigstyCountView, null, null);
         }
-        if (fromTag == MonitorContract.TAG_STATIS_72_HOUR) {
+        if (fromTag == MonPigstyListContract.TAG_STATIS_72_HOUR) {
             setCountView(mPigCountView, null, null);
         } else {
             ToastUtils.show(error.getMessage());

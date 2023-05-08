@@ -5,14 +5,14 @@ import com.wuzi.pig.constant.MonitorConstant;
 import com.wuzi.pig.entity.PigstyListEntity;
 import com.wuzi.pig.entity.ResponseEntity;
 import com.wuzi.pig.entity.Statis72HourEntity;
-import com.wuzi.pig.module.monitor.contract.MonitorContract;
+import com.wuzi.pig.module.monitor.contract.MonPigstyListContract;
 import com.wuzi.pig.net.ApiManager;
 import com.wuzi.pig.net.RequestParams;
 import com.wuzi.pig.net.factory.ResponseObserver;
 
 import io.reactivex.Observable;
 
-public class MonitorModel extends BaseModel implements MonitorContract.IModel {
+public class MonPigstyListModel extends BaseModel implements MonPigstyListContract.IModel {
     @Override
     public void getPigstyCount(String pagfarmId, ResponseObserver observer) {
         RequestParams requestParams = RequestParams.getCommonParams();

@@ -3,13 +3,13 @@ package com.wuzi.pig.module.monitor.presenter;
 import com.wuzi.pig.base.BasePresenter;
 import com.wuzi.pig.entity.PigstyListEntity;
 import com.wuzi.pig.entity.Statis72HourEntity;
-import com.wuzi.pig.module.monitor.contract.MonitorContract;
-import com.wuzi.pig.module.monitor.model.MonitorModel;
+import com.wuzi.pig.module.monitor.contract.MonPigstyListContract;
+import com.wuzi.pig.module.monitor.model.MonPigstyListModel;
 import com.wuzi.pig.net.factory.ResponseException;
 import com.wuzi.pig.net.factory.ResponseListener;
 import com.wuzi.pig.net.factory.ResponseObserver;
 
-public class MonitorPresenter extends BasePresenter<MonitorContract.IView, MonitorModel> implements MonitorContract.IPresenter {
+public class MonPigstyListPresenter extends BasePresenter<MonPigstyListContract.IView, MonPigstyListModel> implements MonPigstyListContract.IPresenter {
     @Override
     public void getPigstyCount(String pagfarmId) {
         ResponseObserver<String> commonResponse = getCommonResponse(new ResponseListener<String>() {
@@ -20,7 +20,7 @@ public class MonitorPresenter extends BasePresenter<MonitorContract.IView, Monit
 
             @Override
             public void onError(ResponseException exception) {
-                getView().performError(exception, MonitorContract.TAG_PIGSTY_COUNT);
+                getView().performError(exception, MonPigstyListContract.TAG_PIGSTY_COUNT);
             }
         });
         mModel.getPigstyCount(pagfarmId, commonResponse);
@@ -36,7 +36,7 @@ public class MonitorPresenter extends BasePresenter<MonitorContract.IView, Monit
 
             @Override
             public void onError(ResponseException exception) {
-                getView().performError(exception, MonitorContract.TAG_STATIS_72_HOUR);
+                getView().performError(exception, MonPigstyListContract.TAG_STATIS_72_HOUR);
             }
         });
         mModel.getStatis72Hour(pagfarmId, commonResponse);
@@ -57,7 +57,7 @@ public class MonitorPresenter extends BasePresenter<MonitorContract.IView, Monit
 
             @Override
             public void onError(ResponseException exception) {
-                getView().performError(exception, MonitorContract.TAG_PIGSTY_LIST);
+                getView().performError(exception, MonPigstyListContract.TAG_PIGSTY_LIST);
             }
         });
         mModel.getPigstyList(pagfarmId, pageNum, commonResponse);
