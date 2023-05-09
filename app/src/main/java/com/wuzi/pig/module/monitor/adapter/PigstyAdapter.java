@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.wuzi.pig.R;
 import com.wuzi.pig.entity.PigstyEntity;
 import com.wuzi.pig.utils.StringUtils;
+import com.wuzi.pig.utils.fun.Function;
 import com.wuzi.pig.utils.tools.CollectionUtils;
 
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ public class PigstyAdapter extends RecyclerView.Adapter<PigstyAdapter.ViewHolder
 
     private Context mContext;
     private List<PigstyEntity> mList = new ArrayList<>();
+    private Function<PigstyEntity> mClickListener;
 
     public PigstyAdapter(Context context) {
         mContext = context;
@@ -46,7 +48,7 @@ public class PigstyAdapter extends RecyclerView.Adapter<PigstyAdapter.ViewHolder
         return mList.size();
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder {
+    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         @BindView(R.id.name)
         AppCompatTextView mNameView;
@@ -60,6 +62,7 @@ public class PigstyAdapter extends RecyclerView.Adapter<PigstyAdapter.ViewHolder
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            itemView.setOnClickListener(this);
         }
 
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
@@ -68,6 +71,15 @@ public class PigstyAdapter extends RecyclerView.Adapter<PigstyAdapter.ViewHolder
             mPigCountView.setText("在线：" + entity.getNum() + "头");
             mPigTemperatureView.setText("平均温度：" + entity.getTemperature() + "°C");
             mPigLivenessView.setText("平均活跃度：" + entity.getMovement());
+        }
+
+        @Override
+        public void onClick(View v) {
+            int position = getAdapterPosition();
+            if (mClickListener != null && position != -1) {
+                PigstyEntity entity = mList.get(position);
+                mClickListener.action(entity);
+            }
         }
     }
 
@@ -86,5 +98,7 @@ public class PigstyAdapter extends RecyclerView.Adapter<PigstyAdapter.ViewHolder
         }
     }
 
-
+    public void setClickListener(Function<PigstyEntity> clickListener) {
+        mClickListener = clickListener;
+    }
 }

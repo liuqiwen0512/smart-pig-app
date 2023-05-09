@@ -1,5 +1,6 @@
 package com.wuzi.pig.module.monitor;
 
+import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Message;
@@ -24,6 +25,7 @@ import com.wuzi.pig.entity.PigstyListEntity;
 import com.wuzi.pig.entity.Statis72HourEntity;
 import com.wuzi.pig.manager.MsgManager;
 import com.wuzi.pig.module.monitor.adapter.PigstyAdapter;
+import com.wuzi.pig.module.monitor.contract.MonChartContract;
 import com.wuzi.pig.module.monitor.contract.MonPigstyListContract;
 import com.wuzi.pig.module.monitor.presenter.MonPigstyListPresenter;
 import com.wuzi.pig.net.factory.ResponseException;
@@ -33,6 +35,7 @@ import com.wuzi.pig.utils.StatusBarUtils;
 import com.wuzi.pig.utils.StringUtils;
 import com.wuzi.pig.utils.ToastUtils;
 import com.wuzi.pig.utils.UIUtils;
+import com.wuzi.pig.utils.fun.Function;
 import com.wuzi.pig.utils.tools.CollectionUtils;
 import com.wuzi.pig.utils.ui.view.GroupWrap;
 
@@ -81,6 +84,7 @@ public class MonPigstyListFragment extends BaseFragment<MonPigstyListPresenter> 
         mRefreshLayout.setEnableLoadMore(false);
         mRefreshLayout.setOnRefreshLoadMoreListener(new OnRefreshLoadMoreListenerImpl());
         mPigstyAdapter = new PigstyAdapter(mContext);
+        mPigstyAdapter.setClickListener(new AdapterItemClicklistener());
         mPigstyRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
         mPigstyRecyclerView.setAdapter(mPigstyAdapter);
         mPigstyRecyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
@@ -145,6 +149,17 @@ public class MonPigstyListFragment extends BaseFragment<MonPigstyListPresenter> 
             mPageNumber += 1;
             String pigfarmId = mPigFarmEntity.getPigfarmId();
             mPresenter.getPigstyList(pigfarmId, mPageNumber);
+        }
+    }
+
+    //猪栏 adapter click
+    private class AdapterItemClicklistener implements Function<PigstyEntity> {
+
+        @Override
+        public void action(PigstyEntity entity) {
+            Intent intent = new Intent(mContext, MonChartActivity.class);
+            intent.putExtra(MonChartContract.INTENT_EXTRA_PIGSTY, entity);
+            startActivity(intent);
         }
     }
 

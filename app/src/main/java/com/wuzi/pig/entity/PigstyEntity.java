@@ -1,5 +1,8 @@
 package com.wuzi.pig.entity;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /*
 {
  猪栏创建
@@ -25,7 +28,7 @@ package com.wuzi.pig.entity;
     "movement": 637
 
 * */
-public class PigstyEntity {
+public class PigstyEntity implements Parcelable {
 
     private String pigstyId;
     private String pigfarmId;
@@ -34,6 +37,31 @@ public class PigstyEntity {
     private int num;
     private float temperature;
     private float movement;
+
+    public PigstyEntity() {
+    }
+
+    protected PigstyEntity(Parcel in) {
+        pigstyId = in.readString();
+        pigfarmId = in.readString();
+        pigstyName = in.readString();
+        baseStation = in.readString();
+        num = in.readInt();
+        temperature = in.readFloat();
+        movement = in.readFloat();
+    }
+
+    public static final Creator<PigstyEntity> CREATOR = new Creator<PigstyEntity>() {
+        @Override
+        public PigstyEntity createFromParcel(Parcel in) {
+            return new PigstyEntity(in);
+        }
+
+        @Override
+        public PigstyEntity[] newArray(int size) {
+            return new PigstyEntity[size];
+        }
+    };
 
     public String getPigstyId() {
         return pigstyId;
@@ -89,5 +117,21 @@ public class PigstyEntity {
 
     public void setMovement(float movement) {
         this.movement = movement;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(pigstyId);
+        dest.writeString(pigfarmId);
+        dest.writeString(pigstyName);
+        dest.writeString(baseStation);
+        dest.writeInt(num);
+        dest.writeFloat(temperature);
+        dest.writeFloat(movement);
     }
 }

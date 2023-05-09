@@ -4,7 +4,9 @@ import com.wuzi.pig.entity.AlarmListEntity;
 import com.wuzi.pig.entity.PigFarmListEntity;
 import com.wuzi.pig.entity.PigstyListEntity;
 import com.wuzi.pig.entity.ResponseEntity;
+import com.wuzi.pig.entity.ResponseListData;
 import com.wuzi.pig.entity.Statis72HourEntity;
+import com.wuzi.pig.entity.TempListEntity;
 import com.wuzi.pig.entity.UserEntity;
 import com.wuzi.pig.net.factory.ResponseNull;
 
@@ -121,6 +123,10 @@ public interface ApiSercice {
     //监测生猪count
     @GET("/prod-api/alarm/app/getEarTag")
     Observable<ResponseEntity<Statis72HourEntity>> getStatis72Hour(@QueryMap HashMap<String, Object> map);
+
+    //监测生猪count
+    @GET("/prod-api/alarm/app/getTemperatures")
+    Observable<ResponseEntity<ResponseListData<TempListEntity>>> getTemperatures(@QueryMap HashMap<String, Object> map);
 
 }
 

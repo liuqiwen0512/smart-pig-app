@@ -50,7 +50,10 @@ public class RequestParams extends HashMap<String, Object> {
 
     //监测
     public final static String MONITOR_PIGFARM_ID = "pigfarmId";
-
+    public final static String MONITOR_PIGSTY_ID = "pigstyId";
+    public final static String MONITOR_BEGIN_TIME = "beginTime";
+    public final static String MONITOR_END_TIME = "endTime";
+    public final static String MONITOR_PARTICLE = "particle";
 
     private RequestParams() {
     }
