@@ -7,6 +7,7 @@ public class TempListEntity {
     private String earTag;
     private String baseStation;
     private List<ItemEntity> datas;
+    private boolean mSelected;
 
     public String getEarTag() {
         return earTag;
@@ -30,6 +31,14 @@ public class TempListEntity {
 
     public void setDatas(List<ItemEntity> datas) {
         this.datas = datas;
+    }
+
+    public boolean isSelected() {
+        return mSelected;
+    }
+
+    public void setSelected(boolean selected) {
+        mSelected = selected;
     }
 
     public static class ItemEntity {

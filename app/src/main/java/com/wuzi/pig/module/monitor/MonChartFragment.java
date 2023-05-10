@@ -1,12 +1,17 @@
 package com.wuzi.pig.module.monitor;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 
 import androidx.appcompat.widget.AppCompatTextView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
+import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
@@ -19,6 +24,7 @@ import com.wuzi.pig.base.BaseFragment;
 import com.wuzi.pig.entity.PigstyEntity;
 import com.wuzi.pig.entity.ResponseListData;
 import com.wuzi.pig.entity.TempListEntity;
+import com.wuzi.pig.module.monitor.adapter.ChartEarTagAdapter;
 import com.wuzi.pig.module.monitor.contract.MonChartContract;
 import com.wuzi.pig.module.monitor.presenter.MonChartPresenter;
 import com.wuzi.pig.net.factory.ResponseException;
@@ -40,9 +46,14 @@ public class MonChartFragment extends BaseFragment<MonChartPresenter> implements
 
     @BindView(R.id.back)
     AppCompatTextView mBackView;
+    @BindView(R.id.ear_tag_recycler)
+    RecyclerView mEarTagRecyclerView;
     @BindView(R.id.chart)
     LineChart mLineChartView;
 
+    private ResponseListData<TempListEntity> mTempList;
+    private int[] mColors;
+    private ChartEarTagAdapter mEarTagAdapter;
     private PigstyEntity mPigstyEntity;
 
     @Override
@@ -54,6 +65,7 @@ public class MonChartFragment extends BaseFragment<MonChartPresenter> implements
     protected void initView(View view, Bundle savedInstanceState) {
         StatusBarUtils.setPadding(mContext, view);
         setPigstyEntity(mPigstyEntity);
+        initLineChartView();
 
         final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String dateStr = dateFormat.format(Calendar.getInstance().getTime());
@@ -61,6 +73,21 @@ public class MonChartFragment extends BaseFragment<MonChartPresenter> implements
         query.pigstyId = mPigstyEntity.getPigstyId();
         query.beginTime = dateStr;
         query.endTime = dateStr;
+
+        mEarTagAdapter = new ChartEarTagAdapter(mContext);
+        mEarTagRecyclerView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false));
+        mEarTagRecyclerView.setAdapter(mEarTagAdapter);
+        mEarTagAdapter.setClickListener(entity -> {
+            boolean selected = !entity.selected;
+            mEarTagAdapter.notifyItemChanged(entity, selected);
+            List<TempListEntity> rows = mTempList.getRows();
+            for (TempListEntity itemEntity : rows) {
+                if (StringUtils.equals(itemEntity.getEarTag(), entity.temp.getEarTag())) {
+                    itemEntity.setSelected(selected);
+                }
+            }
+            setLineData(mTempList, mColors);
+        });
 
         mPresenter.getTemperatures(query);
     }
@@ -77,11 +104,19 @@ public class MonChartFragment extends BaseFragment<MonChartPresenter> implements
 
     @Override
     public void performTemperatures(ResponseListData<TempListEntity> listData, int fromTag) {
-        setLineData(listData);
+        List<TempListEntity> rows = listData.getRows();
+        for (TempListEntity itemEntity : rows) {
+            itemEntity.setSelected(true);
+        }
+        mTempList = listData;
+        mColors = getChartsColor(listData);
+        setChartsMenus(listData, mColors);
+        setLineData(listData, mColors);
     }
 
     @Override
     public void performError(ResponseException error, int fromTag) {
+        //mLineChartView.setNoDataText("暂无数据");
         ToastUtils.show(error.getPromptMessage());
     }
 
@@ -92,68 +127,7 @@ public class MonChartFragment extends BaseFragment<MonChartPresenter> implements
         }
     }
 
-    private void setLineData(ResponseListData<TempListEntity> listData) {
-
-        int[] colors = new int[]{
-                0xFF5c7a29,
-                0xFFF7ACBC,
-                0xFFEF5B9C,
-                0xFFF47920,
-                0xFF80752c
-        };
-        List<TempListEntity> rows = listData.getRows();
-        List<ILineDataSet> lineDataSetList = new ArrayList<>();
-        for (int j = 0; j < rows.size(); j++) {
-            TempListEntity itemTemp = rows.get(j);
-            List<TempListEntity.ItemEntity> datas = itemTemp.getDatas();
-            List<Entry> entityList = new ArrayList<>();
-            float lastTemp = 0;
-            for (int i = 0; i < datas.size(); i++) {
-                TempListEntity.ItemEntity itemEntity = datas.get(i);
-                if (itemEntity.getTemperature() > 0) {
-                    lastTemp = itemEntity.getTemperature();
-                }
-                entityList.add(new Entry(i, lastTemp));
-            }
-            //LineDataSet lineDataSet = new LineDataSet(entityList, StringUtils.ASCII16ToString(itemTemp.getEarTag()));
-            //lineDataSet.setColor();
-            int color = colors[j % colors.length];
-            LineDataSet lineDataSet = new LineDataSet(entityList, itemTemp.getEarTag());
-            lineDataSet.setColor(color);
-            lineDataSet.setCircleColor(color);
-            //lineDataSet.setValueTextSize(12);
-            lineDataSet.setLineWidth(1);
-            lineDataSet.setMode(LineDataSet.Mode.HORIZONTAL_BEZIER);
-            /*lineDataSet.setValueFormatter(new ValueFormatter() {
-                @Override
-                public String getFormattedValue(float value) {
-                    return "";
-                }
-            });*/
-            lineDataSetList.add(lineDataSet);
-
-            LogUtils.e(TAG, " length : " + (j % colors.length) + "; color : " + color);
-        }
-
-        YAxis axisLeft = mLineChartView.getAxisLeft();
-        axisLeft.setAxisMinimum(0);
-        axisLeft.setAxisMaximum(60);
-        axisLeft.setValueFormatter(new ValueFormatter() {
-            @Override
-            public String getAxisLabel(float value, AxisBase axis) {
-                return ((int) value) + "°C";
-            }
-        });
-
-        YAxis axisRight = mLineChartView.getAxisRight();
-        axisRight.setEnabled(false);
-
-        XAxis xAxis = mLineChartView.getXAxis();
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-
-        LineData lineData = new LineData(lineDataSetList);
-        mLineChartView.setData(lineData);
-
+    private void initLineChartView() {
         //设置chart是否可以触摸
         mLineChartView.setTouchEnabled(true);
         //设置是否可以拖拽
@@ -171,16 +145,121 @@ public class MonChartFragment extends BaseFragment<MonChartPresenter> implements
         //设置是否可以通过双击屏幕放大图表。默认是true
         mLineChartView.setDoubleTapToZoomEnabled(false);
 
-        /*//缩放第一种方式
-        Matrix matrix = new Matrix();
-        //1f代表不缩放
-        matrix.postScale(3f, 1f);
-        mLineChartView.getViewPortHandler().refresh(matrix, mLineChartView, false);
-        //重设所有缩放和拖动，使图表完全适合它的边界（完全缩小）。
-        mLineChartView.fitScreen();*/
-        //缩放第二种方式
-        mLineChartView.getViewPortHandler().getMatrixTouch().postScale(10f, 1f);
+        //缩放
+        mLineChartView.getViewPortHandler().getMatrixTouch().postScale(5f, 1f);
+
+        Description description = new Description();
+        description.setText("");
+        mLineChartView.setDescription(description);
+
+    }
+
+    private void setLineData(ResponseListData<TempListEntity> listData, int[] colors) {
+        List<TempListEntity> rows = listData.getRows();
+        List<ILineDataSet> lineDataSetList = new ArrayList<>();
+        for (int j = 0; j < rows.size(); j++) {
+            TempListEntity itemTemp = rows.get(j);
+            if (!itemTemp.isSelected()) {
+                continue;
+            }
+            List<TempListEntity.ItemEntity> datas = itemTemp.getDatas();
+            List<Entry> entityList = new ArrayList<>();
+            float lastTemp = 0;
+            for (int i = 0; i < datas.size(); i++) {
+                TempListEntity.ItemEntity itemEntity = datas.get(i);
+                if (itemEntity.getTemperature() > 0) {
+                    lastTemp = itemEntity.getTemperature();
+                }
+                entityList.add(new Entry(i, lastTemp));
+            }
+            int color = colors[j % colors.length];
+            LineDataSet lineDataSet = new LineDataSet(entityList, itemTemp.getEarTag());
+            lineDataSet.setColor(color);
+            lineDataSet.setCircleColor(color);
+            //lineDataSet.setValueTextSize(12);
+            lineDataSet.setLineWidth(1);
+            lineDataSet.setMode(LineDataSet.Mode.HORIZONTAL_BEZIER);
+            lineDataSetList.add(lineDataSet);
+
+            LogUtils.e(TAG, " length : " + (j % colors.length) + "; color : " + color);
+        }
+
+        YAxis axisLeft = mLineChartView.getAxisLeft();
+        //axisLeft.setLabelCount(6, true);
+        axisLeft.setAxisMinimum(25);
+        axisLeft.setAxisMaximum(50);
+        axisLeft.setGranularity(5);
+        axisLeft.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getAxisLabel(float value, AxisBase axis) {
+                return ((int) value) + "°C";
+            }
+        });
+
+        YAxis axisRight = mLineChartView.getAxisRight();
+        axisRight.setEnabled(false);
+
+        List<TempListEntity.ItemEntity> tempDatas = rows.get(0).getDatas();
+        XAxis xAxis = mLineChartView.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setAxisMinimum(0f);//设置x轴的最小值
+        xAxis.setAxisMaximum(tempDatas.size());//设置最大值
+        xAxis.setGranularity(1.0f);
+        xAxis.setGranularityEnabled(true);
+        xAxis.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getAxisLabel(float value, AxisBase axis) {
+                if (value > tempDatas.size()) {
+                    return "";
+                }
+                TempListEntity.ItemEntity entity = tempDatas.get((int) value);
+                String[] split = entity.getTime().split(" ");
+                //return split[1] + "\n\r" + split[0];
+                return split[1];
+            }
+        });
+
+        LineData lineData = new LineData(lineDataSetList);
+        mLineChartView.setData(lineData);
+        mLineChartView.setVisibleXRangeMinimum(6);
+
+        Legend legend = mLineChartView.getLegend();
+        legend.setEnabled(false);
 
         mLineChartView.invalidate();
     }
+
+    private int[] getChartsColor(ResponseListData<TempListEntity> listData) {
+        int total = listData.getTotal();
+        int[] colors = new int[total];
+        int red = 254;
+        int green = 0;
+        int blue = 254;
+        for (int i = 0; i < colors.length; i++) {
+            if (i % 2 == 0) {
+                red += i * 10;
+            } else if (i % 3 == 0) {
+                green += i * 100;
+            } else {
+                blue += i * 50;
+            }
+            colors[i] = Color.rgb(red % 255, green % 255, blue % 255);
+        }
+        return colors;
+    }
+
+    private void setChartsMenus(ResponseListData<TempListEntity> listData, int[] colors) {
+        List<TempListEntity> rows = listData.getRows();
+        List<ChartEarTagAdapter.MenuEntity> earTagMenuList = new ArrayList<>();
+        for (int i = 0; i < rows.size(); i++) {
+            TempListEntity itemEntity = rows.get(i);
+            ChartEarTagAdapter.MenuEntity menuEntity = new ChartEarTagAdapter.MenuEntity();
+            menuEntity.color = colors[i];
+            menuEntity.temp = itemEntity;
+            earTagMenuList.add(menuEntity);
+        }
+        mEarTagAdapter.setList(earTagMenuList);
+        mEarTagAdapter.notifyDataSetChanged();
+    }
+
 }

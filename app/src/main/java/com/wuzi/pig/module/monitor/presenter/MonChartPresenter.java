@@ -16,7 +16,11 @@ public class MonChartPresenter extends BasePresenter<MonChartContract.IView, Mon
         ResponseObserver<ResponseListData<TempListEntity>> commonResponse = getCommonResponse(new ResponseListener<ResponseListData<TempListEntity>>() {
             @Override
             public void onSuccess(ResponseListData<TempListEntity> listData) {
-                getView().performTemperatures(listData, MonChartContract.TAG_TEMPERATURES);
+                if (listData.getTotal() == 0) {
+                    onError(new ResponseException(ResponseException.ERROR.RESULT_CODE_201));
+                } else {
+                    getView().performTemperatures(listData, MonChartContract.TAG_TEMPERATURES);
+                }
             }
 
             @Override
