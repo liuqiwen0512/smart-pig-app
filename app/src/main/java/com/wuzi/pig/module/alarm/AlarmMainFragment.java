@@ -59,6 +59,7 @@ public class AlarmMainFragment extends BaseFragment<AlarmPresenter> implements A
     private FragmentStateAdapterImpl mFragmentStateAdapter;
     private PigFarmEntity mPigFarmEntity;
     private int mSelectedPosition = -1;
+    private int mInitPosition = 0;
 
     @Override
     protected int getLayoutID() {
@@ -101,6 +102,7 @@ public class AlarmMainFragment extends BaseFragment<AlarmPresenter> implements A
         });
 
         setPigFarmEntity(mPigFarmEntity, true);
+        setCurrentItem(mInitPosition);
     }
 
     @OnClick({R.id.alarm_selection})
@@ -126,6 +128,14 @@ public class AlarmMainFragment extends BaseFragment<AlarmPresenter> implements A
                 });
             }
             mIsRefresh = false;
+        }
+        if (!hidden && mViewPager != null) {
+            mViewPager.post(new Runnable() {
+                @Override
+                public void run() {
+                    setCurrentItem(mInitPosition);
+                }
+            });
         }
     }
 
@@ -269,6 +279,13 @@ public class AlarmMainFragment extends BaseFragment<AlarmPresenter> implements A
                 }
             }
         }
+    }
+
+    public void setCurrentItem(int position) {
+        if (isVisible() && mViewPager != null) {
+            mViewPager.setCurrentItem(position, false);
+        }
+        mInitPosition = position;
     }
 
     @Override

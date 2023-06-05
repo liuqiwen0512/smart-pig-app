@@ -24,6 +24,7 @@ import com.wuzi.pig.utils.SpannableUtils;
 import com.wuzi.pig.utils.StatusBarUtils;
 import com.wuzi.pig.utils.StringUtils;
 import com.wuzi.pig.utils.ToastUtils;
+import com.wuzi.pig.utils.fun.Function;
 import com.wuzi.pig.utils.ui.view.GroupWrap;
 
 import java.util.HashMap;
@@ -58,6 +59,7 @@ public class MainFragment extends BaseFragment<MainPresenter> implements MainCon
     @BindView(R.id.pig_statis_equipment_value)
     AppCompatTextView mPigStatisEquipmentValueView;
 
+    private Function<Integer> mClickListener;
     private Map<String, String> mNetLoadedMap = new HashMap<>();
     private PigFarmEntity mPigFarmEntity;
 
@@ -71,9 +73,9 @@ public class MainFragment extends BaseFragment<MainPresenter> implements MainCon
         StatusBarUtils.setPadding(mContext, view);
 
         int color = getResources().getColor(R.color.grey_3a);
-        SpannableStringBuilder highlightSpannable = SpannableUtils.getHighlightSpannable("90808 头", "90808", color);
-        SpannableStringBuilder boldSpannable = SpannableUtils.getBoldSpannable(highlightSpannable, "90808 头", "90808");
-        SpannableStringBuilder sizeSpannable = SpannableUtils.getSizeSpannable(boldSpannable, "90808 头", "90808", 18);
+        SpannableStringBuilder highlightSpannable = SpannableUtils.getHighlightSpannable("0 头", "0", color);
+        SpannableStringBuilder boldSpannable = SpannableUtils.getBoldSpannable(highlightSpannable, "0 头", "0");
+        SpannableStringBuilder sizeSpannable = SpannableUtils.getSizeSpannable(boldSpannable, "0 头", "0", 18);
 
         mPigStatisTodayValueView.setText(sizeSpannable);
         mPigStatisYesterdayValueView.setText(sizeSpannable);
@@ -98,11 +100,23 @@ public class MainFragment extends BaseFragment<MainPresenter> implements MainCon
         }
     }
 
-    @OnClick({R.id.pig_farm_selection})
+    @OnClick({R.id.pig_farm_selection, R.id.pig_statis_health, R.id.pig_statis_equipment})
     protected void onClickView(View v) {
         switch (v.getId()) {
             case R.id.pig_farm_selection: {
                 MsgManager.showPigFarmDialog();
+                break;
+            }
+            case R.id.pig_statis_health: {
+                if (mClickListener != null) {
+                    mClickListener.action(0);
+                }
+                break;
+            }
+            case R.id.pig_statis_equipment: {
+                if (mClickListener != null) {
+                    mClickListener.action(2);
+                }
                 break;
             }
         }
@@ -187,6 +201,10 @@ public class MainFragment extends BaseFragment<MainPresenter> implements MainCon
         if (mNetLoadedMap.size() >= 2) {
             mRefreshLayout.finishRefresh();
         }
+    }
+
+    public void setClickListener(Function<Integer> clickListener) {
+        mClickListener = clickListener;
     }
 
     public void setPigFarmEntity(PigFarmEntity newEntity, boolean refresh) {

@@ -65,11 +65,15 @@ public class MainActivity extends BaseActivity {
     }
 
     private void switchFragment(String key) {
+        switchFragment(key, null);
+    }
+
+    private void switchFragment(String key, Object data) {
         Fragment fragment = getFragment(key);
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         List<Fragment> fragments = fragmentManager.getFragments();
-        for (Fragment item: fragments) {
+        for (Fragment item : fragments) {
             if (item == fragment) {
                 continue;
             }
@@ -83,27 +87,19 @@ public class MainActivity extends BaseActivity {
             } else {
                 transaction.show(fragment);
             }
+
+            switch (key) {
+                case MenuConstant.MAIN_MENU_ALARM: {
+                    AlarmMainFragment alarmMainFragment = (AlarmMainFragment) fragment;
+                    alarmMainFragment.setCurrentItem((Integer) data);
+                    break;
+                }
+            }
+
             transaction.commitNowAllowingStateLoss();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        /*switch (key) {
-            case MenuConstant.MAIN_MENU_HOME: {
-                MainFragment mainFragment = (MainFragment) fragment;
-                mainFragment.setPigFarmEntity(mPigFarmEntity, false);
-                break;
-            }
-            case MenuConstant.MAIN_MENU_ALARM: {
-                AlarmMainFragment alarmMainFragment = (AlarmMainFragment) fragment;
-                alarmMainFragment.setPigFarmEntity(mPigFarmEntity, false);
-                break;
-            }
-            case MenuConstant.MAIN_MENU_MONITOR: {
-                MonitorFragment monitorFragment = (MonitorFragment) fragment;
-                monitorFragment.setPigFarmEntity(mPigFarmEntity, false);
-                break;
-            }
-        }*/
     }
 
     private Fragment getFragment(String key) {
@@ -115,6 +111,10 @@ public class MainActivity extends BaseActivity {
             case MenuConstant.MAIN_MENU_HOME: {
                 MainFragment mainFragment = new MainFragment();
                 mainFragment.setPigFarmEntity(mPigFarmEntity, true);
+                mainFragment.setClickListener(position -> {
+                    mMenuAdapter.setSelected(MenuConstant.MAIN_MENU_ALARM);
+                    switchFragment(MenuConstant.MAIN_MENU_ALARM, position);
+                });
                 fragment = mainFragment;
                 break;
             }
