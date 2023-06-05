@@ -2,11 +2,9 @@ package com.wuzi.pig.entity;
 
 import java.util.List;
 
-public class TempListEntity {
+public class ActivityListEntity {
 
     private String earTag;
-    private String baseStation;
-    private String code;
     private List<ItemEntity> datas;
     private boolean mSelected;
 
@@ -16,22 +14,6 @@ public class TempListEntity {
 
     public void setEarTag(String earTag) {
         this.earTag = earTag;
-    }
-
-    public String getBaseStation() {
-        return baseStation;
-    }
-
-    public void setBaseStation(String baseStation) {
-        this.baseStation = baseStation;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
     }
 
     public List<ItemEntity> getDatas() {
@@ -51,15 +33,15 @@ public class TempListEntity {
     }
 
     public static class ItemEntity {
-        private float temperature;
+        private float movement;
         private String time;
 
-        public float getTemperature() {
-            return temperature;
+        public float getMovement() {
+            return movement;
         }
 
-        public void setTemperature(float temperature) {
-            this.temperature = temperature;
+        public void setMovement(float movement) {
+            this.movement = movement;
         }
 
         public String getTime() {

@@ -29,6 +29,11 @@
     <string name="alarm_list_title_status_normal">只看良好</string>
     <string name="alarm_list_title_status_abnormal">只看掉标</string>
 
+    <!--监测-->
+    <string name="monitor_chart_model_temp">温度</string>
+    <string name="monitor_chart_model_activity">活跃度</string>
+    <string name="monitor_chart_activity_title">运动量</string>
+
     <!-- 管理 -->
     <string name="mgt_pigfarm_online_count">在线猪场：%1$s个</string>
     <string name="mgt_pigfarm_empty">目前没有猪场数据，下拉刷新试试</string>

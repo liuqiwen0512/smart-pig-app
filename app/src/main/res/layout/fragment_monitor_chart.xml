@@ -2,7 +2,8 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/pink_shallow">
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/back"
@@ -17,25 +18,170 @@
         android:drawablePadding="5dp"
         android:text="猪栏" />
 
+    <androidx.constraintlayout.utils.widget.ImageFilterView
+        android:id="@+id/date_bg"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="40dp"
+        android:src="@drawable/img_pigsty_add_bg"
+        app:layout_constraintDimensionRatio="720:170"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/back" />
+
+    <View
+        android:id="@+id/date_bg2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/back"
+        app:layout_constraintDimensionRatio="720:202"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginRight="16dp"
+        android:background="@drawable/shape_pigsty_add_bg" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/prev_day"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="@id/date_bg2"
+        app:layout_constraintBottom_toBottomOf="@id/today_layout"
+        android:layout_marginLeft="20dp"
+        android:textColor="@color/grey_76"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:text="前一天" />
+
+    <LinearLayout
+        android:id="@+id/today_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="@id/date_bg2"
+        app:layout_constraintTop_toTopOf="@id/date_bg2"
+        app:layout_constraintRight_toRightOf="@id/date_bg2"
+        app:layout_constraintBottom_toBottomOf="@id/date_bg2"
+        android:orientation="horizontal"
+        android:gravity="bottom">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/today_value"
+            style="@style/text_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="22sp" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:textSize="12sp"
+            android:textColor="@color/grey_3a"
+            android:text="今天" />
+    </LinearLayout>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/next_day"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintRight_toRightOf="@id/date_bg2"
+        app:layout_constraintBottom_toBottomOf="@id/today_layout"
+        android:layout_marginRight="20dp"
+        android:textColor="@color/grey_76"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:text="后一天" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/pig_count"
+        style="@style/text_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/date_bg2"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="16dp"
+        android:textSize="14sp"
+        android:text="在线生猪：" />
+
+    <androidx.constraintlayout.utils.widget.ImageFilterView
+        android:id="@+id/ear_tag_left"
+        android:layout_width="50dp"
+        android:layout_height="40dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/pig_count"
+        android:layout_marginTop="8dp"
+        android:scaleType="center"
+        app:tint="@color/selector_monitor_ear_tag_scroll"
+        android:src="@drawable/img_arrow_left" />
+
+    <androidx.constraintlayout.utils.widget.ImageFilterView
+        android:id="@+id/ear_tag_right"
+        android:layout_width="50dp"
+        android:layout_height="40dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/pig_count"
+        android:layout_marginTop="8dp"
+        android:scaleType="center"
+        app:tint="@color/selector_monitor_ear_tag_scroll"
+        android:src="@drawable/img_arrow_right" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/ear_tag_recycler"
         android:layout_width="0dp"
-        android:layout_height="40dp"
+        android:layout_height="56dp"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/back"
+        app:layout_constraintTop_toBottomOf="@id/pig_count"
         app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginRight="16dp" />
+        android:layout_marginLeft="35dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginRight="35dp"
+        android:overScrollMode="never" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/model_temp"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        app:layout_constraintHorizontal_chainStyle="spread_inside"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ear_tag_recycler"
+        app:layout_constraintRight_toLeftOf="@id/model_activity"
+        android:gravity="center"
+        android:textColor="@color/selector_monitor_chart_model"
+        android:text="@string/monitor_chart_model_temp" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/model_activity"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        app:layout_constraintHorizontal_chainStyle="spread_inside"
+        app:layout_constraintLeft_toRightOf="@id/model_temp"
+        app:layout_constraintTop_toTopOf="@id/model_temp"
+        app:layout_constraintRight_toRightOf="parent"
+        android:gravity="center"
+        android:textColor="@color/selector_monitor_chart_model"
+        android:text="@string/monitor_chart_model_activity" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/chart_title"
+        style="@style/text_title2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/model_activity"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="20dp" />
 
     <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/chart"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ear_tag_recycler"
+        app:layout_constraintTop_toBottomOf="@id/chart_title"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="100dp" />
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="25dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,5 +1,6 @@
 package com.wuzi.pig.net;
 
+import com.wuzi.pig.entity.ActivityListEntity;
 import com.wuzi.pig.entity.AlarmListEntity;
 import com.wuzi.pig.entity.PigFarmListEntity;
 import com.wuzi.pig.entity.PigstyListEntity;
@@ -124,9 +125,13 @@ public interface ApiSercice {
     @GET("/prod-api/alarm/app/getEarTag")
     Observable<ResponseEntity<Statis72HourEntity>> getStatis72Hour(@QueryMap HashMap<String, Object> map);
 
-    //监测生猪count
+    //监测生猪温度数据
     @GET("/prod-api/alarm/app/getTemperatures")
     Observable<ResponseEntity<ResponseListData<TempListEntity>>> getTemperatures(@QueryMap HashMap<String, Object> map);
+
+    //监测生猪活跃度数据
+    @GET("/prod-api/alarm/app/getMovements")
+    Observable<ResponseEntity<ResponseListData<ActivityListEntity>>> getMovements(@QueryMap HashMap<String, Object> map);
 
 }
 

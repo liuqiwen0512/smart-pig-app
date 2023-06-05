@@ -26,6 +26,7 @@
 
     <color name="brown_dark">#816c48</color>
     <color name="brown_highlight">#92582f</color>
+    <color name="pink_shallow">#F6F2E9</color>
 
     <color name="pig_farm_item_bg_activated">#F4E8CA</color>
     <color name="pig_farm_item_bg_selected">#80FFFFFF</color>

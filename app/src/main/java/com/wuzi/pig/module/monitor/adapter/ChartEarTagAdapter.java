@@ -1,6 +1,7 @@
 package com.wuzi.pig.module.monitor.adapter;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,10 +9,10 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.wuzi.pig.R;
-import com.wuzi.pig.entity.TempListEntity;
 import com.wuzi.pig.utils.StringUtils;
 import com.wuzi.pig.utils.fun.Function;
 import com.wuzi.pig.utils.tools.CollectionUtils;
@@ -64,8 +65,8 @@ public class ChartEarTagAdapter extends RecyclerView.Adapter<ChartEarTagAdapter.
 
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
             MenuEntity menuEntity = mList.get(position);
-            mColorView.setBackgroundColor(menuEntity.color);
-            mNameView.setText(menuEntity.temp.getEarTag());
+            ViewCompat.setBackgroundTintList(mColorView, new ColorStateList(new int[][]{{}}, new int[]{menuEntity.color}));
+            mNameView.setText(menuEntity.earTag);
             mNameView.setTextColor(menuEntity.selected ? menuEntity.color : ContextCompat.getColor(mContext, R.color.grey_76));
         }
 
@@ -87,11 +88,10 @@ public class ChartEarTagAdapter extends RecyclerView.Adapter<ChartEarTagAdapter.
         notifyDataSetChanged();
     }
 
-    public void notifyItemChanged(MenuEntity entity, boolean selected) {
+    public void notifyItemChanged(String earTag, boolean selected) {
         for (int i = 0; i < mList.size(); i++) {
-            TempListEntity temp = entity.temp;
-            TempListEntity itemTemp = mList.get(i).temp;
-            if (StringUtils.equals(temp.getEarTag(), itemTemp.getEarTag())) {
+            String itemEarTag = mList.get(i).earTag;
+            if (StringUtils.equals(earTag, itemEarTag)) {
                 mList.get(i).selected = selected;
                 notifyItemChanged(i);
                 break;
@@ -105,7 +105,7 @@ public class ChartEarTagAdapter extends RecyclerView.Adapter<ChartEarTagAdapter.
 
     public static class MenuEntity {
         public int color;
-        public TempListEntity temp;
+        public String earTag;
         public boolean selected = true;
     }
 }
