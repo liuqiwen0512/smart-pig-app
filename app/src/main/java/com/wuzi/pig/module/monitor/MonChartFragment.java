@@ -244,8 +244,8 @@ public class MonChartFragment extends BaseFragment<MonChartPresenter> implements
     public void performError(ResponseException error, int fromTag) {
         if (error.code == ResponseException.ERROR.RESULT_CODE_201) {
             mPigCountView.setText("在线生猪：0");
+            mLineChartView.setNoDataText("暂无数据");
         }
-        //mLineChartView.setNoDataText("暂无数据");
         ToastUtils.show(error.getPromptMessage());
     }
 
@@ -268,6 +268,7 @@ public class MonChartFragment extends BaseFragment<MonChartPresenter> implements
         return dateStr;
     }
 
+    // earTag 滚动状态
     private void setEarScrollStatus() {
         int itemCount = mEarTagRecyclerView.getAdapter().getItemCount();
         LinearLayoutManager layoutManager = (LinearLayoutManager) mEarTagRecyclerView.getLayoutManager();
@@ -277,6 +278,24 @@ public class MonChartFragment extends BaseFragment<MonChartPresenter> implements
         mEarTagRightView.setEnabled(lastPosition != itemCount - 1);
     }
 
+    // 请求图表数据
+    private void setChartData() {
+        if (mModelTempView.isSelected()) {
+            if (mTempList == null) {
+                mPresenter.getTemperatures(mQuery);
+            } else {
+                setTempChartData(mTempList);
+            }
+        } else {
+            if (mActivityList == null) {
+                mPresenter.getMovements(mQuery);
+            } else {
+                setActivityChartData(mActivityList);
+            }
+        }
+    }
+
+    //切换图表类型- 温度、活跃度
     private void setSelectorModel(View view) {
         if (view == mModelTempView) {
             mChartTitleView.setText(R.string.monitor_chart_model_temp);
@@ -307,6 +326,7 @@ public class MonChartFragment extends BaseFragment<MonChartPresenter> implements
         }
     }
 
+    //初始化图表绘制
     private void initLineChartView() {
         //设置chart是否可以触摸
         mLineChartView.setTouchEnabled(true);
@@ -325,31 +345,25 @@ public class MonChartFragment extends BaseFragment<MonChartPresenter> implements
         //设置是否可以通过双击屏幕放大图表。默认是true
         mLineChartView.setDoubleTapToZoomEnabled(false);
 
+        XAxis xAxis = mLineChartView.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setAxisMinimum(0f);//设置x轴的最小值
+        xAxis.setAxisMaximum(143);//设置最大值
+        xAxis.setGranularity(1.0f);
+        xAxis.setGranularityEnabled(true);
+        xAxis.setTextSize(12);
+        xAxis.setDrawLabels(true);
+
         //缩放
-        mLineChartView.getViewPortHandler().getMatrixTouch().postScale(5f, 1f);
+        //mLineChartView.getViewPortHandler().getMatrixTouch().postScale(7.0f, 1f);
+        //mLineChartView.fitScreen();
 
         Description description = new Description();
         description.setText("");
         mLineChartView.setDescription(description);
-
     }
 
-    private void setChartData() {
-        if (mModelTempView.isSelected()) {
-            if (mTempList == null) {
-                mPresenter.getTemperatures(mQuery);
-            } else {
-                setTempChartData(mTempList);
-            }
-        } else {
-            if (mActivityList == null) {
-                mPresenter.getMovements(mQuery);
-            } else {
-                setActivityChartData(mActivityList);
-            }
-        }
-    }
-
+    // 设置活跃度数据
     private void setActivityChartData(ResponseListData<ActivityListEntity> listData) {
         List<ActivityListEntity> rows = listData.getRows();
         List<ILineDataSet> lineDataSetList = new ArrayList<>();
@@ -360,19 +374,14 @@ public class MonChartFragment extends BaseFragment<MonChartPresenter> implements
             }
             List<ActivityListEntity.ItemEntity> datas = itemTemp.getDatas();
             List<Entry> entityList = new ArrayList<>();
-            float lastTemp = 0;
             for (int i = 0; i < datas.size(); i++) {
                 ActivityListEntity.ItemEntity itemEntity = datas.get(i);
-                if (itemEntity.getMovement() > 0) {
-                    lastTemp = itemEntity.getMovement();
-                }
-                entityList.add(new Entry(i, lastTemp));
+                entityList.add(new Entry(i, itemEntity.getMovement()));
             }
             int color = getColor(j);
             LineDataSet lineDataSet = new LineDataSet(entityList, ""/*itemTemp.getEarTag()*/);
             lineDataSet.setColor(color);
             lineDataSet.setCircleColor(color);
-            //lineDataSet.setValueTextSize(12);
             lineDataSet.setLineWidth(1);
             lineDataSet.setValueTextSize(10);
             lineDataSet.setMode(LineDataSet.Mode.HORIZONTAL_BEZIER);
@@ -384,9 +393,8 @@ public class MonChartFragment extends BaseFragment<MonChartPresenter> implements
         }
 
         YAxis yAxisLeft = mLineChartView.getAxisLeft();
-        //axisLeft.setLabelCount(6, true);
         yAxisLeft.setAxisMinimum(0);
-        yAxisLeft.setAxisMaximum(100);
+        yAxisLeft.setAxisMaximum(1000);
         yAxisLeft.setGranularity(5);
         yAxisLeft.setTextSize(12);
         yAxisLeft.setValueFormatter(new ValueFormatter() {
@@ -401,12 +409,6 @@ public class MonChartFragment extends BaseFragment<MonChartPresenter> implements
 
         List<ActivityListEntity.ItemEntity> tempDatas = rows.get(0).getDatas();
         XAxis xAxis = mLineChartView.getXAxis();
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxis.setAxisMinimum(0f);//设置x轴的最小值
-        xAxis.setAxisMaximum(tempDatas.size() - 1);//设置最大值
-        xAxis.setGranularity(1.0f);
-        xAxis.setGranularityEnabled(true);
-        xAxis.setTextSize(12);
         xAxis.setValueFormatter(new ValueFormatter() {
             @Override
             public String getAxisLabel(float value, AxisBase axis) {
@@ -430,6 +432,7 @@ public class MonChartFragment extends BaseFragment<MonChartPresenter> implements
         mLineChartView.invalidate();
     }
 
+    //设置温度数据
     private void setTempChartData(ResponseListData<TempListEntity> listData) {
         List<TempListEntity> rows = listData.getRows();
         List<ILineDataSet> lineDataSetList = new ArrayList<>();
@@ -440,19 +443,14 @@ public class MonChartFragment extends BaseFragment<MonChartPresenter> implements
             }
             List<TempListEntity.ItemEntity> datas = itemTemp.getDatas();
             List<Entry> entityList = new ArrayList<>();
-            float lastTemp = 0;
             for (int i = 0; i < datas.size(); i++) {
                 TempListEntity.ItemEntity itemEntity = datas.get(i);
-                if (itemEntity.getTemperature() > 0) {
-                    lastTemp = itemEntity.getTemperature();
-                }
-                entityList.add(new Entry(i, lastTemp));
+                entityList.add(new Entry(i, itemEntity.getTemperature()));
             }
             int color = getColor(j);
             LineDataSet lineDataSet = new LineDataSet(entityList, ""/*itemTemp.getEarTag()*/);
             lineDataSet.setColor(color);
             lineDataSet.setCircleColor(color);
-            //lineDataSet.setValueTextSize(12);
             lineDataSet.setLineWidth(1);
             lineDataSet.setValueTextSize(10);
             lineDataSet.setMode(LineDataSet.Mode.HORIZONTAL_BEZIER);
@@ -464,7 +462,6 @@ public class MonChartFragment extends BaseFragment<MonChartPresenter> implements
         }
 
         YAxis yAxisLeft = mLineChartView.getAxisLeft();
-        //axisLeft.setLabelCount(6, true);
         yAxisLeft.setAxisMinimum(25);
         yAxisLeft.setAxisMaximum(50);
         yAxisLeft.setGranularity(5);
@@ -481,12 +478,6 @@ public class MonChartFragment extends BaseFragment<MonChartPresenter> implements
 
         List<TempListEntity.ItemEntity> tempDatas = rows.get(0).getDatas();
         XAxis xAxis = mLineChartView.getXAxis();
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxis.setAxisMinimum(0f);//设置x轴的最小值
-        xAxis.setAxisMaximum(tempDatas.size() - 1);//设置最大值
-        xAxis.setGranularity(1.0f);
-        xAxis.setGranularityEnabled(true);
-        xAxis.setTextSize(12);
         xAxis.setValueFormatter(new ValueFormatter() {
             @Override
             public String getAxisLabel(float value, AxisBase axis) {
@@ -510,6 +501,7 @@ public class MonChartFragment extends BaseFragment<MonChartPresenter> implements
         mLineChartView.invalidate();
     }
 
+    //温度 earTag
     private void setTempChartsMenus(ResponseListData<TempListEntity> listData) {
         List<TempListEntity> rows = listData.getRows();
         List<ChartEarTagAdapter.MenuEntity> earTagMenuList = new ArrayList<>();
@@ -524,6 +516,7 @@ public class MonChartFragment extends BaseFragment<MonChartPresenter> implements
         mEarTagAdapter.notifyDataSetChanged();
     }
 
+    //活跃度 earTag
     private void setActivityChartsMenus(ResponseListData<ActivityListEntity> listData) {
         List<ActivityListEntity> rows = listData.getRows();
         List<ChartEarTagAdapter.MenuEntity> earTagMenuList = new ArrayList<>();
