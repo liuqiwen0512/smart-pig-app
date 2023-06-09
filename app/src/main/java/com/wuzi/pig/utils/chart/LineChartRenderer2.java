@@ -164,9 +164,9 @@ public class LineChartRenderer2 extends LineRadarRenderer {
 
             for (int j = mXBounds.min + 1; j <= mXBounds.range + mXBounds.min; j++) {
                 Entry entry = dataSet.getEntryForIndex(j);
-                if (entry.getY() == 0 || Float.isNaN(entry.getY())) {
+                /*if (entry.getY() == 0 || Float.isNaN(entry.getY())) {
                     continue;
-                }
+                }*/
                 prev = cur;
                 cur = entry; //dataSet.getEntryForIndex(j);
 
@@ -328,7 +328,6 @@ public class LineChartRenderer2 extends LineRadarRenderer {
         } else {
             canvas = c;
         }
-
         mXBounds.set(mChart, dataSet);
 
         // if drawing filled is enabled
@@ -346,6 +345,7 @@ public class LineChartRenderer2 extends LineRadarRenderer {
 
                 Entry e = dataSet.getEntryForIndex(j);
                 if (e == null) continue;
+                if (e.getY() <= 0) continue;
 
                 mLineBuffer[0] = e.getX();
                 mLineBuffer[1] = e.getY() * phaseY;
@@ -583,6 +583,8 @@ public class LineChartRenderer2 extends LineRadarRenderer {
 
                     Entry entry = dataSet.getEntryForIndex(j / 2 + mXBounds.min);
 
+                    if (entry.getY() <= 0) continue;
+
                     if (dataSet.isDrawValuesEnabled()) {
                         drawValue(c, formatter.getPointLabel(entry), x, y - valOffset, dataSet.getValueTextColor(j / 2));
                     }
@@ -683,6 +685,7 @@ public class LineChartRenderer2 extends LineRadarRenderer {
                 Entry e = dataSet.getEntryForIndex(j);
 
                 if (e == null) break;
+                if (e.getY() <= 0) continue;
 
                 mCirclesBuffer[0] = e.getX();
                 mCirclesBuffer[1] = e.getY() * phaseY;

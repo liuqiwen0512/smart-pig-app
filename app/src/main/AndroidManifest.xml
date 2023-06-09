@@ -89,6 +89,7 @@
             android:name=".module.monitor.MonChartActivity"
             android:exported="true"
             android:screenOrientation="portrait"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:theme="@style/Theme.MaterialComponents.Light.NoActionBar" />
     </application>
 

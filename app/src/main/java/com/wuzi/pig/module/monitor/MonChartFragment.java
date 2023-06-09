@@ -2,11 +2,14 @@ package com.wuzi.pig.module.monitor;
 
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.text.TextPaint;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatTextView;
+import androidx.constraintlayout.utils.widget.ImageFilterView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -21,6 +24,7 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
+import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.wuzi.pig.R;
 import com.wuzi.pig.base.BaseFragment;
 import com.wuzi.pig.entity.ActivityListEntity;
@@ -38,6 +42,7 @@ import com.wuzi.pig.utils.ToastUtils;
 import com.wuzi.pig.utils.UIUtils;
 import com.wuzi.pig.utils.tools.TimeUtils;
 
+import java.lang.ref.WeakReference;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -58,9 +63,9 @@ public class MonChartFragment extends BaseFragment<MonChartPresenter> implements
     @BindView(R.id.pig_count)
     AppCompatTextView mPigCountView;
     @BindView(R.id.ear_tag_left)
-    View mEarTagLeftView;
+    ImageFilterView mEarTagLeftView;
     @BindView(R.id.ear_tag_right)
-    View mEarTagRightView;
+    ImageFilterView mEarTagRightView;
     @BindView(R.id.model_temp)
     AppCompatTextView mModelTempView;
     @BindView(R.id.model_activity)
@@ -71,7 +76,20 @@ public class MonChartFragment extends BaseFragment<MonChartPresenter> implements
     RecyclerView mEarTagRecyclerView;
     @BindView(R.id.chart)
     LineChart mLineChartView;
+    @BindView(R.id.chart_fold)
+    View mChartFoldView;
+    @BindView(R.id.chart_plus)
+    View mChartPlusView;
+    @BindView(R.id.chart_minus)
+    View mChartMinusView;
+    @BindView(R.id.chart_left)
+    View mChartLeftView;
+    @BindView(R.id.chart_right)
+    View mChartRightView;
+    @BindView(R.id.chart_fullscreen)
+    View mChartFullscreenView;
 
+    private HandlerImpl mHandler;
     private ResponseListData<TempListEntity> mTempList;
     private ResponseListData<ActivityListEntity> mActivityList;
     private Map<String, String> mUnSelectedTagMap = new HashMap<>();
@@ -95,6 +113,8 @@ public class MonChartFragment extends BaseFragment<MonChartPresenter> implements
         StatusBarUtils.setPadding(mContext, view);
         setPigstyEntity(mPigstyEntity);
         initLineChartView();
+        setChartMenusStatus();
+        mHandler = new HandlerImpl(this);
 
         String queryDate = getQueryDate(mQueryCalendar);
         mQuery = new MonChartContract.Query();
@@ -152,13 +172,15 @@ public class MonChartFragment extends BaseFragment<MonChartPresenter> implements
         });
 
         setToDayValue(mQueryCalendar);
+        setEarScrollStatus();
         setSelectorModel(mModelTempView);
 
         mPresenter.getTemperatures(mQuery);
     }
 
     @OnClick({R.id.back, R.id.prev_day, R.id.next_day, R.id.ear_tag_left,
-            R.id.ear_tag_right, R.id.model_temp, R.id.model_activity})
+            R.id.ear_tag_right, R.id.model_temp, R.id.model_activity,
+            R.id.chart_plus, R.id.chart_minus, R.id.chart_left, R.id.chart_right, R.id.chart_fullscreen})
     protected void onClickView(View v) {
         if (!TimeUtils.havePast200msec()) {
             return;
@@ -213,6 +235,61 @@ public class MonChartFragment extends BaseFragment<MonChartPresenter> implements
                 setChartData();
                 break;
             }
+            case R.id.chart_plus: {
+                if (mLineChartView.isScaleXEnabled()) {
+                    ViewPortHandler viewPortHandler = mLineChartView.getViewPortHandler();
+                    float currentScaleX = Math.min(viewPortHandler.getScaleX() + 1.4f, viewPortHandler.getMaxScaleX());
+                    mLineChartView.zoomAndCenterAnimated(currentScaleX, 1.0f,
+                            mLineChartView.getLowestVisibleX(), 0,
+                            YAxis.AxisDependency.LEFT, 200);
+                    mChartPlusView.setEnabled(currentScaleX < viewPortHandler.getMaxScaleX());
+                    mHandler.sendChangeChart();
+                    LogUtils.e(TAG, " chart_plus - currentScaleX : " + currentScaleX);
+                }
+                break;
+            }
+            case R.id.chart_minus: {
+                if (mLineChartView.isScaleXEnabled()) {
+                    ViewPortHandler viewPortHandler = mLineChartView.getViewPortHandler();
+                    float currentScaleX = Math.max(viewPortHandler.getScaleX() - 1.4f, viewPortHandler.getMinScaleX());
+                    mLineChartView.zoomAndCenterAnimated(currentScaleX, 1.0f,
+                            mLineChartView.getLowestVisibleX(), 0,
+                            YAxis.AxisDependency.LEFT, 200);
+                    mChartMinusView.setEnabled(currentScaleX > viewPortHandler.getMinScaleX());
+                    mHandler.sendChangeChart();
+                    LogUtils.e(TAG, " chart_minus - currentScaleX : " + currentScaleX);
+                }
+                break;
+            }
+            case R.id.chart_left: {
+                XAxis xAxis = mLineChartView.getXAxis();
+                float lowestVisibleX = mLineChartView.getLowestVisibleX();
+                float visibleX = xAxis.mEntries[0];
+                if (Math.abs(lowestVisibleX - visibleX) < 1) {
+                    visibleX = xAxis.mEntries[1];
+                }
+                mLineChartView.moveViewToAnimated(visibleX, 0, YAxis.AxisDependency.LEFT, 200);
+                mHandler.sendChangeChart();
+                break;
+            }
+            case R.id.chart_right: {
+                XAxis xAxis = mLineChartView.getXAxis();
+                float lowestVisibleX = mLineChartView.getLowestVisibleX();
+                float highestVisibleX = mLineChartView.getHighestVisibleX();
+                float diff = Math.abs(highestVisibleX - xAxis.mEntries[xAxis.mEntryCount - 1]);
+                float visibleX = Math.max(lowestVisibleX - diff, 0);
+                if (diff < 0.05) {
+                    float interval = Math.abs(xAxis.mEntries[1] - xAxis.mEntries[0]);
+                    visibleX = Math.max(lowestVisibleX - interval, 0);
+                }
+                mLineChartView.moveViewToAnimated(visibleX, 0, YAxis.AxisDependency.RIGHT, 200);
+                mHandler.sendChangeChart();
+                break;
+            }
+            case R.id.chart_fullscreen: {
+
+                break;
+            }
         }
     }
 
@@ -225,6 +302,12 @@ public class MonChartFragment extends BaseFragment<MonChartPresenter> implements
         mPigCountView.setText("在线生猪：" + listData.getTotal());
         mTempList = listData;
         setTempChartsMenus(listData);
+        mEarTagRecyclerView.post(new Runnable() {
+            @Override
+            public void run() {
+                setEarScrollStatus();
+            }
+        });
         setChartData();
     }
 
@@ -237,6 +320,12 @@ public class MonChartFragment extends BaseFragment<MonChartPresenter> implements
         mPigCountView.setText("在线生猪：" + listData.getTotal());
         mActivityList = listData;
         setActivityChartsMenus(listData);
+        mEarTagRecyclerView.post(new Runnable() {
+            @Override
+            public void run() {
+                setEarScrollStatus();
+            }
+        });
         setChartData();
     }
 
@@ -326,6 +415,18 @@ public class MonChartFragment extends BaseFragment<MonChartPresenter> implements
         }
     }
 
+    private void setChartMenusStatus() {
+        float maxVisible = mLineChartView.getXAxis().getAxisMaximum();
+        float lowestX = mLineChartView.getLowestVisibleX();
+        float highestX = mLineChartView.getHighestVisibleX();
+        ViewPortHandler viewPortHandler = mLineChartView.getViewPortHandler();
+        mChartFoldView.setSelected(!viewPortHandler.isFullyZoomedOutX());
+        mChartLeftView.setEnabled(highestX < maxVisible);
+        mChartRightView.setEnabled(lowestX > 0);
+        mChartPlusView.setEnabled(viewPortHandler.canZoomInMoreX());
+        mChartMinusView.setEnabled(viewPortHandler.canZoomOutMoreX());
+    }
+
     //初始化图表绘制
     private void initLineChartView() {
         //设置chart是否可以触摸
@@ -345,6 +446,8 @@ public class MonChartFragment extends BaseFragment<MonChartPresenter> implements
         //设置是否可以通过双击屏幕放大图表。默认是true
         mLineChartView.setDoubleTapToZoomEnabled(false);
 
+        //设置x轴
+        mLineChartView.setExtraBottomOffset(10);
         XAxis xAxis = mLineChartView.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setAxisMinimum(0f);//设置x轴的最小值
@@ -357,6 +460,11 @@ public class MonChartFragment extends BaseFragment<MonChartPresenter> implements
         //缩放
         //mLineChartView.getViewPortHandler().getMatrixTouch().postScale(7.0f, 1f);
         //mLineChartView.fitScreen();
+
+        mLineChartView.setVisibleXRangeMinimum(6);
+
+        Legend legend = mLineChartView.getLegend();
+        legend.setEnabled(false);
 
         Description description = new Description();
         description.setText("");
@@ -388,14 +496,12 @@ public class MonChartFragment extends BaseFragment<MonChartPresenter> implements
             lineDataSet.setValueFormatter(new ValueFormatter() {
             });
             lineDataSetList.add(lineDataSet);
-
-            LogUtils.e(TAG, " length : " + getColor(j) + "; color : " + color);
         }
 
         YAxis yAxisLeft = mLineChartView.getAxisLeft();
         yAxisLeft.setAxisMinimum(0);
-        yAxisLeft.setAxisMaximum(1000);
-        yAxisLeft.setGranularity(5);
+        yAxisLeft.setAxisMaximum(2000);
+        yAxisLeft.setGranularity(500);
         yAxisLeft.setTextSize(12);
         yAxisLeft.setValueFormatter(new ValueFormatter() {
             @Override
@@ -424,10 +530,6 @@ public class MonChartFragment extends BaseFragment<MonChartPresenter> implements
 
         LineData lineData = new LineData(lineDataSetList);
         mLineChartView.setData(lineData);
-        mLineChartView.setVisibleXRangeMinimum(6);
-
-        Legend legend = mLineChartView.getLegend();
-        legend.setEnabled(false);
 
         mLineChartView.invalidate();
     }
@@ -457,8 +559,6 @@ public class MonChartFragment extends BaseFragment<MonChartPresenter> implements
             lineDataSet.setValueFormatter(new ValueFormatter() {
             });
             lineDataSetList.add(lineDataSet);
-
-            LogUtils.e(TAG, " length : " + getColor(j) + "; color : " + color);
         }
 
         YAxis yAxisLeft = mLineChartView.getAxisLeft();
@@ -481,6 +581,7 @@ public class MonChartFragment extends BaseFragment<MonChartPresenter> implements
         xAxis.setValueFormatter(new ValueFormatter() {
             @Override
             public String getAxisLabel(float value, AxisBase axis) {
+                //return String.valueOf((int) value);
                 if (value >= tempDatas.size()) {
                     return "";
                 }
@@ -493,10 +594,6 @@ public class MonChartFragment extends BaseFragment<MonChartPresenter> implements
 
         LineData lineData = new LineData(lineDataSetList);
         mLineChartView.setData(lineData);
-        mLineChartView.setVisibleXRangeMinimum(6);
-
-        Legend legend = mLineChartView.getLegend();
-        legend.setEnabled(false);
 
         mLineChartView.invalidate();
     }
@@ -533,6 +630,37 @@ public class MonChartFragment extends BaseFragment<MonChartPresenter> implements
 
     private int getColor(int position) {
         return mColors[position % mColors.length];
+    }
+
+    public static class HandlerImpl extends Handler {
+
+        public final static int WHAT_CHART_CHANGE = 100;
+
+        private WeakReference<MonChartFragment> mFragmentWeakRef = null;
+
+        public HandlerImpl(MonChartFragment fragment) {
+            mFragmentWeakRef = new WeakReference<MonChartFragment>(fragment);
+        }
+
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            switch (msg.what) {
+                case WHAT_CHART_CHANGE: {
+                    MonChartFragment fragment = mFragmentWeakRef.get();
+                    if (fragment != null) {
+                        fragment.setChartMenusStatus();
+                    }
+                    break;
+                }
+            }
+        }
+
+        public void sendChangeChart() {
+            removeMessages(WHAT_CHART_CHANGE);
+            Message message = Message.obtain();
+            message.what = WHAT_CHART_CHANGE;
+            sendEmptyMessageDelayed(WHAT_CHART_CHANGE, 250);
+        }
     }
 
 }
