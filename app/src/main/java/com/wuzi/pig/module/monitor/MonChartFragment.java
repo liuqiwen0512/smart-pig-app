@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextPaint;
+import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -24,6 +25,7 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
+import com.github.mikephil.charting.listener.ChartTouchListener;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.wuzi.pig.R;
 import com.wuzi.pig.base.BaseFragment;
@@ -40,6 +42,7 @@ import com.wuzi.pig.utils.StatusBarUtils;
 import com.wuzi.pig.utils.StringUtils;
 import com.wuzi.pig.utils.ToastUtils;
 import com.wuzi.pig.utils.UIUtils;
+import com.wuzi.pig.utils.listener.OnChartGestureListenerImpl;
 import com.wuzi.pig.utils.tools.TimeUtils;
 
 import java.lang.ref.WeakReference;
@@ -469,6 +472,13 @@ public class MonChartFragment extends BaseFragment<MonChartPresenter> implements
         Description description = new Description();
         description.setText("");
         mLineChartView.setDescription(description);
+
+        mLineChartView.setOnChartGestureListener(new OnChartGestureListenerImpl() {
+            @Override
+            public void onChartGestureEnd(MotionEvent me, ChartTouchListener.ChartGesture lastPerformedGesture) {
+                setChartMenusStatus();
+            }
+        });
     }
 
     // 设置活跃度数据
