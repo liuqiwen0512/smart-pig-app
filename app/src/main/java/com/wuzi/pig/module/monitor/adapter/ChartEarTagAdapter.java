@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -52,6 +53,8 @@ public class ChartEarTagAdapter extends RecyclerView.Adapter<ChartEarTagAdapter.
 
     class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
+        @BindView(R.id.bg)
+        View mBgView;
         @BindView(R.id.color)
         View mColorView;
         @BindView(R.id.name)
@@ -65,6 +68,11 @@ public class ChartEarTagAdapter extends RecyclerView.Adapter<ChartEarTagAdapter.
 
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
             MenuEntity menuEntity = mList.get(position);
+            if (menuEntity.selected) {
+                ViewCompat.setBackgroundTintList(mBgView, new ColorStateList(new int[][]{{}}, new int[]{menuEntity.color}));
+            } else {
+                ViewCompat.setBackgroundTintList(mBgView, new ColorStateList(new int[][]{{}}, new int[]{ResourcesCompat.getColor(mContext.getResources(), R.color.grey_df, null)}));
+            }
             ViewCompat.setBackgroundTintList(mColorView, new ColorStateList(new int[][]{{}}, new int[]{menuEntity.color}));
             mNameView.setText(menuEntity.earTag);
             mNameView.setTextColor(menuEntity.selected ? menuEntity.color : ContextCompat.getColor(mContext, R.color.grey_76));

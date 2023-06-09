@@ -29,8 +29,8 @@ import com.github.mikephil.charting.listener.ChartTouchListener;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.wuzi.pig.R;
 import com.wuzi.pig.base.BaseFragment;
+import com.wuzi.pig.constant.MonitorConstant;
 import com.wuzi.pig.entity.ActivityListEntity;
-import com.wuzi.pig.entity.PigstyEntity;
 import com.wuzi.pig.entity.ResponseListData;
 import com.wuzi.pig.entity.TempListEntity;
 import com.wuzi.pig.module.monitor.adapter.ChartEarTagAdapter;
@@ -42,6 +42,7 @@ import com.wuzi.pig.utils.StatusBarUtils;
 import com.wuzi.pig.utils.StringUtils;
 import com.wuzi.pig.utils.ToastUtils;
 import com.wuzi.pig.utils.UIUtils;
+import com.wuzi.pig.utils.fun.Function2;
 import com.wuzi.pig.utils.listener.OnChartGestureListenerImpl;
 import com.wuzi.pig.utils.tools.TimeUtils;
 
@@ -50,14 +51,12 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.OnClick;
 
-public class MonChartFragment extends BaseFragment<MonChartPresenter> implements MonChartContract.IView {
+public class MonPigstyChartPortraitFragment extends BaseFragment<MonChartPresenter> implements MonChartContract.IView {
 
     @BindView(R.id.back)
     AppCompatTextView mBackView;
@@ -93,18 +92,9 @@ public class MonChartFragment extends BaseFragment<MonChartPresenter> implements
     View mChartFullscreenView;
 
     private HandlerImpl mHandler;
-    private ResponseListData<TempListEntity> mTempList;
-    private ResponseListData<ActivityListEntity> mActivityList;
-    private Map<String, String> mUnSelectedTagMap = new HashMap<>();
-    private int[] mColors = new int[]{0xFFe6194B, 0xFF3cb44b, 0xFFffe119, 0xFF4363d8, 0xFFf58231,
-            0xFF911eb4, 0xFF42d4f4, 0xFFf032e6, 0xFFbfef45, 0xFFfabed4,
-            0xFF469990, 0xFFdcbeff, 0xFF9A6324, 0xFFfffac8, 0xFF800000,
-            0xFFaaffc3, 0xFF808000, 0xFFffd8b1, 0xFF000075, 0xFFa9a9a9, 0xFF000000
-    };
+    private Function2<String, Object> mEventListener;
     private ChartEarTagAdapter mEarTagAdapter;
-    private PigstyEntity mPigstyEntity;
-    private MonChartContract.Query mQuery;
-    private Calendar mQueryCalendar = Calendar.getInstance();
+    private MonChartContract.UIEntity mUIEntity;
 
     @Override
     protected int getLayoutID() {
@@ -114,16 +104,7 @@ public class MonChartFragment extends BaseFragment<MonChartPresenter> implements
     @Override
     protected void initView(View view, Bundle savedInstanceState) {
         StatusBarUtils.setPadding(mContext, view);
-        setPigstyEntity(mPigstyEntity);
-        initLineChartView();
-        setChartMenusStatus();
         mHandler = new HandlerImpl(this);
-
-        String queryDate = getQueryDate(mQueryCalendar);
-        mQuery = new MonChartContract.Query();
-        mQuery.pigstyId = mPigstyEntity.getPigstyId();
-        mQuery.beginTime = queryDate;
-        mQuery.endTime = queryDate;
 
         mEarTagAdapter = new ChartEarTagAdapter(mContext);
         mEarTagRecyclerView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false));
@@ -132,26 +113,33 @@ public class MonChartFragment extends BaseFragment<MonChartPresenter> implements
             String earTag = entity.earTag;
             boolean selected = !entity.selected;
             if (selected) {
-                mUnSelectedTagMap.remove(earTag);
+                mUIEntity.unSelectedTagMap.remove(earTag);
             } else {
-                mUnSelectedTagMap.put(earTag, earTag);
+                mUIEntity.unSelectedTagMap.put(earTag, earTag);
             }
             mEarTagAdapter.notifyItemChanged(earTag, selected);
-            List<TempListEntity> tempRows = mTempList.getRows();
-            for (TempListEntity itemEntity : tempRows) {
-                if (StringUtils.equals(itemEntity.getEarTag(), earTag)) {
-                    itemEntity.setSelected(selected);
+            if (mUIEntity.tempList != null) {
+                List<TempListEntity> tempRows = mUIEntity.tempList.getRows();
+                for (TempListEntity itemEntity : tempRows) {
+                    if (StringUtils.equals(itemEntity.getEarTag(), earTag)) {
+                        itemEntity.setSelected(selected);
+                    }
+                }
+                if (mUIEntity.model == MonitorConstant.MODEL_TEMPERATURES) {
+                    setTempChartData(mUIEntity.tempList);
                 }
             }
-            if (mActivityList != null) {
-                List<ActivityListEntity> activityRows = mActivityList.getRows();
+            if (mUIEntity.activityList != null) {
+                List<ActivityListEntity> activityRows = mUIEntity.activityList.getRows();
                 for (ActivityListEntity itemEntity : activityRows) {
                     if (StringUtils.equals(itemEntity.getEarTag(), earTag)) {
                         itemEntity.setSelected(selected);
                     }
                 }
+                if (mUIEntity.model == MonitorConstant.MODEL_ACTIVITY) {
+                    setActivityChartData(mUIEntity.activityList);
+                }
             }
-            setChartData();
         });
         mEarTagRecyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
             int mMargin = UIUtils.dip2px(5);
@@ -174,11 +162,8 @@ public class MonChartFragment extends BaseFragment<MonChartPresenter> implements
             }
         });
 
-        setToDayValue(mQueryCalendar);
-        setEarScrollStatus();
-        setSelectorModel(mModelTempView);
-
-        mPresenter.getTemperatures(mQuery);
+        setUIEntity(mUIEntity);
+        //mPresenter.getTemperatures(mQuery);
     }
 
     @OnClick({R.id.back, R.id.prev_day, R.id.next_day, R.id.ear_tag_left,
@@ -194,25 +179,15 @@ public class MonChartFragment extends BaseFragment<MonChartPresenter> implements
                 break;
             }
             case R.id.prev_day: {
-                mQueryCalendar.add(Calendar.DATE, -1);
-                String queryDate = getQueryDate(mQueryCalendar);
-                mQuery.beginTime = queryDate;
-                mQuery.endTime = queryDate;
-                mTempList = null;
-                mActivityList = null;
-                setToDayValue(mQueryCalendar);
-                setChartData();
+                if (mEventListener != null) {
+                    mEventListener.action(MonPigstyChartMainFragment.EVENT_PREVE_DAY, mUIEntity.calendar);
+                }
                 break;
             }
             case R.id.next_day: {
-                mQueryCalendar.add(Calendar.DATE, 1);
-                String queryDate = getQueryDate(mQueryCalendar);
-                mQuery.beginTime = queryDate;
-                mQuery.endTime = queryDate;
-                mTempList = null;
-                mActivityList = null;
-                setToDayValue(mQueryCalendar);
-                setChartData();
+                if (mEventListener != null) {
+                    mEventListener.action(MonPigstyChartMainFragment.EVENT_NEXT_DAY, mUIEntity.calendar);
+                }
                 break;
             }
             case R.id.ear_tag_left: {
@@ -229,13 +204,23 @@ public class MonChartFragment extends BaseFragment<MonChartPresenter> implements
                 break;
             }
             case R.id.model_temp: {
+                mUIEntity.model = MonitorConstant.MODEL_TEMPERATURES;
                 setSelectorModel(mModelTempView);
-                setChartData();
+                if (mUIEntity.tempList != null) {
+                    setTempChartData(mUIEntity.tempList);
+                } else if (mEventListener != null) {
+                    mEventListener.action(MonPigstyChartMainFragment.EVENT_MODEL_TEMPERATURE, mUIEntity.calendar);
+                }
                 break;
             }
             case R.id.model_activity: {
+                mUIEntity.model = MonitorConstant.MODEL_ACTIVITY;
                 setSelectorModel(mModelActivityView);
-                setChartData();
+                if (mUIEntity.activityList != null) {
+                    setActivityChartData(mUIEntity.activityList);
+                } else if (mEventListener != null) {
+                    mEventListener.action(MonPigstyChartMainFragment.EVENT_MODEL_ACTIVITY, mUIEntity.calendar);
+                }
                 break;
             }
             case R.id.chart_plus: {
@@ -296,40 +281,68 @@ public class MonChartFragment extends BaseFragment<MonChartPresenter> implements
         }
     }
 
+    public void setUIEntity(MonChartContract.UIEntity UIEntity) {
+        mUIEntity = UIEntity;
+        if (mLineChartView == null) return;
+
+        initLineChartView();
+
+        switch (mUIEntity.model) {
+            case MonitorConstant.MODEL_TEMPERATURES:
+                setSelectorModel(mModelTempView);
+                setTempChartsMenus(mUIEntity.tempList);
+                setTempChartData(mUIEntity.tempList);
+                break;
+            case MonitorConstant.MODEL_ACTIVITY:
+                setSelectorModel(mModelActivityView);
+                setActivityChartsMenus(mUIEntity.activityList);
+                setActivityChartData(mUIEntity.activityList);
+                break;
+        }
+
+        if (mBackView != null && mUIEntity.pigstyEntity != null) {
+            mBackView.setText(StringUtils.ASCII16ToString(mUIEntity.pigstyEntity.getPigstyName()));
+        }
+
+        int month = mUIEntity.calendar.get(Calendar.MONTH) + 1;
+        int date = mUIEntity.calendar.get(Calendar.DAY_OF_MONTH);
+        mTodayValueView.setText(month + "月" + date + "日");
+
+        mEarTagRecyclerView.post(new Runnable() {
+            @Override
+            public void run() {
+                setChartMenusStatus();
+                setEarScrollStatus();
+            }
+        });
+    }
+
+    public void setEventListener(Function2<String, Object> eventListener) {
+        mEventListener = eventListener;
+    }
+
     @Override
     public void performTemperatures(ResponseListData<TempListEntity> listData, int fromTag) {
-        List<TempListEntity> rows = listData.getRows();
-        for (TempListEntity itemEntity : rows) {
-            itemEntity.setSelected(!mUnSelectedTagMap.containsKey(itemEntity.getEarTag()));
-        }
-        mPigCountView.setText("在线生猪：" + listData.getTotal());
-        mTempList = listData;
         setTempChartsMenus(listData);
+        setTempChartData(listData);
         mEarTagRecyclerView.post(new Runnable() {
             @Override
             public void run() {
                 setEarScrollStatus();
             }
         });
-        setChartData();
     }
 
     @Override
     public void performActivitys(ResponseListData<ActivityListEntity> listData, int fromTag) {
-        List<ActivityListEntity> rows = listData.getRows();
-        for (ActivityListEntity itemEntity : rows) {
-            itemEntity.setSelected(!mUnSelectedTagMap.containsKey(itemEntity.getEarTag()));
-        }
-        mPigCountView.setText("在线生猪：" + listData.getTotal());
-        mActivityList = listData;
         setActivityChartsMenus(listData);
+        setActivityChartData(listData);
         mEarTagRecyclerView.post(new Runnable() {
             @Override
             public void run() {
                 setEarScrollStatus();
             }
         });
-        setChartData();
     }
 
     @Override
@@ -339,19 +352,6 @@ public class MonChartFragment extends BaseFragment<MonChartPresenter> implements
             mLineChartView.setNoDataText("暂无数据");
         }
         ToastUtils.show(error.getPromptMessage());
-    }
-
-    public void setPigstyEntity(PigstyEntity pigstyEntity) {
-        mPigstyEntity = pigstyEntity;
-        if (mBackView != null && mPigstyEntity != null) {
-            mBackView.setText(StringUtils.ASCII16ToString(mPigstyEntity.getPigstyName()));
-        }
-    }
-
-    private void setToDayValue(Calendar instance) {
-        int month = instance.get(Calendar.MONTH) + 1;
-        int date = instance.get(Calendar.DAY_OF_MONTH);
-        mTodayValueView.setText(month + "月" + date + "日");
     }
 
     private String getQueryDate(Calendar instance) {
@@ -368,23 +368,6 @@ public class MonChartFragment extends BaseFragment<MonChartPresenter> implements
         int lastPosition = layoutManager.findLastCompletelyVisibleItemPosition();
         mEarTagLeftView.setEnabled(firstPosition != 0);
         mEarTagRightView.setEnabled(lastPosition != itemCount - 1);
-    }
-
-    // 请求图表数据
-    private void setChartData() {
-        if (mModelTempView.isSelected()) {
-            if (mTempList == null) {
-                mPresenter.getTemperatures(mQuery);
-            } else {
-                setTempChartData(mTempList);
-            }
-        } else {
-            if (mActivityList == null) {
-                mPresenter.getMovements(mQuery);
-            } else {
-                setActivityChartData(mActivityList);
-            }
-        }
     }
 
     //切换图表类型- 温度、活跃度
@@ -483,6 +466,7 @@ public class MonChartFragment extends BaseFragment<MonChartPresenter> implements
 
     // 设置活跃度数据
     private void setActivityChartData(ResponseListData<ActivityListEntity> listData) {
+        if (listData == null) return;
         List<ActivityListEntity> rows = listData.getRows();
         List<ILineDataSet> lineDataSetList = new ArrayList<>();
         for (int j = 0; j < rows.size(); j++) {
@@ -546,6 +530,7 @@ public class MonChartFragment extends BaseFragment<MonChartPresenter> implements
 
     //设置温度数据
     private void setTempChartData(ResponseListData<TempListEntity> listData) {
+        if (listData == null) return;
         List<TempListEntity> rows = listData.getRows();
         List<ILineDataSet> lineDataSetList = new ArrayList<>();
         for (int j = 0; j < rows.size(); j++) {
@@ -610,6 +595,7 @@ public class MonChartFragment extends BaseFragment<MonChartPresenter> implements
 
     //温度 earTag
     private void setTempChartsMenus(ResponseListData<TempListEntity> listData) {
+        if (listData == null) return;
         List<TempListEntity> rows = listData.getRows();
         List<ChartEarTagAdapter.MenuEntity> earTagMenuList = new ArrayList<>();
         for (int i = 0; i < rows.size(); i++) {
@@ -621,10 +607,12 @@ public class MonChartFragment extends BaseFragment<MonChartPresenter> implements
         }
         mEarTagAdapter.setList(earTagMenuList);
         mEarTagAdapter.notifyDataSetChanged();
+        mPigCountView.setText("在线生猪：" + listData.getTotal());
     }
 
     //活跃度 earTag
     private void setActivityChartsMenus(ResponseListData<ActivityListEntity> listData) {
+        if (listData == null) return;
         List<ActivityListEntity> rows = listData.getRows();
         List<ChartEarTagAdapter.MenuEntity> earTagMenuList = new ArrayList<>();
         for (int i = 0; i < rows.size(); i++) {
@@ -636,27 +624,28 @@ public class MonChartFragment extends BaseFragment<MonChartPresenter> implements
         }
         mEarTagAdapter.setList(earTagMenuList);
         mEarTagAdapter.notifyDataSetChanged();
+        mPigCountView.setText("在线生猪：" + listData.getTotal());
     }
 
     private int getColor(int position) {
-        return mColors[position % mColors.length];
+        return mUIEntity.colors[position % mUIEntity.colors.length];
     }
 
     public static class HandlerImpl extends Handler {
 
         public final static int WHAT_CHART_CHANGE = 100;
 
-        private WeakReference<MonChartFragment> mFragmentWeakRef = null;
+        private WeakReference<MonPigstyChartPortraitFragment> mFragmentWeakRef = null;
 
-        public HandlerImpl(MonChartFragment fragment) {
-            mFragmentWeakRef = new WeakReference<MonChartFragment>(fragment);
+        public HandlerImpl(MonPigstyChartPortraitFragment fragment) {
+            mFragmentWeakRef = new WeakReference<MonPigstyChartPortraitFragment>(fragment);
         }
 
         @Override
         public void handleMessage(@NonNull Message msg) {
             switch (msg.what) {
                 case WHAT_CHART_CHANGE: {
-                    MonChartFragment fragment = mFragmentWeakRef.get();
+                    MonPigstyChartPortraitFragment fragment = mFragmentWeakRef.get();
                     if (fragment != null) {
                         fragment.setChartMenusStatus();
                     }

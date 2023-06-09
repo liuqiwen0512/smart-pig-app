@@ -33,9 +33,11 @@ public class MonChartActivity extends BaseActivity {
     }
 
     private void switchFragment(String key) {
-        MonChartFragment monChartFragment = new MonChartFragment();
-        monChartFragment.setPigstyEntity(mPigstyEntity);
-        Fragment fragment = monChartFragment;
+        /*MonPigstyChartPortraitFragment monPigstyChartPortraitFragment = new MonPigstyChartPortraitFragment();
+        monPigstyChartPortraitFragment.setPigstyEntity(mPigstyEntity);  */
+        MonPigstyChartMainFragment monPigstyChartMainFragment = new MonPigstyChartMainFragment();
+        monPigstyChartMainFragment.setPigstyEntity(mPigstyEntity);
+        Fragment fragment = monPigstyChartMainFragment;
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         List<Fragment> fragments = fragmentManager.getFragments();
