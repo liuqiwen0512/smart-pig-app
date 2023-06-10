@@ -130,4 +130,8 @@ public class TimeUtils {
         Calendar calendar = Calendar.getInstance();
         return getTimeInMillisOfDate(calendar);
     }
+
+    public static int deviationDays(Calendar c1, Calendar c2) {
+        return (int) ((c1.getTimeInMillis() - c2.getTimeInMillis()) / 3600000 / 24.0f);
+    }
 }

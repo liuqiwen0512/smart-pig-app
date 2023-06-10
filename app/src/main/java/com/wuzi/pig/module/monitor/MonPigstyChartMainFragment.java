@@ -1,5 +1,7 @@
 package com.wuzi.pig.module.monitor;
 
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.View;
 
@@ -36,12 +38,14 @@ public class MonPigstyChartMainFragment extends BaseFragment<MonChartPresenter> 
     public final static String EVENT_NEXT_DAY = "next_day";
     public final static String EVENT_LANDSCAPE = "landscape";
     public final static String EVENT_PORTRAIT = "portrait";
+    public final static String EVENT_DATE = "date";
 
     private Function2<String, Object> mEventListener = new EventListenerImpl();
+    private MonDateDialog mDateDialog;
     private MonChartContract.UIEntity mUIEntity;
     private PigstyEntity mPigstyEntity;
     private MonChartContract.Query mQuery = new MonChartContract.Query();
-    private String mCurrentFragmentTag = FRAGMENT_PORTRAIT;
+    private String mCurrentFragmentTag = FRAGMENT_LANDSCAPE;
 
     @Override
     protected int getLayoutID() {
@@ -62,7 +66,7 @@ public class MonPigstyChartMainFragment extends BaseFragment<MonChartPresenter> 
         mQuery.beginTime = queryDate;
         mQuery.endTime = queryDate;
 
-        switchFragment(mCurrentFragmentTag);
+        switchFragment(FRAGMENT_PORTRAIT);
         mPresenter.getTemperatures(mQuery);
     }
 
@@ -95,6 +99,10 @@ public class MonPigstyChartMainFragment extends BaseFragment<MonChartPresenter> 
     @Override
     public void performError(ResponseException error, int fromTag) {
         if (error.code == ResponseException.ERROR.RESULT_CODE_201) {
+            Fragment fragment = getChildFragmentManager().findFragmentByTag(mCurrentFragmentTag);
+            if (fragment != null) {
+                ((MonChartContract.IView) fragment).performError(error, fromTag);
+            }
         }
         ToastUtils.show(error.getPromptMessage());
     }
@@ -110,10 +118,26 @@ public class MonPigstyChartMainFragment extends BaseFragment<MonChartPresenter> 
     }
 
     private void switchFragment(String key) {
-        MonPigstyChartPortraitFragment portraitFragment = new MonPigstyChartPortraitFragment();
-        setFragmentData(portraitFragment);
-        Fragment fragment = portraitFragment;
+        mCurrentFragmentTag = key;
         FragmentManager fragmentManager = getChildFragmentManager();
+        Fragment fragment = fragmentManager.findFragmentByTag(key);
+        if (fragment == null) {
+            switch (key) {
+                case FRAGMENT_PORTRAIT: {
+                    MonPigstyChartPortraitFragment portraitFragment = new MonPigstyChartPortraitFragment();
+                    fragment = portraitFragment;
+                    setFragmentData(fragment);
+                    break;
+                }
+                case FRAGMENT_LANDSCAPE: {
+                    MonPigstyChartLandscapeFragment landscapeFragment = new MonPigstyChartLandscapeFragment();
+                    fragment = landscapeFragment;
+                    setFragmentData(fragment);
+                    break;
+                }
+            }
+        }
+
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         List<Fragment> fragments = fragmentManager.getFragments();
         for (Fragment item : fragments) {
@@ -141,7 +165,25 @@ public class MonPigstyChartMainFragment extends BaseFragment<MonChartPresenter> 
             MonPigstyChartPortraitFragment portraitFragment = (MonPigstyChartPortraitFragment) fragment;
             portraitFragment.setEventListener(mEventListener);
             portraitFragment.setUIEntity(mUIEntity);
+        } else if (fragment instanceof MonPigstyChartLandscapeFragment) {
+            MonPigstyChartLandscapeFragment landscapeFragment = (MonPigstyChartLandscapeFragment) fragment;
+            landscapeFragment.setEventListener(mEventListener);
+            landscapeFragment.setUIEntity(mUIEntity);
         }
+    }
+
+    private void requestChartData(Calendar calendar) {
+        mUIEntity.resetChartData();
+        mUIEntity.calendar = calendar;
+        String queryDate = getQueryDate(mUIEntity.calendar);
+        mQuery.beginTime = queryDate;
+        mQuery.endTime = queryDate;
+        if (mUIEntity.model == MonitorConstant.MODEL_TEMPERATURES) {
+            mPresenter.getTemperatures(mQuery);
+        } else if (mUIEntity.model == MonitorConstant.MODEL_ACTIVITY) {
+            mPresenter.getMovements(mQuery);
+        }
+        setFragmentData(getChildFragmentManager().findFragmentByTag(mCurrentFragmentTag));
     }
 
     private class EventListenerImpl implements Function2<String, Object> {
@@ -158,29 +200,59 @@ public class MonPigstyChartMainFragment extends BaseFragment<MonChartPresenter> 
                     break;
                 }
                 case EVENT_PREVE_DAY: {
-                    mUIEntity.tempList = null;
-                    mUIEntity.activityList = null;
                     mUIEntity.calendar.add(Calendar.DATE, -1);
-                    String queryDate = getQueryDate(mUIEntity.calendar);
-                    mQuery.beginTime = queryDate;
-                    mQuery.endTime = queryDate;
-
-                    setFragmentData(getChildFragmentManager().findFragmentByTag(mUIEntity.model));
-                    mPresenter.getMovements(mQuery);
+                    requestChartData(mUIEntity.calendar);
                     break;
                 }
                 case EVENT_NEXT_DAY: {
-                    mUIEntity.tempList = null;
-                    mUIEntity.activityList = null;
                     mUIEntity.calendar.add(Calendar.DATE, 1);
-                    String queryDate = getQueryDate(mUIEntity.calendar);
-                    mQuery.beginTime = queryDate;
-                    mQuery.endTime = queryDate;
-
-                    setFragmentData(getChildFragmentManager().findFragmentByTag(mUIEntity.model));
-                    mPresenter.getMovements(mQuery);
+                    requestChartData(mUIEntity.calendar);
                     break;
                 }
+                case EVENT_PORTRAIT: {
+                    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                    switchFragment(FRAGMENT_PORTRAIT);
+                    setFragmentData(getChildFragmentManager().findFragmentByTag(mCurrentFragmentTag));
+                    break;
+                }
+                case EVENT_LANDSCAPE: {
+                    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                    switchFragment(FRAGMENT_LANDSCAPE);
+                    setFragmentData(getChildFragmentManager().findFragmentByTag(mCurrentFragmentTag));
+                    break;
+                }
+                case EVENT_DATE: {
+                    if (mDateDialog == null) {
+                        mDateDialog = new MonDateDialog();
+                        mDateDialog.setCurrentDate(mUIEntity.calendar);
+                        mDateDialog.setOnDismissListener(dialog -> {
+                            mDateDialog = null;
+                        });
+                        mDateDialog.setSubmitListener(calendar -> {
+                            requestChartData(calendar);
+                        });
+                    }
+                    mDateDialog.showNow(getParentFragmentManager());
+                    break;
+                }
+            }
+        }
+    }
+
+    private void setRequestedOrientation(int orientation) {
+        Configuration config = this.getResources().getConfiguration();
+        switch (orientation) {
+            case ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE: {
+                if (Configuration.ORIENTATION_LANDSCAPE != config.orientation) {
+                    getActivity().setRequestedOrientation(orientation);
+                }
+                break;
+            }
+            case ActivityInfo.SCREEN_ORIENTATION_PORTRAIT: {
+                if (Configuration.ORIENTATION_PORTRAIT != config.orientation) {
+                    getActivity().setRequestedOrientation(orientation);
+                }
+                break;
             }
         }
     }

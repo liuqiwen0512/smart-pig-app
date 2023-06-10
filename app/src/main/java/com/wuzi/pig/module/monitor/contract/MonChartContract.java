@@ -57,6 +57,12 @@ public interface MonChartContract {
         public float scaleX; // chart x scale
         public float leastX; // chart x least
         public int[] colors; // chart line color
+
+        public void resetChartData() {
+            tempList = null;
+            activityList = null;
+            unSelectedTagMap.clear();
+        }
     }
 
 }

@@ -26,24 +26,42 @@ import butterknife.ButterKnife;
 
 public class ChartEarTagAdapter extends RecyclerView.Adapter<ChartEarTagAdapter.ViewHolder> {
 
+    public final static int TYPE_LANDSCAPE = 1;
+
     private Context mContext;
     private List<MenuEntity> mList = new ArrayList<>();
     private Function<MenuEntity> mClickListener;
+    private int mType;
 
     public ChartEarTagAdapter(Context context) {
+        this(context, 0);
+    }
+
+    public ChartEarTagAdapter(Context context, int type) {
         mContext = context;
+        mType = type;
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(mContext).inflate(R.layout.adapter_chart_ear_tag, parent, false);
-        return new ViewHolder(view);
+        if (viewType == TYPE_LANDSCAPE) {
+            View view = LayoutInflater.from(mContext).inflate(R.layout.adapter_chart_landscape_ear_tag, parent, false);
+            return new ViewHolder(view);
+        } else {
+            View view = LayoutInflater.from(mContext).inflate(R.layout.adapter_chart_portrait_ear_tag, parent, false);
+            return new ViewHolder(view);
+        }
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.onBindViewHolder(holder, position);
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return mType;
     }
 
     @Override
@@ -75,7 +93,7 @@ public class ChartEarTagAdapter extends RecyclerView.Adapter<ChartEarTagAdapter.
             }
             ViewCompat.setBackgroundTintList(mColorView, new ColorStateList(new int[][]{{}}, new int[]{menuEntity.color}));
             mNameView.setText(menuEntity.earTag);
-            mNameView.setTextColor(menuEntity.selected ? menuEntity.color : ContextCompat.getColor(mContext, R.color.grey_76));
+            mNameView.setTextColor(menuEntity.selected ? menuEntity.color : ContextCompat.getColor(mContext, R.color.grey_df));
         }
 
         @Override

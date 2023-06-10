@@ -11,6 +11,11 @@
         <item name="android:windowExitAnimation">@anim/slide_out_left</item>
     </style>
 
+    <style name="dialog_fade_style3">
+        <item name="android:windowEnterAnimation">@anim/slide_in_up</item>
+        <item name="android:windowExitAnimation">@anim/slide_out_down</item>
+    </style>
+
     <!--LoadingDialog-->
     <style name="loadingDialogTheme" parent="Theme.AppCompat.Dialog">
         <item name="android:windowIsFloating">true</item>

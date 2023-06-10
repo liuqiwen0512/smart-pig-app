@@ -2,8 +2,6 @@ package com.wuzi.pig.module.monitor;
 
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.text.TextPaint;
 import android.view.MotionEvent;
 import android.view.View;
@@ -38,7 +36,6 @@ import com.wuzi.pig.module.monitor.contract.MonChartContract;
 import com.wuzi.pig.module.monitor.presenter.MonChartPresenter;
 import com.wuzi.pig.module.monitor.tools.MonTools;
 import com.wuzi.pig.net.factory.ResponseException;
-import com.wuzi.pig.utils.LogUtils;
 import com.wuzi.pig.utils.StatusBarUtils;
 import com.wuzi.pig.utils.StringUtils;
 import com.wuzi.pig.utils.ToastUtils;
@@ -47,20 +44,16 @@ import com.wuzi.pig.utils.fun.Function2;
 import com.wuzi.pig.utils.listener.OnChartGestureListenerImpl;
 import com.wuzi.pig.utils.tools.TimeUtils;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
 
-public class MonPigstyChartPortraitFragment extends BaseFragment<MonChartPresenter> implements MonChartContract.IView {
+public class MonPigstyChartLandscapeFragment extends BaseFragment<MonChartPresenter> implements MonChartContract.IView {
 
     @BindView(R.id.back)
     AppCompatTextView mBackView;
-    @BindView(R.id.next_day)
-    AppCompatTextView mNextDayView;
     @BindView(R.id.today_value)
     AppCompatTextView mTodayValueView;
     @BindView(R.id.today_nickname)
@@ -81,20 +74,7 @@ public class MonPigstyChartPortraitFragment extends BaseFragment<MonChartPresent
     RecyclerView mEarTagRecyclerView;
     @BindView(R.id.chart)
     LineChart mLineChartView;
-    @BindView(R.id.chart_fold)
-    View mChartFoldView;
-    @BindView(R.id.chart_plus)
-    View mChartPlusView;
-    @BindView(R.id.chart_minus)
-    View mChartMinusView;
-    @BindView(R.id.chart_left)
-    View mChartLeftView;
-    @BindView(R.id.chart_right)
-    View mChartRightView;
-    @BindView(R.id.chart_fullscreen)
-    View mChartFullscreenView;
 
-    private HandlerImpl mHandler;
     private Function2<String, Object> mEventListener;
     private ChartEarTagAdapter mEarTagAdapter;
     private MonChartContract.UIEntity mUIEntity;
@@ -102,16 +82,16 @@ public class MonPigstyChartPortraitFragment extends BaseFragment<MonChartPresent
 
     @Override
     protected int getLayoutID() {
-        return R.layout.fragment_monitor_pigsty_chart_portrait;
+        return R.layout.fragment_monitor_pigsty_chart_landscape;
     }
 
     @Override
     protected void initView(View view, Bundle savedInstanceState) {
-        StatusBarUtils.setPadding(mContext, view);
-        mHandler = new HandlerImpl(this);
+        int statusBarHeight = StatusBarUtils.getStatusBarHeight(mContext);
+        view.setPadding(statusBarHeight, 0, 0, 0);
 
-        mEarTagAdapter = new ChartEarTagAdapter(mContext);
-        mEarTagRecyclerView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false));
+        mEarTagAdapter = new ChartEarTagAdapter(mContext, ChartEarTagAdapter.TYPE_LANDSCAPE);
+        mEarTagRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
         mEarTagRecyclerView.setAdapter(mEarTagAdapter);
         mEarTagAdapter.setClickListener(entity -> {
             String earTag = entity.earTag;
@@ -153,7 +133,7 @@ public class MonPigstyChartPortraitFragment extends BaseFragment<MonChartPresent
                 super.getItemOffsets(outRect, view, parent, state);
                 int position = parent.getChildAdapterPosition(view);
                 if (position != 0) {
-                    outRect.left = mMargin;
+                    outRect.top = mMargin;
                 }
             }
         });
@@ -170,39 +150,25 @@ public class MonPigstyChartPortraitFragment extends BaseFragment<MonChartPresent
         //mPresenter.getTemperatures(mQuery);
     }
 
-    @OnClick({R.id.back, R.id.prev_day, R.id.today_layout, R.id.next_day, R.id.ear_tag_left,
-            R.id.ear_tag_right, R.id.model_temp, R.id.model_activity,
-            R.id.chart_plus, R.id.chart_minus, R.id.chart_left, R.id.chart_right, R.id.chart_fullscreen})
+    @OnClick({R.id.today_layout, R.id.screen_orientation, R.id.ear_tag_left, R.id.ear_tag_right, R.id.model_temp, R.id.model_activity})
     protected void onClickView(View v) {
         if (!TimeUtils.havePast200msec()) {
             return;
         }
         switch (v.getId()) {
-            case R.id.back: {
-                getActivity().finish();
-                break;
-            }
-            case R.id.prev_day: {
-                if (mEventListener != null) {
-                    mEventListener.action(MonPigstyChartMainFragment.EVENT_PREVE_DAY, mUIEntity.calendar);
-                }
-                break;
-            }
             case R.id.today_layout: {
                 if (mEventListener != null) {
                     mEventListener.action(MonPigstyChartMainFragment.EVENT_DATE, mUIEntity.calendar);
                 }
                 break;
             }
-            case R.id.next_day: {
+            case R.id.screen_orientation: {
                 if (mEventListener != null) {
-                    mEventListener.action(MonPigstyChartMainFragment.EVENT_NEXT_DAY, mUIEntity.calendar);
+                    mEventListener.action(MonPigstyChartMainFragment.EVENT_PORTRAIT, null);
                 }
                 break;
             }
             case R.id.ear_tag_left: {
-                int itemCount = mEarTagRecyclerView.getAdapter().getItemCount();
-                if (itemCount <= 0) break;
                 LinearLayoutManager layoutManager = (LinearLayoutManager) mEarTagRecyclerView.getLayoutManager();
                 int firstPosition = layoutManager.findFirstCompletelyVisibleItemPosition();
                 mEarTagRecyclerView.smoothScrollToPosition(Math.max(firstPosition - 1, 0));
@@ -210,7 +176,6 @@ public class MonPigstyChartPortraitFragment extends BaseFragment<MonChartPresent
             }
             case R.id.ear_tag_right: {
                 int itemCount = mEarTagRecyclerView.getAdapter().getItemCount();
-                if (itemCount <= 0) break;
                 LinearLayoutManager layoutManager = (LinearLayoutManager) mEarTagRecyclerView.getLayoutManager();
                 int lastPosition = layoutManager.findLastCompletelyVisibleItemPosition();
                 mEarTagRecyclerView.smoothScrollToPosition(Math.min(lastPosition + 1, itemCount - 1));
@@ -233,63 +198,6 @@ public class MonPigstyChartPortraitFragment extends BaseFragment<MonChartPresent
                     setActivityChartData(mUIEntity.activityList);
                 } else if (mEventListener != null) {
                     mEventListener.action(MonPigstyChartMainFragment.EVENT_MODEL_ACTIVITY, mUIEntity.calendar);
-                }
-                break;
-            }
-            case R.id.chart_plus: {
-                if (mLineChartView.isScaleXEnabled()) {
-                    ViewPortHandler viewPortHandler = mLineChartView.getViewPortHandler();
-                    float currentScaleX = Math.min(viewPortHandler.getScaleX() + 1.4f, viewPortHandler.getMaxScaleX());
-                    mLineChartView.zoomAndCenterAnimated(currentScaleX, 1.0f,
-                            mLineChartView.getLowestVisibleX(), 0,
-                            YAxis.AxisDependency.LEFT, 200);
-                    mChartPlusView.setEnabled(currentScaleX < viewPortHandler.getMaxScaleX());
-                    mHandler.sendChangeChart();
-                    LogUtils.e(TAG, " chart_plus - currentScaleX : " + currentScaleX);
-                }
-                break;
-            }
-            case R.id.chart_minus: {
-                if (mLineChartView.isScaleXEnabled()) {
-                    ViewPortHandler viewPortHandler = mLineChartView.getViewPortHandler();
-                    float currentScaleX = Math.max(viewPortHandler.getScaleX() - 1.4f, viewPortHandler.getMinScaleX());
-                    mLineChartView.zoomAndCenterAnimated(currentScaleX, 1.0f,
-                            mLineChartView.getLowestVisibleX(), 0,
-                            YAxis.AxisDependency.LEFT, 200);
-                    mChartMinusView.setEnabled(currentScaleX > viewPortHandler.getMinScaleX());
-                    mHandler.sendChangeChart();
-                    LogUtils.e(TAG, " chart_minus - currentScaleX : " + currentScaleX);
-                }
-                break;
-            }
-            case R.id.chart_left: {
-                XAxis xAxis = mLineChartView.getXAxis();
-                float lowestVisibleX = mLineChartView.getLowestVisibleX();
-                float visibleX = xAxis.mEntries[0];
-                if (Math.abs(lowestVisibleX - visibleX) < 1) {
-                    visibleX = xAxis.mEntries[1];
-                }
-                mLineChartView.moveViewToAnimated(visibleX, 0, YAxis.AxisDependency.LEFT, 200);
-                mHandler.sendChangeChart();
-                break;
-            }
-            case R.id.chart_right: {
-                XAxis xAxis = mLineChartView.getXAxis();
-                float lowestVisibleX = mLineChartView.getLowestVisibleX();
-                float highestVisibleX = mLineChartView.getHighestVisibleX();
-                float diff = Math.abs(highestVisibleX - xAxis.mEntries[xAxis.mEntryCount - 1]);
-                float visibleX = Math.max(lowestVisibleX - diff, 0);
-                if (diff < 0.05) {
-                    float interval = Math.abs(xAxis.mEntries[1] - xAxis.mEntries[0]);
-                    visibleX = Math.max(lowestVisibleX - interval, 0);
-                }
-                mLineChartView.moveViewToAnimated(visibleX, 0, YAxis.AxisDependency.RIGHT, 200);
-                mHandler.sendChangeChart();
-                break;
-            }
-            case R.id.chart_fullscreen: {
-                if (mEventListener != null) {
-                    mEventListener.action(MonPigstyChartMainFragment.EVENT_LANDSCAPE, null);
                 }
                 break;
             }
@@ -338,7 +246,6 @@ public class MonPigstyChartPortraitFragment extends BaseFragment<MonChartPresent
             mBackView.setText(StringUtils.ASCII16ToString(mUIEntity.pigstyEntity.getPigstyName()));
         }
 
-        mNextDayView.setEnabled(TimeUtils.deviationDays(mUIEntity.calendar, Calendar.getInstance()) < 0);
         mTodayValueView.setText(MonTools.formatTime(mUIEntity.calendar));
         mTodayNicknameView.setText(MonTools.nicknameOfTime(mUIEntity.calendar));
 
@@ -418,7 +325,7 @@ public class MonPigstyChartPortraitFragment extends BaseFragment<MonChartPresent
             mModelTempView.setTextSize(14);
             TextPaint tempPaint = mModelTempView.getPaint();
             tempPaint.setFakeBoldText(true);
-            mModelTempView.setBackgroundResource(R.drawable.img_monitor_temp_bg);
+            mModelTempView.setBackgroundResource(R.drawable.shape_monitor_chart_model_bg);
 
             mModelActivityView.setSelected(false);
             mModelActivityView.setTextSize(12);
@@ -431,7 +338,7 @@ public class MonPigstyChartPortraitFragment extends BaseFragment<MonChartPresent
             mModelActivityView.setTextSize(14);
             TextPaint activityPaint = mModelActivityView.getPaint();
             activityPaint.setFakeBoldText(true);
-            mModelActivityView.setBackgroundResource(R.drawable.img_monitor_activity_bg);
+            mModelActivityView.setBackgroundResource(R.drawable.shape_monitor_chart_model_bg);
 
             mModelTempView.setSelected(false);
             mModelTempView.setTextSize(12);
@@ -442,16 +349,11 @@ public class MonPigstyChartPortraitFragment extends BaseFragment<MonChartPresent
     }
 
     private void setChartMenusStatus() {
-        boolean isEmpty = mLineChartView.getLineData() == null;
         float maxVisible = mLineChartView.getXAxis().getAxisMaximum();
         float lowestX = mLineChartView.getLowestVisibleX();
         float highestX = mLineChartView.getHighestVisibleX();
         ViewPortHandler viewPortHandler = mLineChartView.getViewPortHandler();
-        mChartFoldView.setSelected(isEmpty && !viewPortHandler.isFullyZoomedOutX());
-        mChartLeftView.setEnabled(isEmpty && highestX < maxVisible);
-        mChartRightView.setEnabled(isEmpty && lowestX > 0);
-        mChartPlusView.setEnabled(isEmpty && viewPortHandler.canZoomInMoreX());
-        mChartMinusView.setEnabled(isEmpty && viewPortHandler.canZoomOutMoreX());
+
     }
 
     //初始化图表绘制
@@ -488,7 +390,7 @@ public class MonPigstyChartPortraitFragment extends BaseFragment<MonChartPresent
         //mLineChartView.getViewPortHandler().getMatrixTouch().postScale(7.0f, 1f);
         //mLineChartView.fitScreen();
 
-        mLineChartView.setVisibleXRangeMinimum(6);
+        mLineChartView.setVisibleXRangeMinimum(12);
 
         Legend legend = mLineChartView.getLegend();
         legend.setEnabled(false);
@@ -671,36 +573,4 @@ public class MonPigstyChartPortraitFragment extends BaseFragment<MonChartPresent
     private int getColor(int position) {
         return mUIEntity.colors[position % mUIEntity.colors.length];
     }
-
-    public static class HandlerImpl extends Handler {
-
-        public final static int WHAT_CHART_CHANGE = 100;
-
-        private WeakReference<MonPigstyChartPortraitFragment> mFragmentWeakRef = null;
-
-        public HandlerImpl(MonPigstyChartPortraitFragment fragment) {
-            mFragmentWeakRef = new WeakReference<MonPigstyChartPortraitFragment>(fragment);
-        }
-
-        @Override
-        public void handleMessage(@NonNull Message msg) {
-            switch (msg.what) {
-                case WHAT_CHART_CHANGE: {
-                    MonPigstyChartPortraitFragment fragment = mFragmentWeakRef.get();
-                    if (fragment != null) {
-                        fragment.setChartMenusStatus();
-                    }
-                    break;
-                }
-            }
-        }
-
-        public void sendChangeChart() {
-            removeMessages(WHAT_CHART_CHANGE);
-            Message message = Message.obtain();
-            message.what = WHAT_CHART_CHANGE;
-            sendEmptyMessageDelayed(WHAT_CHART_CHANGE, 250);
-        }
-    }
-
 }
